@@ -28,7 +28,9 @@ P3课下需要支持的指令集： `{addu, subu, ori, lw, sw, beq, lui, nop}`
   - [x] 测试一下重构之后的CPU有没有Bug！！！！(OK)
   - [x] 将准备加的指令添加到Control单元中。
   - [x] 扩展Control单元的输出信号
-  - [ ] 扩展CPU中对移位指令的数据通路
+  - [x] 扩展CPU中对移位指令的数据通路
+  - [ ] 测出来了bgez的BUG！！！（已修复）
+  - [ ] 测出来了jalr的数据通路错误！！！建模时对jalr指令理解有误（已修复）
 
 
 
@@ -38,22 +40,22 @@ P3课下需要支持的指令集： `{addu, subu, ori, lw, sw, beq, lui, nop}`
 
 - [x] add/addu
 - [x] sub/subu
-- [ ] slt
-- [ ] sltu
-- [ ] and
-- [ ] or
-- [ ] xor
-- [ ] nor
+- [x] slt
+- [x] sltu
+- [x] and
+- [x] or
+- [x] xor
+- [x] nor
 - [ ] 
 
 ### 运算类-移位指令
 
-- [ ] sll
-- [ ] srl
-- [ ] sra
-- [ ] sllv
-- [ ] srlv
-- [ ] srav
+- [x] sll
+- [x] srl
+- [x] sra
+- [x] sllv
+- [x] srlv
+- [x] srav
 - [ ] 
 
 
@@ -63,9 +65,9 @@ P3课下需要支持的指令集： `{addu, subu, ori, lw, sw, beq, lui, nop}`
 - [x] lui
 - [x] ori
 - [x] addi
-- [ ] andi
-- [ ] xori
-- [ ] slti/sltiu
+- [x] andi
+- [x] xori
+- [x] slti/sltiu
 
 
 
@@ -93,9 +95,10 @@ P3课下需要支持的指令集： `{addu, subu, ori, lw, sw, beq, lui, nop}`
 
 - [x] beq
 - [x] bne
-- [ ] bgez
-- [ ] bgtz
-- [ ] blez
-- [ ] bltz
-- [ ] 
+- [x] bgez
+- [x] bgtz
+- [x] blez
+- [x] bltz
+
+
 
