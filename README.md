@@ -1,2 +1,3 @@
-# BUAA_Computer_Organization_2020Fall
-Computer Organization in BUAA, 2020 Fall.
+# P3 课下
+
+正式的 P3 课下
