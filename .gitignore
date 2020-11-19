@@ -1,0 +1,21 @@
+# Non Necessary
+.vscode/
+asm/
+instr/
+work/
+*.zip
+
+# Report
+Report.md
+**.pdf
+
+# Useless files
+Parts.md
+
+# Testbenches
+testbench/
+
+# ModelSim
+*.mti
+*.mpf
+*.wlf

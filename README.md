@@ -1,2 +1,4 @@
-# BUAA_Computer_Organization_2020Fall
-Computer Organization in BUAA, 2020 Fall.
+# P4
+
+P4：Verilog 单周期CPU
+
