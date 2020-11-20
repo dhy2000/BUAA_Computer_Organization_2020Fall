@@ -15,7 +15,7 @@ module NPC (
     input wire cmp,
     input wire [31:0] PC,
     input wire [15:0] imm16,
-    input wire [25:0] jmpAddr;
+    input wire [25:0] jmpAddr,
     input wire [31:0] jmpReg,
     output wire [31:0] NPC,
     output wire [31:0] PCToLink

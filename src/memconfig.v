@@ -14,7 +14,7 @@
 `define DM_SIZE             (`DM_SIZE_WORD << 2)
 
 /* ------ TEXT MEMORY ------ */
-`define TEXT_STARTADDR  32'0000_3000
+`define TEXT_STARTADDR  32'h0000_3000
 `define WIDTH_IM_ADDR_WORD  10  // 10: 1024 * 4 Bytes
 `define WIDTH_IM_ADDR       (`WIDTH_IM_ADDR_WORD + 2)
 `define IM_SIZE_WORD        (1 << `WIDTH_IM_ADDR_WORD)

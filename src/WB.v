@@ -27,7 +27,7 @@ module WB (
     assign regWriteEn = (
         ((func == `FUNC_CALC_R) || (func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ)) ? 1 : 
         ((instr == `JAL) || (instr == `JALR)) ? 1 : 
-        0;
+        0
     );
     
     assign regWriteData = (

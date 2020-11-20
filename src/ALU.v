@@ -18,7 +18,7 @@ module ALU (
     input wire [15:0] imm16, 
     input wire [4:0] shamt,
     /* Output */
-    output wire [31:0] out;
+    output wire [31:0] out
 );
     /* Inner control signal */
     parameter WIDTH_Ext = 1,
@@ -49,7 +49,7 @@ module ALU (
     wire [WIDTH_Alu-1:0] aluOp;
     
     assign extOp = (
-        (func == `FUNC_MEM_READ || func == `FUNC_MEM_WRITE) ? (Sign_Ext) 
+        (func == `FUNC_MEM_READ || func == `FUNC_MEM_WRITE) ? (Sign_Ext) :
         ((instr == `ANDI) || (instr == `ORI) || (instr == `XORI) || (instr == `LUI)) ? (Zero_Ext) : 
         (Sign_Ext) // default
     );
@@ -94,7 +94,7 @@ module ALU (
             Alu_Or:     alu = a | b;
             Alu_Xor:    alu = a ^ b;
             Alu_Nor:    alu = ~(a | b);
-            Alu_Slt:    alu = ($signed(a) < $(signed(b))) ? 32'b1 : 32'b0;
+            Alu_Slt:    alu = ($signed(a) < $signed(b)) ? 32'b1 : 32'b0;
             Alu_Sltu:   alu = (a < b) ? 32'b1 : 32'b0;
             Alu_Sll:    alu = (b << a[4:0]);
             Alu_Srl:    alu = (b >> a[4:0]);

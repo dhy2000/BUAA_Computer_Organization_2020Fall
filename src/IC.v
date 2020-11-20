@@ -38,7 +38,7 @@ module IC (
     // func
     wire calc_r, calc_i, mem_r, mem_w, br, jmp;
     assign calc_r = (
-        (instr == `NOP )
+        (instr == `NOP ) || 
         (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV) 
     );
     assign calc_i = (

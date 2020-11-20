@@ -61,19 +61,19 @@ module DM (
                 extByte = {{24{byte[7]}}, byte};
         end
     endfunction
-    function extHalf;
+    function [31:0] extHalf;
         input [15:0] half;
         input ext;
         begin
             if (ext == EXT_Zero) 
-                extByte = {16'b0, half};
+                extHalf = {16'b0, half};
             else 
-                extByte = {{16{half[15]}}, half};
+                extHalf = {{16{half[15]}}, half};
         end
     endfunction
 
     // store half/byte - insert
-    function replaceByteToWord;
+    function [31:0] replaceByteToWord;
         input [31:0] word;
         input [7:0] byte;
         input [1:0] offset;
