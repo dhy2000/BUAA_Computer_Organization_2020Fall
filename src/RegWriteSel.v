@@ -2,7 +2,7 @@
  *  File Name: RegWriteSel.v
  *  Module: RegWriteSel
  *  Input: addrRt, addrRd
- *  Output: RegWriteAddr
+ *  Output: RegWriteAddr (rd, rt, 31)
  */
 
 `default_nettype none
@@ -23,5 +23,6 @@ module RegWriteSel (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
     // This module contains only a MUX
-    assign regWriteAddr = (format == `FORMAT_R) ? addrRd : addrRt;
+    assign regWriteAddr = (instr == `JAL) ? 31 : 
+                        (format == `FORMAT_R) ? addrRd : addrRt;
 endmodule
