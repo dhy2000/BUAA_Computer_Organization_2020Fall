@@ -22,8 +22,9 @@ module GRF (
 );
     // Memory Declaration
     reg [31:0] grf [0: 31];
-    assign RData1 = grf[RAddr1];
-    assign RData2 = grf[RAddr2];
+    // Inner Transmit Forward
+    assign RData1 = (writeEn && (RAddr1 == WAddr) && (WAddr != 0)) ? WData : grf[RAddr1];
+    assign RData2 = (writeEn && (RAddr2 == WAddr) && (WAddr != 0)) ? WData : grf[RAddr2];
 
     task resetReg;
         integer i;
