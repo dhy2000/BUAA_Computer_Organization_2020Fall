@@ -1,3 +1,8 @@
 .vscode/
 document/
 util/
+
+# ModelSim Project Files
+*.mti
+*.mpf
+work/
