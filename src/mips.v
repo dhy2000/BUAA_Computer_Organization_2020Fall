@@ -131,7 +131,7 @@ module mips (
         // WRITE@WB
         .clk(clk), .reset(reset), .writeEn(RegWriteEn),
         .WAddr(RegWriteAddr_WB), .WData(RegWriteData), 
-        .PC(PC_ID)
+        .PC(PC_WB)
     );
     COMP cmp (
         .instr(Instr), 
@@ -168,6 +168,7 @@ module mips (
     EX_MEM ex_mem (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
         .PC_EX(PC_EX), .PC_MEM(PC_MEM), 
+        .instr_EX(Instr_EX), .instr_MEM(Instr_MEM),
         .aluOut_EX(AluOut), .aluOut_MEM(AluOut_MEM), 
         .memWriteData_EX(DataRt_Alu), .memWriteData_MEM(MemWriteData_MEM),
         .regWriteAddr_EX(RegWriteAddr), .regWriteAddr_MEM(RegWriteAddr_MEM),
