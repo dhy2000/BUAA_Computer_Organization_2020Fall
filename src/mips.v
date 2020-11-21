@@ -32,7 +32,6 @@ module mips (
     wire [31:0] PC;
     // NPC
     wire [31:0] NPC;
-    wire [31:0] PCToLink;
     // IM
     wire [31:0] Code; 
     // --- 
@@ -70,7 +69,6 @@ module mips (
     // IF/ID
     wire [31:0] Code_ID;
     wire [31:0] PC_ID;
-    wire [31:0] PCToLink_ID;
     // ID/EX
     wire [`WIDTH_INSTR-1:0] Instr_EX;
     wire [31:0] PC_EX;
@@ -81,20 +79,17 @@ module mips (
     wire [4:0] AddrRs_EX;
     wire [4:0] AddrRt_EX;
     wire [4:0] AddrRd_EX;
-    wire [31:0] PCToLink_EX;
     // EX/MEM
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
     wire [31:0] PC_MEM;
     wire [31:0] AluOut_MEM;
     wire [31:0] MemWriteData_MEM;
     wire [4:0] RegWriteAddr_MEM;
-    wire [31:0] PCToLink_MEM;
     // MEM/WB
     wire [`WIDTH_INSTR-1:0] Instr_WB;
     wire [31:0] PC_WB;
     wire [31:0] AluOut_WB;
     wire [31:0] MemReadData_WB;
-    wire [31:0] PCToLink_WB;
     wire [4:0] RegWriteAddr_WB;
 
     // TODO: support Data Forward!!!!!
@@ -107,7 +102,7 @@ module mips (
     );
     NPC npc (
         .instr(Instr), .cmp(Cmp), .PC(PC), .imm16(Imm16), .jmpAddr(JmpAddr), .jmpReg(DataRs_ID),
-        .NPC(NPC), .PCToLink(PCToLink)
+        .NPC(NPC)
     );
     IM im (
         .PC(PC), .code(Code)
@@ -116,8 +111,7 @@ module mips (
     IF_ID if_id (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
         .code_IF(Code), .code_ID(Code_ID),
-        .PC_IF(PC), .PC_ID(PC_ID),
-        .PCToLink_IF(PCToLink), .PCToLink_ID(PCToLink_ID)
+        .PC_IF(PC), .PC_ID(PC_ID)
     );
     // ID
     Decoder decd (
@@ -150,8 +144,7 @@ module mips (
         .shamt_ID(Shamt), .shamt_EX(Shamt_EX), 
         .addrRs_ID(AddrRs), .addrRs_EX(AddrRs_EX),
         .addrRt_ID(AddrRt), .addrRt_EX(AddrRt_EX),
-        .addrRd_ID(AddrRd), .addrRd_EX(AddrRd_EX),
-        .PCToLink_ID(PCToLink_ID), .PCToLink_EX(PCToLink_EX)
+        .addrRd_ID(AddrRd), .addrRd_EX(AddrRd_EX)
     );
     // EX
     ALU alu (
@@ -172,8 +165,7 @@ module mips (
         .instr_EX(Instr_EX), .instr_MEM(Instr_MEM),
         .aluOut_EX(AluOut), .aluOut_MEM(AluOut_MEM), 
         .memWriteData_EX(DataRt_Alu), .memWriteData_MEM(MemWriteData_MEM),
-        .regWriteAddr_EX(RegWriteAddr), .regWriteAddr_MEM(RegWriteAddr_MEM),
-        .PCToLink_EX(PCToLink_EX), .PCToLink_MEM(PCToLink_MEM)
+        .regWriteAddr_EX(RegWriteAddr), .regWriteAddr_MEM(RegWriteAddr_MEM)
     );
     // MEM
     DM dm (
@@ -188,13 +180,12 @@ module mips (
         .instr_MEM(Instr_MEM), .instr_WB(Instr_WB),
         .aluOut_MEM(AluOut_MEM), .aluOut_WB(AluOut_WB), 
         .memReadData_MEM(MemReadData), .memReadData_WB(MemReadData_WB),
-        .PCToLink_MEM(PCToLink_MEM), .PCToLink_WB(PCToLink_WB),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteAddr_WB(RegWriteAddr_WB)
     );
     // WB
     WB wb (
-        .instr(Instr_WB),
-        .aluOut(AluOut_WB), .memRead(MemReadData_WB), .PCToLink(PCToLink_WB),
+        .instr(Instr_WB), .PC(PC_WB), 
+        .aluOut(AluOut_WB), .memRead(MemReadData_WB), 
         .regWriteData(RegWriteData), .regWriteEn(RegWriteEn)
     );
 

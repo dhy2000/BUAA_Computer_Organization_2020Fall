@@ -17,8 +17,7 @@ module NPC (
     input wire [15:0] imm16,
     input wire [25:0] jmpAddr,
     input wire [31:0] jmpReg,
-    output wire [31:0] NPC,
-    output wire [31:0] PCToLink
+    output wire [31:0] NPC
 );
     parameter WIDTH_NPC = 2,
             NPC_Order   = 0,
@@ -46,6 +45,6 @@ module NPC (
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
                 (npcOp == NPC_JmpReg) ? (jmpReg) : 
                 (PC + 4);
-    assign PCToLink = PC + 8; // Delay Slot.
+    // assign PCToLink = PC + 8; // Delay Slot.
     
 endmodule

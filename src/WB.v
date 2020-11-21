@@ -11,10 +11,10 @@
 
 module WB (
     input wire [`WIDTH_INSTR-1:0] instr,
+    input wire [31:0] PC, 
     // GRF Write Data Source
     input wire [31:0] aluOut,
     input wire [31:0] memRead,
-    input wire [31:0] PCToLink,
     // Output 
     output wire [31:0] regWriteData,
     output wire regWriteEn
@@ -32,7 +32,7 @@ module WB (
     
     assign regWriteData = (
         ((func == `FUNC_MEM_READ)) ? (memRead) : 
-        ((instr == `JAL) || (instr == `JALR)) ? (PCToLink) : 
+        ((instr == `JAL) || (instr == `JALR)) ? (PC + 8) : 
         (aluOut) // default
     );
 
