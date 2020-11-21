@@ -62,8 +62,8 @@ module ID_EX (
     output wire [4:0] addrRs_EX,
     input wire [4:0] addrRt_ID,
     output wire [4:0] addrRt_EX,
-    input wire [4:0] addrRd_ID,
-    output wire [4:0] addrRd_EX
+    input wire [4:0] regWriteAddr_ID,
+    output wire [4:0] regWriteAddr_EX
 );
     reg [`WIDTH_INSTR-1:0] instr = 0;
     reg [31:0] PC = 0;
@@ -73,7 +73,7 @@ module ID_EX (
     reg [4:0] shamt = 0;
     reg [4:0] addrRs = 0;
     reg [4:0] addrRt = 0;
-    reg [4:0] addrRd = 0;
+    reg [4:0] regWriteAddr = 0;
 
     assign instr_EX = instr;
     assign PC_EX = PC;
@@ -83,7 +83,7 @@ module ID_EX (
     assign shamt_EX = shamt;
     assign addrRs_EX = addrRs;
     assign addrRt_EX = addrRt;
-    assign addrRd_EX = addrRd;
+    assign regWriteAddr_EX = regWriteAddr;
 
     always @ (posedge clk) begin
         if (reset | clr) begin
@@ -95,7 +95,7 @@ module ID_EX (
             shamt <= 0;
             addrRs <= 0;
             addrRt <= 0;
-            addrRd <= 0;
+            regWriteAddr <= 0;
         end 
         else begin
             if (!stall) begin
@@ -107,7 +107,7 @@ module ID_EX (
                 shamt <= shamt_ID;
                 addrRs <= addrRs_ID;
                 addrRt <= addrRt_ID;
-                addrRd <= addrRd_ID;
+                regWriteAddr <= regWriteAddr_ID;
             end
         end
     end

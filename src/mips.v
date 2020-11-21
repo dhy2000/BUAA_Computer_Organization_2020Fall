@@ -50,13 +50,13 @@ module mips (
     wire [31:0] DataRt_ID; // forward
     // COMP
     wire Cmp;
+    // RegWriteSel
+    wire [4:0] RegWriteAddr;
     // ---
     // ALU
     wire [31:0] DataRs_Alu; // forward
     wire [31:0] DataRt_Alu; // forward
     wire [31:0] AluOut;
-    // RegWriteSel
-    wire [4:0] RegWriteAddr;
     // ---
     // DM
     wire [31:0] MemWriteData_DM; // forward
@@ -79,6 +79,7 @@ module mips (
     wire [4:0] AddrRs_EX;
     wire [4:0] AddrRt_EX;
     wire [4:0] AddrRd_EX;
+    wire [4:0] RegWriteAddr_EX;
     // EX/MEM
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
     wire [31:0] PC_MEM;
@@ -133,6 +134,11 @@ module mips (
         .dataRs(DataRs_ID), .dataRt(DataRt_ID), 
         .cmp(Cmp)
     );
+    RegWriteSel regwsel (
+        .instr(Instr),
+        .addrRt(AddrRt), .addrRd(AddrRd),
+        .regWriteAddr(RegWriteAddr)
+    ); 
     // ID/EX
     ID_EX id_ex (   
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
@@ -144,7 +150,8 @@ module mips (
         .shamt_ID(Shamt), .shamt_EX(Shamt_EX), 
         .addrRs_ID(AddrRs), .addrRs_EX(AddrRs_EX),
         .addrRt_ID(AddrRt), .addrRt_EX(AddrRt_EX),
-        .addrRd_ID(AddrRd), .addrRd_EX(AddrRd_EX)
+        .addrRd_ID(AddrRd), .addrRd_EX(AddrRd_EX),
+        .regWriteAddr_ID(RegWriteAddr), .regWriteAddr_EX(RegWriteAddr_EX)
     );
     // EX
     ALU alu (
@@ -153,11 +160,6 @@ module mips (
         .imm16(Imm16_EX), .shamt(Shamt_EX), 
         .out(AluOut)
     );
-    RegWriteSel regwsel (
-        .instr(Instr_EX),
-        .addrRt(AddrRt_EX), .addrRd(AddrRd_EX),
-        .regWriteAddr(RegWriteAddr)
-    );
     // EX/MEM
     EX_MEM ex_mem (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
@@ -165,7 +167,7 @@ module mips (
         .instr_EX(Instr_EX), .instr_MEM(Instr_MEM),
         .aluOut_EX(AluOut), .aluOut_MEM(AluOut_MEM), 
         .memWriteData_EX(DataRt_Alu), .memWriteData_MEM(MemWriteData_MEM),
-        .regWriteAddr_EX(RegWriteAddr), .regWriteAddr_MEM(RegWriteAddr_MEM)
+        .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM)
     );
     // MEM
     DM dm (
