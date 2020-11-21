@@ -45,13 +45,17 @@ module mips (
     wire [15:0] Imm16;
     wire [25:0] JmpAddr;
     // GRF
-    wire [31:0] DataRs_GRF; // transmit forward
-    wire [31:0] DataRt_GRF;
+    wire [31:0] DataRs_GRF; // Raw
+    wire [31:0] DataRt_GRF; // Raw
+    wire [31:0] DataRs_ID; // transmit forward
+    wire [31:0] DataRt_ID; // transmit forward
     // COMP
     wire Cmp;
     // ---
     // ALU
-    wire [31:0] AluOut_Alu;
+    wire [31:0] DataRs_Alu; // forward
+    wire [31:0] DataRt_Alu; // forward
+    wire [31:0] AluOut;
     // RegWriteSel
     wire [4:0] RegWriteAddr;
     // ---
@@ -59,14 +63,16 @@ module mips (
     wire [31:0] MemReadData;
     // --- 
     // WB
-    wire regWriteEn;
+    wire RegWriteEn;
     wire [31:0] RegWriteData;
     // --- Pipeline Register
     // IF/ID
     wire [31:0] Code_ID;
+    wire [31:0] PC_ID;
     wire [31:0] PCToLink_ID;
     // ID/EX
     wire [`WIDTH_INSTR-1:0] Instr_EX;
+    wire [31:0] PC_EX;
     wire [31:0] DataRs_EX;
     wire [31:0] DataRt_EX;
     wire [15:0] Imm16_EX;
@@ -77,19 +83,20 @@ module mips (
     wire [31:0] PCToLink_EX;
     // EX/MEM
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
+    wire [31:0] PC_MEM;
     wire [31:0] AluOut_MEM;
     wire [31:0] MemWriteData_MEM;
     wire [4:0] RegWriteAddr_MEM;
     wire [31:0] PCToLink_MEM;
     // MEM/WB
     wire [`WIDTH_INSTR-1:0] Instr_WB;
+    wire [31:0] PC_WB;
     wire [31:0] AluOut_WB;
     wire [31:0] MemReadData_WB;
     wire [31:0] PCToLink_WB;
     wire [4:0] RegWriteAddr_WB;
 
     // TODO: support Data Forward!!!!!
-    // TODO: Pipeline the PC !!!!!!
 
     /* 2. Instantiate Modules */
     // IF
@@ -98,7 +105,7 @@ module mips (
         .NPC(NPC), .PC(PC)
     );
     NPC npc (
-        .instr(Instr), .cmp(Cmp), .PC(PC), .imm16(Imm16), .jmpAddr(JmpAddr), .jmpReg(DataRs_GRF),
+        .instr(Instr), .cmp(Cmp), .PC(PC), .imm16(Imm16), .jmpAddr(JmpAddr), .jmpReg(DataRs_ID),
         .NPC(NPC), .PCToLink(PCToLink)
     );
     IM im (
@@ -108,6 +115,7 @@ module mips (
     IF_ID if_id (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
         .code_IF(Code), .code_ID(Code_ID),
+        .PC_IF(PC), .PC_ID(PC_ID),
         .PCToLink_IF(PCToLink), .PCToLink_ID(PCToLink_ID)
     );
     // ID
@@ -121,23 +129,79 @@ module mips (
         .RAddr1(AddrRs), .RAddr2(AddrRt),
         .RData1(DataRs_GRF), .RData2(DataRt_GRF),
         // WRITE@WB
-        .clk(clk), .reset(reset), .writeEn(regWriteEn),
+        .clk(clk), .reset(reset), .writeEn(RegWriteEn),
         .WAddr(RegWriteAddr_WB), .WData(RegWriteData), 
-        .PC()
+        .PC(PC_ID)
+    );
+    COMP cmp (
+        .instr(Instr), 
+        .dataRs(DataRs_ID), .dataRt(DataRt_ID), 
+        .cmp(Cmp)
     );
     // ID/EX
-    
+    ID_EX id_ex (   
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .instr_ID(Instr), .instr_EX(Instr_EX), 
+        .PC_ID(PC_ID), .PC_EX(PC_EX),
+        .dataRs_ID(DataRs_ID), .dataRs_EX(DataRs_EX),
+        .dataRt_ID(DataRt_ID), .dataRt_EX(DataRt_EX),
+        .imm16_ID(Imm16), .imm16_EX(Imm16_EX),
+        .shamt_ID(Shamt), .shamt_EX(Shamt_EX), 
+        .addrRs_ID(AddrRs), .addrRs_EX(AddrRs_EX),
+        .addrRt_ID(AddrRt), .addrRt_EX(AddrRt_EX),
+        .addrRd_ID(AddrRd), .addrRd_EX(AddrRd_EX),
+        .PCToLink_ID(PCToLink_ID), .PCToLink_EX(PCToLink_EX)
+    );
     // EX
-
+    ALU alu (
+        .instr(Instr_EX), 
+        .dataRs(DataRs_Alu), .dataRt(DataRt_Alu),
+        .imm16(Imm16_EX), .shamt(Shamt_EX), 
+        .out(AluOut)
+    );
+    RegWriteSel regwsel (
+        .instr(Instr_EX),
+        .addrRt(AddrRt_EX), .addrRd(AddrRd_EX),
+        .regWriteAddr(RegWriteAddr)
+    );
     // EX/MEM
-
+    EX_MEM ex_mem (
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .PC_EX(PC_EX), .PC_MEM(PC_MEM), 
+        .aluOut_EX(AluOut), .aluOut_MEM(AluOut_MEM), 
+        .memWriteData_EX(DataRt_Alu), .memWriteData_MEM(MemWriteData_MEM),
+        .regWriteAddr_EX(RegWriteAddr), .regWriteAddr_MEM(RegWriteAddr_MEM),
+        .PCToLink_EX(PCToLink_EX), .PCToLink_MEM(PCToLink_MEM)
+    );
     // MEM
-
+    DM dm (
+        .clk(clk), .reset(reset), 
+        .instr(Instr_MEM), .Addr(AluOut_MEM), .WData(MemWriteData_MEM),
+        .PC(PC_MEM), .RData(MemReadData)
+    );
     // MEM/WB
-
+    MEM_WB mem_wb (
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .PC_MEM(PC_MEM), .PC_WB(PC_WB), 
+        .instr_MEM(Instr_MEM), .instr_WB(Instr_WB),
+        .aluOut_MEM(AluOut_MEM), .aluOut_WB(AluOut_WB), 
+        .memReadData_MEM(MemReadData), .memReadData_WB(MemReadData_WB),
+        .PCToLink_MEM(PCToLink_MEM), .PCToLink_WB(PCToLink_WB),
+        .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteAddr_WB(RegWriteAddr_WB)
+    );
     // WB
+    WB wb (
+        .instr(Instr_WB),
+        .aluOut(AluOut_WB), .memRead(MemReadData_WB), .PCToLink(PCToLink_WB),
+        .regWriteData(RegWriteData), .regWriteEn(RegWriteEn)
+    );
 
-
-
+    /* 3. Select Forward Data */
+    // RS@ID, RT@ID, RS@EX, RT@EX
+    // TODO: support Forward
+    assign DataRs_ID = DataRs_GRF;
+    assign DataRt_ID = DataRt_GRF;
+    assign DataRs_Alu = DataRs_EX;
+    assign DataRt_Alu = DataRt_EX;
     
 endmodule
