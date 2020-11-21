@@ -47,8 +47,8 @@ module mips (
     // GRF
     wire [31:0] DataRs_GRF; // Raw
     wire [31:0] DataRt_GRF; // Raw
-    wire [31:0] DataRs_ID; // transmit forward
-    wire [31:0] DataRt_ID; // transmit forward
+    wire [31:0] DataRs_ID; // forward
+    wire [31:0] DataRt_ID; // forward
     // COMP
     wire Cmp;
     // ---
@@ -60,6 +60,7 @@ module mips (
     wire [4:0] RegWriteAddr;
     // ---
     // DM
+    wire [31:0] MemWriteData_DM; // forward
     wire [31:0] MemReadData;
     // --- 
     // WB
@@ -177,7 +178,7 @@ module mips (
     // MEM
     DM dm (
         .clk(clk), .reset(reset), 
-        .instr(Instr_MEM), .Addr(AluOut_MEM), .WData(MemWriteData_MEM),
+        .instr(Instr_MEM), .Addr(AluOut_MEM), .WData(MemWriteData_DM),
         .PC(PC_MEM), .RData(MemReadData)
     );
     // MEM/WB
@@ -204,5 +205,6 @@ module mips (
     assign DataRt_ID = DataRt_GRF;
     assign DataRs_Alu = DataRs_EX;
     assign DataRt_Alu = DataRt_EX;
+    assign MemWriteData_MEM = MemWriteData_DM;
     
 endmodule
