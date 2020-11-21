@@ -150,7 +150,6 @@ module mips (
         .shamt_ID(Shamt), .shamt_EX(Shamt_EX), 
         .addrRs_ID(AddrRs), .addrRs_EX(AddrRs_EX),
         .addrRt_ID(AddrRt), .addrRt_EX(AddrRt_EX),
-        .addrRd_ID(AddrRd), .addrRd_EX(AddrRd_EX),
         .regWriteAddr_ID(RegWriteAddr), .regWriteAddr_EX(RegWriteAddr_EX)
     );
     // EX
@@ -198,6 +197,6 @@ module mips (
     assign DataRt_ID = DataRt_GRF;
     assign DataRs_Alu = DataRs_EX;
     assign DataRt_Alu = DataRt_EX;
-    assign MemWriteData_MEM = MemWriteData_DM;
+    assign MemWriteData_DM = MemWriteData_MEM;
     
 endmodule
