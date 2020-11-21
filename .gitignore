@@ -5,4 +5,5 @@ util/
 # ModelSim Project Files
 *.mti
 *.mpf
+*.wlf
 work/
