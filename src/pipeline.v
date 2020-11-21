@@ -16,23 +16,29 @@ module IF_ID (
     input wire clr,
     input wire [31:0] code_IF,
     output wire [31:0] code_ID,
+    input wire [31:0] PC_IF,
+    output wire [31:0] PC_ID,
     input wire [31:0] PCToLink_IF,
     output wire [31:0] PCToLink_ID
 );
     reg [31:0] code = 0;
+    reg [31:0] PC = 0;
     reg [31:0] PCToLink = 0;
 
     assign code_ID = code;
+    assign PC_ID = PC;
     assign PCToLink_ID = PCToLink;
 
     always @ (posedge clk) begin
         if (reset | clr) begin
             code <= 0;
+            PC <= 0;
             PCToLink <= 0;
         end 
         else begin
             if (!stall) begin
                 code <= code_IF;
+                PC <= PC_IF;
                 PCToLink <= PCToLink_IF;
             end
         end
