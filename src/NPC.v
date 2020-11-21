@@ -39,10 +39,10 @@ module NPC (
 
     wire [31:0] extImm, extJmp;
     assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
-    assign extJmp = {PCToLink[31:28], jmpAddr, 2'b0};
+    assign extJmp = {PC[31:28], jmpAddr, 2'b0};
 
     assign NPC = (npcOp == NPC_Order) ? (PC + 4) : 
-                (npcOp == NPC_Branch) ? (PC + 4 + extImm) : 
+                (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
                 (npcOp == NPC_JmpReg) ? (jmpReg) : 
                 (PC + 4);
