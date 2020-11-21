@@ -38,7 +38,7 @@
 `define NOR     8
 `define SLT     9
 `define SLTU    10
-`define SLL     11  // rd <= rt, shamt
+`define SLL     11  // rd <= rt, shamt, need special judge between NOP
 `define SRL     12  // rd <= rt, shamt
 `define SRA     13  // rd <= rt, shamt
 `define SLLV    14  // rd <= rt, rs

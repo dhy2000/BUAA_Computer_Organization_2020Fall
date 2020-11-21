@@ -143,7 +143,8 @@ module Decoder (
     assign sp_r = SpecialR(rs, rt, rd, shamt, funct);
     assign sp_i = SpecialI(opcode, rs, rt);
     // link these sub-signals
-    assign instr = (opcode == 6'b000000) ? (
+    assign instr = (code == 32'h0000_0000) ? (`NOP) : 
+    (opcode == 6'b000000) ? (
         // R format
         (sp_r != `NOP) ? (sp_r) : (r)
     ) : (
