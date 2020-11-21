@@ -31,6 +31,8 @@ module Decoder (
     assign rd = code[15:11];
     assign shamt = code[10:6];
     assign funct = code[5:0];
+    assign imm = code[15:0];
+    assign jmpaddr = code[25:0];
 
     /* Part 2: Determine the symbol of instruction */
     // R type, check [funct]
