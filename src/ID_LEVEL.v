@@ -216,6 +216,9 @@ module ID_LEVEL (
     /* Data Outputs for NPC */
     output wire [`WIDTH_INSTR-1:0]  instr_NPC, 
     output wire                     cmp_NPC,
+    output wire [15:0]              imm16_NPC, 
+    output wire [25:0]              jmpAddr_NPC, 
+    output wire [31:0]              jmpReg_NPC,
     /* Interfaces for GRF-READ */
     output wire [4:0]               RA1_GRF, 
     output wire [4:0]               RA2_GRF,
@@ -299,6 +302,9 @@ module ID_LEVEL (
     /* ------ Part 3.5: Assign Wire Outputs ------ */
     assign instr_NPC = instr;
     assign cmp_NPC = cmp;
+    assign imm16_NPC = imm16;
+    assign jmpAddr_NPC = jmpAddr;
+    assign jmpReg_NPC = dataRs_use;
     assign RA1_GRF = addrRs;
     assign RA2_GRF = addrRt;
     
