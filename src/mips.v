@@ -56,7 +56,7 @@ module mips (
     // Attention: GRF
 
     IF_LEVEL ifu (
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0), .stallPC(1'b0),
         .instr(Instr_NPC), .cmp(Cmp_NPC),
         .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
         .code_ID(Code_ID), .PC_ID(PC_ID)

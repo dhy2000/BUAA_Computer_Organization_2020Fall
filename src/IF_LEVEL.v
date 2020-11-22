@@ -103,6 +103,7 @@ module IF_LEVEL (
     // Pipeline Registers
     input wire                      stall, 
     input wire                      clr, 
+    input wire                      stallPC, 
     /* Data Inputs from Branch or Jump */
     input wire [`WIDTH_INSTR-1:0]   instr,
     input wire                      cmp,
@@ -133,7 +134,7 @@ module IF_LEVEL (
     
     PC pc (
         .clk(clk), .reset(reset),
-        .En(~stall), // 
+        .En(~stallPC), // 
         .NPC(NPC), .PC(PC)
     );
 
