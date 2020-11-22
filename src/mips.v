@@ -6,17 +6,12 @@
 `default_nettype none
 `include "instructions.v"
 /* ---------- Parts ---------- */
-`include "PC.v"
-`include "NPC.v"
-`include "IM.v"
-`include "Decoder.v"
+`include "IF_LEVEL.v"
+`include "ID_LEVEL.v"
+`include "EX_LEVEL.v"
+`include "MEM_LEVEL.v"
+`include "WB_LEVEL.v"
 `include "GRF.v"
-`include "COMP.v"
-`include "ALU.v"
-`include "RegWriteSel.v"
-`include "DM.v"
-`include "WB.v"
-`include "pipeline.v"
 
 /* ---------- Main Body ---------- */
 module mips (
@@ -28,175 +23,97 @@ module mips (
         1. IF  2. ID(D)  3. EX(E)  4. MEM(M)  5. WB(W)
     */
     /* 1. Declare Wires */
-    // PC
-    wire [31:0] PC;
-    // NPC
-    wire [31:0] NPC;
-    // IM
-    wire [31:0] Code; 
-    // --- 
-    // Decoder
-    wire [`WIDTH_INSTR-1:0] Instr;
-    wire [4:0] AddrRs;
-    wire [4:0] AddrRt;
-    wire [4:0] AddrRd;
-    wire [4:0] Shamt;
-    wire [15:0] Imm16;
-    wire [25:0] JmpAddr;
+    // IF
+    wire [31:0] Code_ID, PC_ID;
+    // ID
+    wire [`WIDTH_INSTR-1:0] Instr_EX, Instr_NPC;
+    wire Cmp_NPC; 
+    wire [31:0] PC_EX, DataRs_EX, DataRt_EX, RegWriteData_EX, JmpReg_NPC;
+    wire [4:0] Shamt_EX, RegWriteAddr_EX, RA1_GRF, RA2_GRF;
+    wire [15:0] Imm16_EX, Imm16_NPC;
+    wire [25:0] JmpAddr_NPC;
     // GRF
-    wire [31:0] DataRs_GRF; // Raw
-    wire [31:0] DataRt_GRF; // Raw
-    wire [31:0] DataRs_ID; // forward
-    wire [31:0] DataRt_ID; // forward
-    // COMP
-    wire Cmp;
-    // RegWriteSel
-    wire [4:0] RegWriteAddr;
-    // ---
-    // ALU
-    wire [31:0] DataRs_Alu; // forward
-    wire [31:0] DataRt_Alu; // forward
-    wire [31:0] AluOut;
-    // ---
-    // DM
-    wire [31:0] MemWriteData_DM; // forward
-    wire [31:0] MemReadData;
-    // --- 
-    // WB
-    wire RegWriteEn;
-    wire [31:0] RegWriteData;
-    // --- Pipeline Register
-    // IF/ID
-    wire [31:0] Code_ID;
-    wire [31:0] PC_ID;
-    // ID/EX
-    wire [`WIDTH_INSTR-1:0] Instr_EX;
-    wire [31:0] PC_EX;
-    wire [31:0] DataRs_EX;
-    wire [31:0] DataRt_EX;
-    wire [15:0] Imm16_EX;
-    wire [4:0] Shamt_EX;
-    wire [4:0] AddrRs_EX;
-    wire [4:0] AddrRt_EX;
-    wire [4:0] AddrRd_EX;
-    wire [4:0] RegWriteAddr_EX;
-    // EX/MEM
+    wire [31:0] RD1_GRF, RD2_GRF;
+    // EX
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
-    wire [31:0] PC_MEM;
-    wire [31:0] AluOut_MEM;
-    wire [31:0] MemWriteData_MEM;
-    wire [4:0] RegWriteAddr_MEM;
-    // MEM/WB
+    wire [31:0] PC_MEM, AluOut_MEM, MemWriteData_MEM;
+    wire [4:0] RegWriteAddr_MEM; 
+    wire [31:0] RegWriteData_MEM;
+    // MEM
     wire [`WIDTH_INSTR-1:0] Instr_WB;
-    wire [31:0] PC_WB;
-    wire [31:0] AluOut_WB;
-    wire [31:0] MemReadData_WB;
-    wire [4:0] RegWriteAddr_WB;
-
-    // TODO: support Data Forward!!!!!
+    wire [31:0] PC_WB, MemReadData_WB;
+    wire [4:0] RegWriteAddr_WB; 
+    wire [31:0] RegWriteData_WB;
+    // WB
+    wire WriteEn_GRF;
+    wire [4:0] RegWriteAddr_GRF; 
+    wire [31:0] RegWriteData_GRF;
+    wire [31:0] PC_GRF;
 
     /* 2. Instantiate Modules */
-    // IF
-    PC pc (
-        .clk(clk), .reset(reset), .En(1'b1),
-        .NPC(NPC), .PC(PC)
-    );
-    NPC npc (
-        .instr(Instr), .cmp(Cmp), .PC(PC), .imm16(Imm16), .jmpAddr(JmpAddr), .jmpReg(DataRs_ID),
-        .NPC(NPC)
-    );
-    IM im (
-        .PC(PC), .code(Code)
-    );
-    // IF/ID
-    IF_ID if_id (
+    // Attention: GRF
+
+    IF_LEVEL ifu (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
-        .code_IF(Code), .code_ID(Code_ID),
-        .PC_IF(PC), .PC_ID(PC_ID)
-    );
-    // ID
-    Decoder decd (
-        .code(Code_ID),
-        .instr(Instr), .rs(AddrRs), .rt(AddrRt), .rd(AddrRd),
-        .shamt(Shamt), .imm(Imm16), .jmpaddr(JmpAddr)
-    );
-    GRF grf (
-        // READ@ID
-        .RAddr1(AddrRs), .RAddr2(AddrRt),
-        .RData1(DataRs_GRF), .RData2(DataRt_GRF),
-        // WRITE@WB
-        .clk(clk), .reset(reset), .writeEn(RegWriteEn),
-        .WAddr(RegWriteAddr_WB), .WData(RegWriteData), 
-        .PC(PC_WB)
-    );
-    COMP cmp (
-        .instr(Instr), 
-        .dataRs(DataRs_ID), .dataRt(DataRt_ID), 
-        .cmp(Cmp)
-    );
-    RegWriteSel regwsel (
-        .instr(Instr),
-        .addrRt(AddrRt), .addrRd(AddrRd),
-        .regWriteAddr(RegWriteAddr)
-    ); 
-    // ID/EX
-    ID_EX id_ex (   
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
-        .instr_ID(Instr), .instr_EX(Instr_EX), 
-        .PC_ID(PC_ID), .PC_EX(PC_EX),
-        .dataRs_ID(DataRs_ID), .dataRs_EX(DataRs_EX),
-        .dataRt_ID(DataRt_ID), .dataRt_EX(DataRt_EX),
-        .imm16_ID(Imm16), .imm16_EX(Imm16_EX),
-        .shamt_ID(Shamt), .shamt_EX(Shamt_EX), 
-        .addrRs_ID(AddrRs), .addrRs_EX(AddrRs_EX),
-        .addrRt_ID(AddrRt), .addrRt_EX(AddrRt_EX),
-        .regWriteAddr_ID(RegWriteAddr), .regWriteAddr_EX(RegWriteAddr_EX)
-    );
-    // EX
-    ALU alu (
-        .instr(Instr_EX), 
-        .dataRs(DataRs_Alu), .dataRt(DataRt_Alu),
-        .imm16(Imm16_EX), .shamt(Shamt_EX), 
-        .out(AluOut)
-    );
-    // EX/MEM
-    EX_MEM ex_mem (
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
-        .PC_EX(PC_EX), .PC_MEM(PC_MEM), 
-        .instr_EX(Instr_EX), .instr_MEM(Instr_MEM),
-        .aluOut_EX(AluOut), .aluOut_MEM(AluOut_MEM), 
-        .memWriteData_EX(DataRt_Alu), .memWriteData_MEM(MemWriteData_MEM),
-        .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM)
-    );
-    // MEM
-    DM dm (
-        .clk(clk), .reset(reset), 
-        .instr(Instr_MEM), .Addr(AluOut_MEM), .WData(MemWriteData_DM),
-        .PC(PC_MEM), .RData(MemReadData)
-    );
-    // MEM/WB
-    MEM_WB mem_wb (
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
-        .PC_MEM(PC_MEM), .PC_WB(PC_WB), 
-        .instr_MEM(Instr_MEM), .instr_WB(Instr_WB),
-        .aluOut_MEM(AluOut_MEM), .aluOut_WB(AluOut_WB), 
-        .memReadData_MEM(MemReadData), .memReadData_WB(MemReadData_WB),
-        .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteAddr_WB(RegWriteAddr_WB)
-    );
-    // WB
-    WB wb (
-        .instr(Instr_WB), .PC(PC_WB), 
-        .aluOut(AluOut_WB), .memRead(MemReadData_WB), 
-        .regWriteData(RegWriteData), .regWriteEn(RegWriteEn)
+        .instr(Instr_NPC), .cmp(Cmp_NPC),
+        .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
+        .code_ID(Code_ID), .PC_ID(PC_ID)
     );
 
-    /* 3. Select Forward Data */
-    // RS@ID, RT@ID, RS@EX, RT@EX
-    // TODO: support Forward
-    assign DataRs_ID = DataRs_GRF;
-    assign DataRt_ID = DataRt_GRF;
-    assign DataRs_Alu = DataRs_EX;
-    assign DataRt_Alu = DataRt_EX;
-    assign MemWriteData_DM = MemWriteData_MEM;
+    ID_LEVEL id (
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .code_ID(Code_ID), .PC_ID(PC_ID),
+        .regaddr_EX(RegWriteAddr_EX), .regdata_EX(RegWriteData_EX), // Forward
+        .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
+        .instr_EX(Instr_EX), .PC_EX(PC_EX),
+        .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
+        .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
+        .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
+        .instr_NPC(Instr_NPC), .cmp_NPC(Cmp_NPC),
+        .imm16_NPC(Imm16_NPC), .jmpAddr_NPC(JmpAddr_NPC), .jmpReg_NPC(JmpReg_NPC),
+        .RA1_GRF(RA1_GRF), .RA2_GRF(RA2_GRF),
+        .RD1_GRF(RD1_GRF), .RD2_GRF(RD2_GRF)
+    );
+
+    EX_LEVEL ex (
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .instr_EX(Instr_EX), .PC_EX(PC_EX),
+        .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
+        .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
+        .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
+        .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
+        .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB), // Forward
+        .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
+        .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
+        .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM)
+    );
+
+    MEM_LEVEL mem (
+        .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
+        .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
+        .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
+        .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
+        .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
+        .instr_WB(Instr_WB), .PC_WB(PC_WB),
+        .memReadData_WB(MemReadData_WB),
+        .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB)
+    );
+
+    WB_LEVEL wb (
+        .instr_WB(Instr_WB), .PC_WB(PC_WB),
+        .memReadData_WB(MemReadData_WB),
+        .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteAddr_WB),
+        .writeEn_GRF(WriteEn_GRF),
+        .regWriteAddr_GRF(RegWriteAddr_GRF), .regWriteData_GRF(RegWriteData_GRF),
+        .PC_GRF(PC_GRF)
+    );
+
+    GRF grf (
+        .clk(clk), .reset(reset), .PC(PC_GRF),
+        .RAddr1(RA1_GRF), .RAddr2(RA2_GRF),
+        .writeEn(WriteEn_GRF), .WAddr(RegWriteAddr_GRF), .WData(RegWriteData_GRF),
+        .RData1(RD1_GRF), .RData2(RD2_GRF)
+    );
+
     
 endmodule
