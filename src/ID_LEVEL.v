@@ -196,8 +196,10 @@ module ID_LEVEL (
     input wire [31:0]               code_ID, // Machine Code from IM@IF
     input wire [31:0]               PC_ID,   // PC from PC@IF
     /* Data Inputs from Forward (Data to Write back to GRF) */
-    input wire [31:0]               reg_EX, 
-    input wire [31:0]               reg_MEM, 
+    input wire [4:0]                regaddr_EX, 
+    input wire [31:0]               regdata_EX, 
+    input wire [4:0]                regaddr_MEM,
+    input wire [31:0]               regdata_MEM, 
     // input wire [31:0] reg_WB, // Omitted because of Inner-Forward@GRF
     /* Data Outputs to Next Pipeline */
     // Instruction
