@@ -30,6 +30,7 @@ module mips (
     wire Cmp_NPC; 
     wire [31:0] PC_EX, DataRs_EX, DataRt_EX, RegWriteData_EX, JmpReg_NPC;
     wire [4:0] Shamt_EX, RegWriteAddr_EX, RA1_GRF, RA2_GRF;
+    wire [4:0] AddrRs_EX, AddrRt_EX;
     wire [15:0] Imm16_EX, Imm16_NPC;
     wire [25:0] JmpAddr_NPC;
     // GRF
@@ -37,6 +38,7 @@ module mips (
     // EX
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
     wire [31:0] PC_MEM, AluOut_MEM, MemWriteData_MEM;
+    wire [4:0] AddrRt_MEM;
     wire [4:0] RegWriteAddr_MEM; 
     wire [31:0] RegWriteData_MEM;
     // MEM
@@ -68,6 +70,7 @@ module mips (
         .instr_EX(Instr_EX), .PC_EX(PC_EX),
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
+        .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
         .instr_NPC(Instr_NPC), .cmp_NPC(Cmp_NPC),
         .imm16_NPC(Imm16_NPC), .jmpAddr_NPC(JmpAddr_NPC), .jmpReg_NPC(JmpReg_NPC),
@@ -80,11 +83,13 @@ module mips (
         .instr_EX(Instr_EX), .PC_EX(PC_EX),
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
+        .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
         .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB), // Forward
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
         .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
+        .addrRt_MEM(AddrRt_MEM), 
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM)
     );
 
@@ -92,6 +97,7 @@ module mips (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
         .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
+        .addrRt_MEM(AddrRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .instr_WB(Instr_WB), .PC_WB(PC_WB),

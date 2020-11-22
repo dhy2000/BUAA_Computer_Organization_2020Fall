@@ -210,7 +210,10 @@ module ID_LEVEL (
     output reg [31:0]               dataRt_EX           = 0, // Need Forward
     output reg [15:0]               imm16_EX            = 0, 
     output reg [4:0]                shamt_EX            = 0, 
-    // Other - (Signals about Hazard)
+    // RegUsed
+    output reg [4:0]                addrRs_EX           = 0,
+    output reg [4:0]                addrRt_EX           = 0,
+    // RegWrite
     output reg [4:0]                regWriteAddr_EX     = 0, 
     output reg [31:0]               regWriteData_EX     = 0, 
     /* Data Outputs for NPC */
@@ -248,10 +251,18 @@ module ID_LEVEL (
     wire [31:0] regWriteData;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
+    // GRF already supports inner forward.
     wire [31:0]dataRs_use, dataRt_use;
-
-    assign dataRs_use = RD1_GRF; // TODO: forward select
-    assign dataRt_use = RD2_GRF; // TODO: forward select
+    assign dataRs_use = (
+        (regaddr_EX == addrRs && regaddr_EX != 0) ? (regdata_EX) : 
+        (regaddr_MEM == addrRs && regaddr_MEM != 0) ? (regdata_MEM) : 
+        (RD1_GRF)
+    ); 
+    assign dataRt_use = (
+        (regaddr_EX == addrRt && regaddr_EX != 0) ? (regdata_EX) : 
+        (regaddr_MEM == addrRt && regaddr_MEM != 0) ? (regdata_MEM) : 
+        (RD2_GRF)
+    ); 
 
     /* ------ Part 2: Instantiate Modules ------ */
     DECD decd (
@@ -286,6 +297,8 @@ module ID_LEVEL (
             dataRt_EX           <= 0;
             imm16_EX            <= 0;
             shamt_EX            <= 0;
+            addrRs_EX           <= 0;
+            addrRt_EX           <= 0;
             regWriteAddr_EX     <= 0;
             regWriteData_EX     <= 0;
         end
@@ -296,6 +309,8 @@ module ID_LEVEL (
             dataRt_EX           <=  dataRt_use;
             imm16_EX            <=  imm16;
             shamt_EX            <=  shamt;
+            addrRs_EX           <=  addrRs;
+            addrRt_EX           <=  addrRt;
             regWriteAddr_EX     <=  regWriteAddr;
             regWriteData_EX     <=  regWriteData;
         end

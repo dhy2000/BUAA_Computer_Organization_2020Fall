@@ -130,6 +130,8 @@ module EX_LEVEL (
     input wire [31:0]               dataRt_EX           , 
     input wire [15:0]               imm16_EX            , 
     input wire [4:0]                shamt_EX            , 
+    input wire [4:0]                addrRs_EX           ,
+    input wire [4:0]                addrRt_EX           ,
     input wire [4:0]                regWriteAddr_EX     , 
     input wire [31:0]               regWriteData_EX     , 
     /* Data Inputs from Forward (Data to Write back to GRF) */
@@ -144,7 +146,9 @@ module EX_LEVEL (
     // From ALU
     output reg [31:0]               aluOut_MEM          = 0,
     output reg [31:0]               memWriteData_MEM    = 0,
-    // For Hazard
+    // RegUsed
+    output reg [4:0]                addrRt_MEM          = 0,
+    // RegWrite
     output reg [4:0]                regWriteAddr_MEM    = 0, 
     output reg [31:0]               regWriteData_MEM    = 0
 );
@@ -165,8 +169,16 @@ module EX_LEVEL (
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
 
     wire [31:0] dataRs_alu, dataRt_alu;
-    assign dataRs_alu = dataRs_EX; // TODO: forward select
-    assign dataRt_alu = dataRt_EX; // TODO: forward select
+    assign dataRs_alu = (
+        (regaddr_MEM == addrRs_EX && regaddr_MEM != 0) ? (regdata_MEM) : 
+        (regaddr_WB == addrRs_EX && regaddr_WB != 0) ? (regaddr_WB) : 
+        (dataRs_EX)
+    ); 
+    assign dataRt_alu = (
+        (regaddr_MEM == addrRt_EX && regaddr_MEM != 0) ? (regdata_MEM) : 
+        (regaddr_WB == addrRt_EX && regaddr_WB != 0) ? (regaddr_WB) : 
+        (dataRt_EX)
+    ); 
 
     /* ------ Part 2: Instantiate Modules ------ */
 

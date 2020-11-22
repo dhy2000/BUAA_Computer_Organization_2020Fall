@@ -24,6 +24,7 @@ module MEM_LEVEL (
     input wire [31:0]               PC_MEM              , 
     input wire [31:0]               aluOut_MEM          ,
     input wire [31:0]               memWriteData_MEM    ,
+    input wire [4:0]                addrRt_MEM          ,
     input wire [4:0]                regWriteAddr_MEM    , 
     input wire [31:0]               regWriteData_MEM    ,
     /* Data Inputs from Forward (Data to Write back to GRF) */
@@ -56,7 +57,10 @@ module MEM_LEVEL (
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
     wire [31:0] memWriteData_use;
-    assign memWriteData_use = memWriteData_MEM;
+    assign memWriteData_use = (
+        (regaddr_WB == addrRt_MEM && regaddr_WB != 0) ? (regdata_WB) : 
+        (memWriteData_MEM)
+    );
 
     /* ------ Part 2: Instantiate Modules ------ */
     DM dm (
