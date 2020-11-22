@@ -24,6 +24,10 @@
 // `define FUNC_PRIOR      8
 // `define FUNC_TRAP       9
 
+/* ------ Tuse / Tnew for stalls in pipeline ------ */
+`define WIDTH_T         3
+`define TUSE_INF        5
+
 /* ------ Label of Instruction Symbol ------ */
 `define WIDTH_INSTR     6
 `define NOP     0
@@ -75,5 +79,16 @@
 `define JAL     40
 `define JALR    41
 `define JR      42
+// Duliu
+`define WSBH    53
+`define CLO     54
+`define CLZ     55
+`define BALR    56
+`define BGEZALR 57
+`define BLTZALR 58
+`define BGEZALL 59
+`define BLTZALL 60
+`define MOVZ    61
+`define MOVN    62
 
 `endif
