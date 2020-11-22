@@ -44,7 +44,7 @@ module WB_LEVEL (
 
     /* ------ Part 3: Pipeline Registers ------ */
     assign regWriteAddr_GRF = regWriteAddr_WB;
-    assign regWriteData_GRF = regWriteAddr_WB;
+    assign regWriteData_GRF = regWriteData_WB;
     assign PC_GRF = PC_WB;
 
 endmodule
