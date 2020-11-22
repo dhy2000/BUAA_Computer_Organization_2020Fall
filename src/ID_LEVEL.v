@@ -283,8 +283,10 @@ module ID_LEVEL (
     IC ic (.instr(instr), .format(format), .func(func));
 
     assign regWriteAddr = (instr == `JAL)                  ? 31 :       // JAL
-                            (format == `FORMAT_R)           ? addrRd :  // rd
-                            addrRt  ;                                   // rt
+                            ((func == `FUNC_CALC_R) || (instr == `JALR))        ? addrRd :  // rd
+                            ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ))  ? addrRt :  // rt
+                            0;
+                            
     assign regWriteData = ((instr == `JAL) || (instr == `JALR))     ?   PC_ID + 8   :   // Jump Link
                             ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
                             0; // Default
