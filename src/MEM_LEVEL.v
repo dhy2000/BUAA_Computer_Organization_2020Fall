@@ -20,12 +20,12 @@ module MEM_LEVEL (
     input wire                      stall, 
     input wire                      clr, 
     /* Data Inputs from Previous Pipeline */
-    input wire [`WIDTH_INSTR-1:0]   instr_MEM           = 0, 
-    input wire [31:0]               PC_MEM              = 0, 
-    input wire [31:0]               aluOut_MEM          = 0,
-    input wire [31:0]               memWriteData_MEM    = 0,
-    input wire [4:0]                regWriteAddr_MEM    = 0, 
-    input wire [31:0]               regWriteData_MEM    = 0
+    input wire [`WIDTH_INSTR-1:0]   instr_MEM           , 
+    input wire [31:0]               PC_MEM              , 
+    input wire [31:0]               aluOut_MEM          ,
+    input wire [31:0]               memWriteData_MEM    ,
+    input wire [4:0]                regWriteAddr_MEM    , 
+    input wire [31:0]               regWriteData_MEM    ,
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [4:0]                regaddr_WB, 
     input wire [31:0]               regdata_WB, 
@@ -50,6 +50,10 @@ module MEM_LEVEL (
     /* ------ Part 1: Wires Declaration ------ */
     wire [31:0] memReadData;
 
+    // Hazard may use
+    wire [4:0] regWriteAddr;
+    wire [31:0] regWriteData;
+
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
     wire memWriteData_use;
     assign memWriteData_use = memWriteData_MEM;
@@ -63,6 +67,8 @@ module MEM_LEVEL (
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
+    wire [`WIDTH_INSTR-1:0] instr;
+    assign instr = instr_MEM;
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 

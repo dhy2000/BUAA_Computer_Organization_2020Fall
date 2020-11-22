@@ -242,6 +242,7 @@ module ID_LEVEL (
     wire [15:0] imm16; wire [4:0] shamt;
     wire [25:0] jmpAddr;
     wire cmp;
+    wire [31:0] luiExtImm;
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;

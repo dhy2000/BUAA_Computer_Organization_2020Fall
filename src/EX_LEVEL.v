@@ -181,6 +181,8 @@ module EX_LEVEL (
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
+    wire [`WIDTH_INSTR-1:0] instr;
+    assign instr = instr_EX;
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 

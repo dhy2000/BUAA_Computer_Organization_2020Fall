@@ -6,6 +6,7 @@
 
 `default_nettype none
 `include "instructions.v"
+`include "memconfig.v"
 `include "IC.v"
 
 /*
