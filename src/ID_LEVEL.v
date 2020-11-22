@@ -193,8 +193,8 @@ module ID_LEVEL (
     input wire                      stall, 
     input wire                      clr, 
     /* Data Inputs from Previous Pipeline */
-    input wire [31:0]               code_IF, // Machine Code from IM@IF
-    input wire [31:0]               PC_IF,   // PC from PC@IF
+    input wire [31:0]               code_ID, // Machine Code from IM@IF
+    input wire [31:0]               PC_ID,   // PC from PC@IF
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [31:0]               reg_EX, 
     input wire [31:0]               reg_MEM, 
@@ -249,7 +249,7 @@ module ID_LEVEL (
 
     /* ------ Part 2: Instantiate Modules ------ */
     DECD decd (
-        .code(code_IF), .instr(instr),
+        .code(code_ID), .instr(instr),
         .rs(addrRs), .rt(addrRt), .rd(addrRd),
         .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr)
     );
@@ -268,7 +268,7 @@ module ID_LEVEL (
     assign regWriteAddr = (instr == `JAL)                  ? 31 :       // JAL
                             (format == `FORMAT_R)           ? addrRd :  // rd
                             addrRt  ;                                   // rt
-    assign regWriteData = ((instr == `JAL) || (instr == `JALR))     ?   PC_IF + 8   :   // Jump Link
+    assign regWriteData = ((instr == `JAL) || (instr == `JALR))     ?   PC_ID + 8   :   // Jump Link
                             ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
                             0; // Default
     /* ------ Part 3: Pipeline Registers ------ */
@@ -285,7 +285,7 @@ module ID_LEVEL (
         end
         else if (!stall) begin
             instr_EX            <=  instr;
-            PC_EX               <=  PC_IF;
+            PC_EX               <=  PC_ID;
             dataRs_EX           <=  dataRs_use;
             dataRt_EX           <=  dataRt_use;
             imm16_EX            <=  imm16;
