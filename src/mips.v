@@ -102,7 +102,7 @@ module mips (
     WB_LEVEL wb (
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
         .memReadData_WB(MemReadData_WB),
-        .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteAddr_WB),
+        .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .writeEn_GRF(WriteEn_GRF),
         .regWriteAddr_GRF(RegWriteAddr_GRF), .regWriteData_GRF(RegWriteData_GRF),
         .PC_GRF(PC_GRF)
