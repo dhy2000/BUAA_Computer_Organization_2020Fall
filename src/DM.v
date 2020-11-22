@@ -131,7 +131,7 @@ module DM (
         reg [31:0] writeAddr;
         begin
             writeAddr = (wordIndex << 2);
-            $display($time, "@%h: *%h <= %h", PC, writeAddr, wordToWrite);
+            $display("%d@%h: *%h <= %h", $time, PC, writeAddr, wordToWrite);
             mem[wordIndex] <= wordToWrite;
         end
     endtask

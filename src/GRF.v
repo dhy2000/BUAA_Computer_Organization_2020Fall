@@ -41,7 +41,7 @@ module GRF (
         input [31:0] pc;
         begin
             if (addr != 0) begin
-                $display($time, "@%h: $%d <= %h", pc, addr, data);
+                $display("%d@%h: $%d <= %h", $time, pc, addr, data);
                 grf[addr] <= data;
             end
             else begin
