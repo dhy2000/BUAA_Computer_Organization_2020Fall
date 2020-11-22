@@ -13,7 +13,7 @@ module GRF (
     input wire reset,
     input wire [4:0] RAddr1, 
     input wire [4:0] RAddr2,
-    input wire writeEn,
+    // input wire writeEn,
     input wire [4:0] WAddr,
     input wire [31:0] WData,
     input wire [31:0] PC,
@@ -23,8 +23,8 @@ module GRF (
     // Memory Declaration
     reg [31:0] grf [0: 31];
     // Inner Transmit Forward
-    assign RData1 = (writeEn && (RAddr1 == WAddr) && (WAddr != 0)) ? WData : grf[RAddr1];
-    assign RData2 = (writeEn && (RAddr2 == WAddr) && (WAddr != 0)) ? WData : grf[RAddr2];
+    assign RData1 = ((WAddr != 0) && (RAddr1 == WAddr)) ? WData : grf[RAddr1];
+    assign RData2 = ((WAddr != 0) && (RAddr2 == WAddr)) ? WData : grf[RAddr2];
 
     task resetReg;
         integer i;
@@ -59,9 +59,9 @@ module GRF (
             resetReg;
         end
         else begin
-            if (writeEn) begin
+            // if (writeEn) begin
                 writeToReg(WAddr, WData, PC);
-            end
+            // end
         end
     end
 
