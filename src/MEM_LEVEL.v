@@ -55,7 +55,7 @@ module MEM_LEVEL (
     wire [31:0] regWriteData;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
-    wire memWriteData_use;
+    wire [31:0] memWriteData_use;
     assign memWriteData_use = memWriteData_MEM;
 
     /* ------ Part 2: Instantiate Modules ------ */
