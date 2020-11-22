@@ -1,6 +1,10 @@
 .vscode/
 document/
 util/
+**.zip
+code.txt
+
+out/
 
 # ModelSim Project Files
 *.mti
