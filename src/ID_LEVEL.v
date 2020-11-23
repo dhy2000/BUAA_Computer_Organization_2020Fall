@@ -201,6 +201,8 @@ module ID_LEVEL (
     input wire [4:0]                regaddr_MEM,
     input wire [31:0]               regdata_MEM, 
     // input wire [31:0] reg_WB, // Omitted because of Inner-Forward@GRF
+    /* Input from Hazard Unit */
+    input wire [`WIDTH_T-1:0]       Tnew_ID,
     /* Data Outputs to Next Pipeline */
     // Instruction
     output reg [`WIDTH_INSTR-1:0]   instr_EX            = 0, 
@@ -216,6 +218,8 @@ module ID_LEVEL (
     // RegWrite
     output reg [4:0]                regWriteAddr_EX     = 0, 
     output reg [31:0]               regWriteData_EX     = 0, 
+    // Tnew
+    output reg [`WIDTH_T-1:0]       Tnew_EX             = 0,
     /* Data Outputs for NPC */
     output wire [`WIDTH_INSTR-1:0]  instr_NPC, 
     output wire                     cmp_NPC,
@@ -249,6 +253,8 @@ module ID_LEVEL (
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
+    // Tnew
+    wire [`WIDTH_T-1:0] Tnew;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
     // GRF already supports inner forward.
@@ -264,6 +270,7 @@ module ID_LEVEL (
         (RD2_GRF)
     ); 
 
+    assign Tnew = Tnew_ID - 1;
     /* ------ Part 2: Instantiate Modules ------ */
     DECD decd (
         .code(code_ID), .instr(instr),
@@ -303,6 +310,7 @@ module ID_LEVEL (
             addrRt_EX           <= 0;
             regWriteAddr_EX     <= 0;
             regWriteData_EX     <= 0;
+            Tnew_EX             <= 0;
         end
         else if (!stall) begin
             instr_EX            <=  instr;
@@ -315,6 +323,7 @@ module ID_LEVEL (
             addrRt_EX           <=  addrRt;
             regWriteAddr_EX     <=  regWriteAddr;
             regWriteData_EX     <=  regWriteData;
+            Tnew_EX             <=  Tnew;
         end
     end
     /* ------ Part 3.5: Assign Wire Outputs ------ */

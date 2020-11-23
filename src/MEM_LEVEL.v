@@ -27,6 +27,7 @@ module MEM_LEVEL (
     input wire [4:0]                addrRt_MEM          ,
     input wire [4:0]                regWriteAddr_MEM    , 
     input wire [31:0]               regWriteData_MEM    ,
+    input wire [`WIDTH_T-1:0]       Tnew_MEM            ,
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [4:0]                regaddr_WB, 
     input wire [31:0]               regdata_WB, 
@@ -54,6 +55,7 @@ module MEM_LEVEL (
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
+    wire [`WIDTH_T-1:0] Tnew;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
     wire [31:0] memWriteData_use;
@@ -61,6 +63,8 @@ module MEM_LEVEL (
         (regaddr_WB == addrRt_MEM && regaddr_WB != 0) ? (regdata_WB) : 
         (memWriteData_MEM)
     );
+    
+    assign Tnew = Tnew_MEM - 1;
 
     /* ------ Part 2: Instantiate Modules ------ */
     DM dm (

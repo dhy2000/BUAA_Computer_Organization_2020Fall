@@ -134,6 +134,7 @@ module EX_LEVEL (
     input wire [4:0]                addrRt_EX           ,
     input wire [4:0]                regWriteAddr_EX     , 
     input wire [31:0]               regWriteData_EX     , 
+    input wire [`WIDTH_T-1:0]       Tnew_EX             ,
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [4:0]                regaddr_MEM, 
     input wire [31:0]               regdata_MEM, 
@@ -150,7 +151,9 @@ module EX_LEVEL (
     output reg [4:0]                addrRt_MEM          = 0,
     // RegWrite
     output reg [4:0]                regWriteAddr_MEM    = 0, 
-    output reg [31:0]               regWriteData_MEM    = 0
+    output reg [31:0]               regWriteData_MEM    = 0,
+    // Tnew
+    output reg [`WIDTH_T-1:0]       Tnew_MEM            = 0
 );
     /*
         Modules included: 
@@ -165,6 +168,7 @@ module EX_LEVEL (
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
+    wire [`WIDTH_T-1:0] Tnew;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
 
@@ -179,6 +183,8 @@ module EX_LEVEL (
         (regaddr_WB == addrRt_EX && regaddr_WB != 0) ? (regaddr_WB) : 
         (dataRt_EX)
     ); 
+
+    assign Tnew = Tnew_EX - 1; // TODO: mult/div module stalls
 
     /* ------ Part 2: Instantiate Modules ------ */
 
@@ -213,6 +219,7 @@ module EX_LEVEL (
             memWriteData_MEM            <=  0;
             regWriteAddr_MEM            <=  0;
             regWriteData_MEM            <=  0;
+            Tnew_MEM                    <=  0;
         end
         else if (!stall) begin
             instr_MEM                   <=  instr_EX;
@@ -221,6 +228,7 @@ module EX_LEVEL (
             memWriteData_MEM            <=  memWriteData;
             regWriteAddr_MEM            <=  regWriteAddr;
             regWriteData_MEM            <=  regWriteData;
+            Tnew_MEM                    <=  Tnew;
         end
     end
 
