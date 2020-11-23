@@ -226,6 +226,10 @@ module ID_LEVEL (
     output wire [15:0]              imm16_NPC, 
     output wire [25:0]              jmpAddr_NPC, 
     output wire [31:0]              jmpReg_NPC,
+    /* Outputs for Hazard Unit */
+    output wire [`WIDTH_INSTR-1:0]  instr_ID, 
+    output wire [4:0]               addrRs_ID, 
+    output wire [4:0]               addrRt_ID, 
     /* Interfaces for GRF-READ */
     output wire [4:0]               RA1_GRF, 
     output wire [4:0]               RA2_GRF,
@@ -334,5 +338,8 @@ module ID_LEVEL (
     assign jmpReg_NPC = dataRs_use;
     assign RA1_GRF = addrRs;
     assign RA2_GRF = addrRt;
+    assign instr_ID = instr;
+    assign addrRs_ID = addrRs;
+    assign addrRt_ID = addrRt;
     
 endmodule
