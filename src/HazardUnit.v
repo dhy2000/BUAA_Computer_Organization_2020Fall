@@ -28,7 +28,9 @@ module InstrTuseTnew (
         (func == `FUNC_MEM_READ) ? 1 : 
         (func == `FUNC_MEM_WRITE) ? 1 : 
         (func == `FUNC_BRANCH) ? 0 : 
-        (func == `FUNC_JUMP) ? (`TUSE_INF) : 
+        (func == `FUNC_JUMP) ? (
+            ((instr == `JR) || (instr == `JALR)) ? 0 : (`TUSE_INF)
+        ) : 
         (`TUSE_INF)
     );
     assign Tuse_rt = (
