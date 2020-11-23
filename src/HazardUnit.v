@@ -89,12 +89,12 @@ module HazardUnit (
 
     wire stall_rs, stall_rt;
     assign stall_rs = (addrRs_ID != 0) && (
-        (Tnew_EX >= Tuse_rs && regWriteAddr_EX == addrRs_ID) || 
-        (Tnew_MEM >= Tuse_rs && regWriteAddr_MEM == addrRs_ID)
+        (Tnew_EX > Tuse_rs && regWriteAddr_EX == addrRs_ID) || 
+        (Tnew_MEM > Tuse_rs && regWriteAddr_MEM == addrRs_ID)
     );
     assign stall_rt = (addrRt_ID != 0) && (
-        (Tnew_EX >= Tuse_rt && regWriteAddr_EX == addrRt_ID) || 
-        (Tnew_MEM >= Tuse_rt && regWriteAddr_MEM == addrRt_ID)
+        (Tnew_EX > Tuse_rt && regWriteAddr_EX == addrRt_ID) || 
+        (Tnew_MEM > Tuse_rt && regWriteAddr_MEM == addrRt_ID)
     );
 
     // TODO: mult/div stalls
