@@ -75,7 +75,7 @@ module HazardUnit (
     output wire [`WIDTH_T-1:0] Tnew_ID, 
     // Output Stall Signals
     output wire stall_PC, 
-    output wire stall_IF, 
+    output wire stall_ID, 
     output wire clr_EX
 );
 
@@ -99,6 +99,6 @@ module HazardUnit (
 
     // TODO: mult/div stalls
 
-    assign {stall_PC, stall_IF, clr_EX} = (stall_rs || stall_rt) ? 3'b111 : 3'b000;
+    assign {stall_PC, stall_ID, clr_EX} = (stall_rs || stall_rt) ? 3'b111 : 3'b000;
 
 endmodule
