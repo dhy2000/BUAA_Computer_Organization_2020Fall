@@ -64,7 +64,7 @@ module MEM_LEVEL (
         (memWriteData_MEM)
     );
     
-    assign Tnew = Tnew_MEM - 1;
+    assign Tnew = (Tnew_MEM >= 1) ?  (Tnew_MEM - 1) : 0;
 
     /* ------ Part 2: Instantiate Modules ------ */
     DM dm (

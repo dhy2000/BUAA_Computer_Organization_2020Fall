@@ -184,7 +184,7 @@ module EX_LEVEL (
         (dataRt_EX)
     ); 
 
-    assign Tnew = Tnew_EX - 1; // TODO: mult/div module stalls
+    assign Tnew = (Tnew_EX >= 1) ? (Tnew_EX - 1) : 0; // TODO: mult/div module stalls
 
     /* ------ Part 2: Instantiate Modules ------ */
 

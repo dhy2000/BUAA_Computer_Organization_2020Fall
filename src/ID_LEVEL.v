@@ -274,7 +274,7 @@ module ID_LEVEL (
         (RD2_GRF)
     ); 
 
-    assign Tnew = Tnew_ID - 1;
+    assign Tnew = (Tnew_ID >= 1) ? (Tnew_ID - 1) : 0;
     /* ------ Part 2: Instantiate Modules ------ */
     DECD decd (
         .code(code_ID), .instr(instr),
