@@ -71,24 +71,34 @@ module HazardUnit (
     input wire [4:0] regWriteAddr_MEM, 
     input wire [`WIDTH_T-1:0] Tnew_EX, 
     input wire [`WIDTH_T-1:0] Tnew_MEM,
+    // Output Tnew to pipeline
+    output wire [`WIDTH_T-1:0] Tnew_ID, 
     // Output Stall Signals
     output wire stall_PC, 
     output wire stall_IF, 
     output wire clr_EX
 );
-    // wire [`WIDTH_T-1:0] Tuse_rs, Tuse_rt, Tnew_EX, Tnew_MEM;
 
-    /* Initialize IC module */
-    wire [`WIDTH_FORMAT-1:0] format_ID; wire [`WIDTH_FUNC-1:0] func_ID;
-    IC ic_ID (.instr(instr_ID), .format(format_ID), .func(func_ID));
-    wire [`WIDTH_FORMAT-1:0] format_EX; wire [`WIDTH_FUNC-1:0] func_EX;
-    IC ic_EX (.instr(instr_EX), .format(format_EX), .func(func_EX));
-    wire [`WIDTH_FORMAT-1:0] format_MEM; wire [`WIDTH_FUNC-1:0] func_MEM;
-    IC ic_MEM (.instr(instr_MEM), .format(format_MEM), .func(func_MEM));
+    wire [`WIDTH_T-1:0] Tuse_rs, Tuse_rt;
+    InstrTuseTnew tusetnew (
+        .instr(instr_ID),
+        .Tuse_rs(Tuse_rs),
+        .Tuse_rt(Tuse_rt),
+        .Tnew_ID(Tnew_ID)
+    );
 
+    wire stall_rs, stall_rt;
+    assign stall_rs = (addrRs_ID != 0) && (
+        (Tnew_EX >= Tuse_rs && regWriteAddr_EX == addrRs_ID) || 
+        (Tnew_MEM >= Tuse_rs && regWriteAddr_MEM == addrRs_ID)
+    );
+    assign stall_rt = (addrRt_ID != 0) && (
+        (Tnew_EX >= Tuse_rt && regWriteAddr_EX == addrRt_ID) || 
+        (Tnew_MEM >= Tuse_rt && regWriteAddr_MEM == addrRt_ID)
+    );
 
+    // TODO: mult/div stalls
 
-
-
+    assign {stall_PC, stall_IF, clr_EX} = (stall_rs || stall_rt) ? 3'b111 : 3'b000;
 
 endmodule
