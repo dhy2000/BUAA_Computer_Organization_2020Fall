@@ -123,7 +123,7 @@ module mips (
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
         .memReadData_WB(MemReadData_WB),
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
-        .writeEn_GRF(WriteEn_GRF),
+        // .writeEn_GRF(WriteEn_GRF),
         .regWriteAddr_GRF(RegWriteAddr_GRF), .regWriteData_GRF(RegWriteData_GRF),
         .PC_GRF(PC_GRF)
     );
@@ -131,7 +131,8 @@ module mips (
     GRF grf (
         .clk(clk), .reset(reset), .PC(PC_GRF),
         .RAddr1(RA1_GRF), .RAddr2(RA2_GRF),
-        .writeEn(WriteEn_GRF), .WAddr(RegWriteAddr_GRF), .WData(RegWriteData_GRF),
+        // .writeEn(WriteEn_GRF), 
+        .WAddr(RegWriteAddr_GRF), .WData(RegWriteData_GRF),
         .RData1(RD1_GRF), .RData2(RD2_GRF)
     );
 
