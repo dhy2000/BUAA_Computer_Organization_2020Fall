@@ -175,12 +175,12 @@ module EX_LEVEL (
     wire [31:0] dataRs_alu, dataRt_alu;
     assign dataRs_alu = (
         (regaddr_MEM == addrRs_EX && regaddr_MEM != 0) ? (regdata_MEM) : 
-        (regaddr_WB == addrRs_EX && regaddr_WB != 0) ? (regaddr_WB) : 
+        (regaddr_WB == addrRs_EX && regaddr_WB != 0) ? (regdata_WB) : 
         (dataRs_EX)
     ); 
     assign dataRt_alu = (
         (regaddr_MEM == addrRt_EX && regaddr_MEM != 0) ? (regdata_MEM) : 
-        (regaddr_WB == addrRt_EX && regaddr_WB != 0) ? (regaddr_WB) : 
+        (regaddr_WB == addrRt_EX && regaddr_WB != 0) ? (regdata_WB) : 
         (dataRt_EX)
     ); 
 
