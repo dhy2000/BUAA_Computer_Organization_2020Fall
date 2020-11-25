@@ -170,10 +170,10 @@ module COMP (
             case (instr) 
             `BEQ:   compare = (rs == rt);
             `BNE:   compare = (rs != rt);
-            `BGEZ:  compare = (rs[0] == 0);
-            `BGTZ:  compare = (rs[0] == 0) && (rs != 0);
-            `BLEZ:  compare = (rs[0] == 1) || (rs == 0);
-            `BLTZ:  compare = (rs[0] == 1);
+            `BGEZ:  compare = (rs[31] == 0);
+            `BGTZ:  compare = (rs[31] == 0) && (rs != 0);
+            `BLEZ:  compare = (rs[31] == 1) || (rs == 0);
+            `BLTZ:  compare = (rs[31] == 1);
             default: compare = 0;
             endcase
         end
