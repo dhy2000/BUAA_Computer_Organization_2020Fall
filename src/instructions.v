@@ -79,6 +79,15 @@
 `define JAL     40
 `define JALR    41
 `define JR      42
+// Mult/Div
+`define MULT    43
+`define MULTU   44
+`define DIV     45
+`define DIVU    46
+`define MFHI    47
+`define MFLO    48
+`define MTHI    49
+`define MTLO    50
 // Duliu
 `define WSBH    53
 `define CLO     54
