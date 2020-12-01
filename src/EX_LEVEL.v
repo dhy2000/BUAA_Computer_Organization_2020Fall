@@ -115,6 +115,81 @@ module ALU (
 
 endmodule
 
+module MULTDIV (
+    /* Input */
+    // Time Sequential
+    input wire clk, 
+    input wire reset, 
+    // Control
+    input wire [`WIDTH_INSTR-1:0] instr,
+    // Data
+    input wire [31:0] dataRs, 
+    input wire [31:0] dataRt, 
+    // output
+    output wire busy, 
+    output wire [31:0] out
+);
+parameter WIDTH_OP  = 2,
+            Nop     = 0,
+            Op_Mult = 1,
+            Op_Div  = 2;
+
+    reg [31:0] HI = 0, LO = 0;
+    reg [3:0] delayCounter = 0;
+    reg [WIDTH_OP-1:0] currOp;
+    
+    assign busy = (delayCounter > 0);
+
+    wire [63:0] extRs, extRt;
+    assign extRs = (instr == `MULTU || instr == `DIVU) ? {32'b0, dataRs} : {{32{dataRs[31]}}, dataRs};
+    assign extRt = (instr == `MULTU || instr == `DIVU) ? {32'b0, dataRt} : {{32{dataRt[31]}}, dataRt};
+
+    assign out = (busy) ? 0 : (
+        (instr == `MFHI) ? (HI) : 
+        (instr == `MFLO) ? (LO) : 
+        0
+    );
+
+
+    wire [63:0] product;
+    assign product = extRs * extRt;
+    wire [31:0] quotient, remainder;
+    assign quotient = extRs / extRt;
+    assign remainder = extRs % extRt;
+    
+    always @(posedge clk) begin
+        if (reset) begin
+            HI <= 0;
+            LO <= 0;
+            delayCounter <= 0;
+            currOp <= Nop;
+        end
+        else begin
+            if (busy) begin
+                delayCounter <= delayCounter - 1;
+            end
+            else begin
+                if (instr == `MULT || instr == `MULTU) begin
+                    delayCounter <= 5;
+                    HI <= product[63:32];
+                    LO <= product[31:0];
+                end
+                else if (instr == `DIV || instr == `DIVU) begin
+                    delayCounter <= 10;
+                    HI <= remainder;
+                    LO <= quotient;
+                end
+                else if (instr == `MTHI) begin
+                    HI <= dataRs;
+                end
+                else if (instr == `MTLO) begin
+                    LO <= dataRs;
+                end
+            end
+        end
+    end
+endmodule
+
 module EX_LEVEL (
     /* Global Inputs */
     // Time Sequence
@@ -153,7 +228,9 @@ module EX_LEVEL (
     output reg [4:0]                regWriteAddr_MEM    = 0, 
     output reg [31:0]               regWriteData_MEM    = 0,
     // Tnew
-    output reg [`WIDTH_T-1:0]       Tnew_MEM            = 0
+    output reg [`WIDTH_T-1:0]       Tnew_MEM            = 0,
+    // Mult/Div Unit
+    output wire                     MDBusy_EX
 );
     /*
         Modules included: 
@@ -165,6 +242,9 @@ module EX_LEVEL (
     /* ------ Part 1: Wires Declaration ------ */
     wire [31:0] aluOut;
     wire [31:0] memWriteData;
+    wire [31:0] mdOut;
+    wire [31:0] mdBusy;
+    wire [31:0] exOut;
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
@@ -195,7 +275,15 @@ module EX_LEVEL (
         .out(aluOut)
     );
 
+    MULTDIV md (
+        .clk(clk), .reset(reset), 
+        .instr(instr_EX), 
+        .dataRs(dataRs_alu), .dataRt(dataRt_alu), 
+        .out(mdOut), .busy(mdBusy)
+    );
+
     assign memWriteData = dataRt_alu;
+    assign exOut = (instr == `MFLO || instr == `MFHI) ? mdOut : aluOut;
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
@@ -206,6 +294,7 @@ module EX_LEVEL (
 
     assign regWriteAddr = regWriteAddr_EX;
     assign regWriteData = (
+        ((instr == `MFLO) || (instr == `MFHI)) ? (mdOut) : 
         ((func == `FUNC_CALC_R) || (func == `FUNC_CALC_I)) ? (aluOut) :
         (regWriteData_EX) // not alu instruction, use previous
     );
@@ -225,7 +314,7 @@ module EX_LEVEL (
         else if (!stall) begin
             instr_MEM                   <=  instr_EX;
             PC_MEM                      <=  PC_EX;
-            aluOut_MEM                  <=  aluOut;
+            aluOut_MEM                  <=  exOut;
             memWriteData_MEM            <=  memWriteData;
             regWriteAddr_MEM            <=  regWriteAddr;
             regWriteData_MEM            <=  regWriteData;
