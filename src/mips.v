@@ -46,6 +46,7 @@ module mips (
     wire [4:0] RegWriteAddr_MEM; 
     wire [31:0] RegWriteData_MEM;
     wire [`WIDTH_T-1:0] Tnew_MEM;
+    wire MDBusy_EX;
     // MEM
     wire [`WIDTH_INSTR-1:0] Instr_WB;
     wire [31:0] PC_WB, MemReadData_WB;
@@ -103,7 +104,8 @@ module mips (
         .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
         .addrRt_MEM(AddrRt_MEM), 
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
-        .Tnew_MEM(Tnew_MEM)
+        .Tnew_MEM(Tnew_MEM),
+        .MDBusy_EX(MDBusy_EX)
     );
 
     MEM_LEVEL mem (
