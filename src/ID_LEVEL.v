@@ -59,6 +59,15 @@ module DECD (
             // jalr and jr
             6'b001001: Rformat = `JALR      ;
             6'b001000: Rformat = `JR        ;
+            // multdiv
+            6'b011000: Rformat = `MULT      ;
+            6'b011001: Rformat = `MULTU     ;
+            6'b011010: Rformat = `DIV       ;
+            6'b011011: Rformat = `DIVU      ;
+            6'b010000: Rformat = `MFHI      ;
+            6'b010010: Rformat = `MFLO      ;
+            6'b010001: Rformat = `MTHI      ;
+            6'b010011: Rformat = `MTLO      ;
             default: Rformat = `NOP         ;
             endcase
         end
