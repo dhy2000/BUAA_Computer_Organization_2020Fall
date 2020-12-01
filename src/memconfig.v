@@ -8,7 +8,7 @@
 
 /* ------ DATA MEMORY ------ */
 `define DATA_STARTADDR  32'h0000_0000
-`define WIDTH_DM_ADDR_WORD  10  // 10: 1024 * 4 Bytes
+`define WIDTH_DM_ADDR_WORD  12  // 10: 1024 * 4 Bytes
 `define WIDTH_DM_ADDR       (`WIDTH_DM_ADDR_WORD + 2)
 `define DM_SIZE_WORD        (1 << `WIDTH_DM_ADDR_WORD)
 `define DM_SIZE             (`DM_SIZE_WORD << 2)
