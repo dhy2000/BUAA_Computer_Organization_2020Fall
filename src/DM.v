@@ -107,7 +107,7 @@ module DM (
         (UNIT_Word) // default
     );
     assign ext = (
-        ((instr == `LHU) && (instr == `LBU)) ? (EXT_Zero) : (EXT_Sign)
+        ((instr == `LHU) || (instr == `LBU)) ? (EXT_Zero) : (EXT_Sign)
     );
 
     // Execute
