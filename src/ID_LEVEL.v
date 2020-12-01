@@ -303,7 +303,7 @@ module ID_LEVEL (
     IC ic (.instr(instr), .format(format), .func(func));
 
     assign regWriteAddr = (instr == `JAL)                  ? 31 :       // JAL
-                            ((func == `FUNC_CALC_R) || (instr == `JALR))        ? addrRd :  // rd
+                            ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
                             ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ))  ? addrRt :  // rt
                             0;
                             
