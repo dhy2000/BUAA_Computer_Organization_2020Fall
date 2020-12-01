@@ -154,8 +154,8 @@ parameter WIDTH_OP  = 2,
     wire [63:0] product;
     assign product = extRs * extRt;
     wire [31:0] quotient, remainder;
-    assign quotient = extRs / extRt;
-    assign remainder = extRs % extRt;
+    assign quotient = (extRs / extRt)[31:0];
+    assign remainder = (extRs % extRt)[31:0];
     
     always @(posedge clk) begin
         if (reset) begin
@@ -265,6 +265,8 @@ module EX_LEVEL (
     ); 
 
     assign Tnew = (Tnew_EX >= 1) ? (Tnew_EX - 1) : 0; // TODO: mult/div module stalls
+
+    assign MDBusy_EX = mdBusy; // Busy Signal
 
     /* ------ Part 2: Instantiate Modules ------ */
 
