@@ -220,6 +220,7 @@ module EX_LEVEL (
             regWriteAddr_MEM            <=  0;
             regWriteData_MEM            <=  0;
             Tnew_MEM                    <=  0;
+            addrRt_MEM                  <=  0;
         end
         else if (!stall) begin
             instr_MEM                   <=  instr_EX;
@@ -229,6 +230,7 @@ module EX_LEVEL (
             regWriteAddr_MEM            <=  regWriteAddr;
             regWriteData_MEM            <=  regWriteData;
             Tnew_MEM                    <=  Tnew;
+            addrRt_MEM                  <=  addrRt_EX;
         end
     end
 
