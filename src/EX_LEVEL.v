@@ -169,6 +169,8 @@ parameter WIDTH_OP  = 2,
         end
         else begin
             if (delayCounter != 0) begin
+                if (delayCounter == 1) 
+                    currOp <= Nop;
                 delayCounter <= delayCounter - 1;
             end
             else begin
@@ -176,11 +178,13 @@ parameter WIDTH_OP  = 2,
                     delayCounter <= 5;
                     HI <= product[63:32];
                     LO <= product[31:0];
+                    currOp <= Op_Mult;
                 end
                 else if (instr == `DIV || instr == `DIVU) begin
                     delayCounter <= 10;
                     HI <= remainder;
                     LO <= quotient;
+                    currOp <= Op_Div;
                 end
                 else if (instr == `MTHI) begin
                     HI <= dataRs;
