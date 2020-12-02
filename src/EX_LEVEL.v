@@ -168,7 +168,7 @@ parameter WIDTH_OP  = 2,
             currOp <= Nop;
         end
         else begin
-            if (busy) begin
+            if (delayCounter != 0) begin
                 delayCounter <= delayCounter - 1;
             end
             else begin
