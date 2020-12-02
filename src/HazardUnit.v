@@ -31,6 +31,11 @@ module InstrTuseTnew (
         (func == `FUNC_JUMP) ? (
             ((instr == `JR) || (instr == `JALR)) ? 0 : (`TUSE_INF)
         ) : 
+        (func == `FUNC_MULTDIV) ? (
+            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+            ((instr == `MTHI) || (instr == `MTLO)) ? 1 : 
+            (`TUSE_INF)
+        ) : 
         (`TUSE_INF)
     );
     assign Tuse_rt = (
@@ -44,6 +49,10 @@ module InstrTuseTnew (
             ((instr == `BEQ) || (instr == `BNE)) ? 0 : (`TUSE_INF)
         ) : 
         (func == `FUNC_JUMP) ? (`TUSE_INF) : 
+        (func == `FUNC_MULTDIV) ? (
+            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+            (`TUSE_INF)
+        ) : 
         (`TUSE_INF)
     );
 
@@ -57,6 +66,9 @@ module InstrTuseTnew (
         (func == `FUNC_BRANCH) ? 0 : 
         (func == `FUNC_JUMP) ? (
             ((instr == `JAL) || (instr == `JALR)) ? 1 : 0
+        ) : 
+        (func == `FUNC_MULTDIV) ? (
+            ((instr == `MFLO) || (instr == `MFHI)) ? 2 : 0
         ) : 
         0   // NOP
     );
