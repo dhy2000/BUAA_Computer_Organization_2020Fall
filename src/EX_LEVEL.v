@@ -157,8 +157,8 @@ parameter WIDTH_OP  = 2,
     wire [63:0] product;
     assign product = extRs * extRt;
     wire [31:0] quotient, remainder;
-    assign quotient = (extRs / extRt)[31:0];
-    assign remainder = (extRs % extRt)[31:0];
+    assign quotient = (extRs / extRt);
+    assign remainder = (extRs % extRt);
     
     always @(posedge clk) begin
         if (reset) begin
@@ -288,7 +288,7 @@ module EX_LEVEL (
     );
 
     assign memWriteData = dataRt_alu;
-    assign exOut = (instr == `MFLO || instr == `MFHI) ? mdOut : aluOut;
+    
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
@@ -304,6 +304,8 @@ module EX_LEVEL (
         (regWriteData_EX) // not alu instruction, use previous
     );
     
+    assign exOut = (instr == `MFLO || instr == `MFHI) ? mdOut : aluOut;
+
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk) begin
         if (reset | clr) begin
