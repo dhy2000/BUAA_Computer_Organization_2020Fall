@@ -138,7 +138,10 @@ parameter WIDTH_OP  = 2,
     reg [3:0] delayCounter = 0;
     reg [WIDTH_OP-1:0] currOp;
     
-    assign busy = (delayCounter > 0);
+    assign busy = (delayCounter > 0) || 
+                    ((delayCounter == 0) && (
+                        (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)
+                    ));
 
     wire [63:0] extRs, extRt;
     assign extRs = (instr == `MULTU || instr == `DIVU) ? {32'b0, dataRs} : {{32{dataRs[31]}}, dataRs};
