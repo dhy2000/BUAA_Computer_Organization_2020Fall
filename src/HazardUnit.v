@@ -10,11 +10,12 @@
 
 module InstrTuseTnew (
     input wire [`WIDTH_INSTR-1:0] instr, 
+    output wire [`WIDTH_FUNC-1:0] func, 
     output wire [`WIDTH_T-1:0] Tuse_rs, 
     output wire [`WIDTH_T-1:0] Tuse_rt,
     output wire [`WIDTH_T-1:0] Tnew_ID     // Tnew @ ID
 );
-    wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
+    wire [`WIDTH_FORMAT-1:0] format; // wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
     assign Tuse_rs = (
@@ -93,10 +94,11 @@ module HazardUnit (
     output wire stall_ID, 
     output wire clr_EX
 );
-
+    wire [`WIDTH_FUNC-1:0] func;
     wire [`WIDTH_T-1:0] Tuse_rs, Tuse_rt;
     InstrTuseTnew tusetnew (
         .instr(instr_ID),
+        .func(func),
         .Tuse_rs(Tuse_rs),
         .Tuse_rt(Tuse_rt),
         .Tnew_ID(Tnew_ID)
