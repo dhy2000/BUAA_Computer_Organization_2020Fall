@@ -246,8 +246,8 @@ module EX_LEVEL (
     wire [31:0] aluOut;
     wire [31:0] memWriteData;
     wire [31:0] mdOut;
-    wire [31:0] mdBusy;
     wire [31:0] exOut;
+    wire mdBusy;
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
