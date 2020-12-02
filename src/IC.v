@@ -36,7 +36,7 @@ module IC (
                     (j) ? (`FORMAT_J) : 
                     (`FORMAT_R) ;
     // func
-    wire calc_r, calc_i, mem_r, mem_w, br, jmp;
+    wire calc_r, calc_i, mem_r, mem_w, br, jmp, md;
     assign calc_r = (
         (instr == `NOP ) || 
         (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV) 
@@ -56,6 +56,10 @@ module IC (
     assign jmp = (
         (instr == `J   ) || (instr == `JAL ) || (instr == `JALR) || (instr == `JR  ) 
     );
+    assign md = (
+        (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU) ||
+        (instr == `MFHI) || (instr == `MFLO ) || (instr == `MTHI)|| (instr == `MTLO)
+    );
 
     assign func =   (calc_r) ? (`FUNC_CALC_R) : 
                     (calc_i) ? (`FUNC_CALC_I) : 
@@ -63,6 +67,7 @@ module IC (
                     (mem_w) ? (`FUNC_MEM_WRITE) : 
                     (br) ? (`FUNC_BRANCH) : 
                     (jmp) ? (`FUNC_JUMP) : 
+                    (md) ? (`FUNC_MULTDIV) : 
                     (`FUNC_CALC_R) ;
     // 
 

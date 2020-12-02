@@ -19,7 +19,7 @@
 `define FUNC_MEM_WRITE  3   
 `define FUNC_BRANCH     4   
 `define FUNC_JUMP       5   
-// `define FUNC_MULTDIV    6
+`define FUNC_MULTDIV    6
 // `define FUNC_CP0        7
 // `define FUNC_PRIOR      8
 // `define FUNC_TRAP       9
