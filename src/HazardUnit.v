@@ -94,11 +94,11 @@ module HazardUnit (
     output wire stall_ID, 
     output wire clr_EX
 );
-    wire [`WIDTH_FUNC-1:0] func;
+    wire [`WIDTH_FUNC-1:0] func_ID;
     wire [`WIDTH_T-1:0] Tuse_rs, Tuse_rt;
     InstrTuseTnew tusetnew (
         .instr(instr_ID),
-        .func(func),
+        .func(func_ID),
         .Tuse_rs(Tuse_rs),
         .Tuse_rt(Tuse_rt),
         .Tnew_ID(Tnew_ID)
@@ -114,8 +114,11 @@ module HazardUnit (
         (Tnew_MEM > Tuse_rt && regWriteAddr_MEM == addrRt_ID)
     );
 
+    wire stall_md;
+    assign stall_md = (MDBusy) && (func_ID == `FUNC_MULTDIV);
+
     // TODO: mult/div stalls
 
-    assign {stall_PC, stall_ID, clr_EX} = (stall_rs || stall_rt) ? 3'b111 : 3'b000;
+    assign {stall_PC, stall_ID, clr_EX} = (stall_rs || stall_rt || stall_md) ? 3'b111 : 3'b000;
 
 endmodule
