@@ -85,6 +85,7 @@ module HazardUnit (
     input wire [4:0] regWriteAddr_MEM, // new
     input wire [`WIDTH_T-1:0] Tnew_EX, 
     input wire [`WIDTH_T-1:0] Tnew_MEM,
+    input wire MDBusy,     // multdiv unit
     // Output Tnew to pipeline
     output wire [`WIDTH_T-1:0] Tnew_ID, 
     // Output Stall Signals

@@ -143,6 +143,7 @@ module mips (
         .addrRs_ID(AddrRs_ID), .addrRt_ID(AddrRt_ID),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM),
         .Tnew_EX(Tnew_EX), .Tnew_MEM(Tnew_MEM),
+        .MDBusy(MDBusy_EX),
         .Tnew_ID(Tnew_ID),
         .stall_PC(stall_PC), .stall_ID(stall_ID), .clr_EX(clr_EX)
     );
