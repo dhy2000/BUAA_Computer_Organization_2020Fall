@@ -313,7 +313,7 @@ module ID_LEVEL (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
-    assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? 31 : 
+    assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? (cmp ? 31 : 0) : // conditionally link according to MARS, but directly link according to MIPS-V2.
                             (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
                             (instr == `JAL)                  ? 31 :       // JAL
                             ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
