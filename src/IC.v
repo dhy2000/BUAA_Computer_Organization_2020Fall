@@ -69,7 +69,7 @@ module IC (
                     (br) ? (`FUNC_BRANCH) : 
                     (jmp) ? (`FUNC_JUMP) : 
                     (md) ? (`FUNC_MULTDIV) : 
-                    (`FUNC_CALC_R) ;
+                    (`FUNC_OTHER) ;
     // 
 
 endmodule

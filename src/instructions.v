@@ -23,6 +23,7 @@
 // `define FUNC_CP0        7
 // `define FUNC_PRIOR      8
 // `define FUNC_TRAP       9
+`define FUNC_OTHER      15  // reserved
 
 /* ------ Tuse / Tnew for stalls in pipeline ------ */
 `define WIDTH_T         3
