@@ -89,15 +89,15 @@
 `define MTHI    49
 `define MTLO    50
 // Duliu
-`define WSBH    53
-`define CLO     54
-`define CLZ     55
-`define BALR    56
-`define BGEZALR 57
-`define BLTZALR 58
-`define BGEZALL 59
-`define BLTZALL 60
-`define MOVZ    61
-`define MOVN    62
+// `define WSBH    53
+// `define CLO     54
+// `define CLZ     55
+// `define BALR    56
+// `define BGEZALR 57
+// `define BLTZALR 58
+// `define BGEZALL 59
+// `define BLTZALL 60
+// `define MOVZ    61
+// `define MOVN    62
 
 `endif
