@@ -19,6 +19,7 @@ module InstrTuseTnew (
     IC ic (.instr(instr), .format(format), .func(func));
 
     assign Tuse_rs = (
+        (instr == `MOVN || instr == `MOVZ) ? 0 : 
         // Calc_R
         (func == `FUNC_CALC_R) ? (
             ((instr == `SLL) || (instr == `SRL) || (instr == `SRA)) ? (`TUSE_INF) : 1
@@ -40,6 +41,7 @@ module InstrTuseTnew (
         (`TUSE_INF)
     );
     assign Tuse_rt = (
+        (instr == `MOVN || instr == `MOVZ) ? 0 : 
         (func == `FUNC_CALC_R) ? (
             // ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 1
             1
@@ -59,6 +61,7 @@ module InstrTuseTnew (
     );
 
     assign Tnew_ID = (
+        (instr == `MOVZ || instr == `MOVN) ? 1 : 
         (func == `FUNC_CALC_R) ? 2 : 
         (func == `FUNC_CALC_I) ? (
             (instr == `LUI) ? 1 : 2
