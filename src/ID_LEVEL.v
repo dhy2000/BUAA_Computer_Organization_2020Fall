@@ -190,6 +190,10 @@ module COMP (
             `BGTZ:  compare = (rs[31] == 0) && (rs != 0);
             `BLEZ:  compare = (rs[31] == 1) || (rs == 0);
             `BLTZ:  compare = (rs[31] == 1);
+            `BGEZAL: compare = (rs[31] == 0);
+            `BLTZAL: compare = (rs[31] == 1);
+            `MOVZ:  compare = (rt == 0);
+            `MOVN:  compare = (rt != 0);
             default: compare = 0;
             endcase
         end
@@ -309,12 +313,14 @@ module ID_LEVEL (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
-    assign regWriteAddr = (instr == `JAL)                  ? 31 :       // JAL
+    assign regWriteAddr =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
+                            (instr == `JAL)                  ? 31 :       // JAL
                             ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
                             ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ))  ? addrRt :  // rt
                             0;
                             
-    assign regWriteData = ((instr == `JAL) || (instr == `JALR))     ?   PC_ID + 8   :   // Jump Link
+    assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 
+                            ((instr == `JAL) || (instr == `JALR))     ?   PC_ID + 8   :   // Jump Link
                             ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
                             0; // Default
     /* ------ Part 3: Pipeline Registers ------ */
