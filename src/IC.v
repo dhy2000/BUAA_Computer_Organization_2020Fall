@@ -23,7 +23,8 @@ module IC (
     wire r, i, j;
     assign r = (
         (instr == `NOP ) ||
-        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) ||(instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) ||(instr == `SLTU) || (instr == `SLL ) || (instr == `SLLV) || (instr == `SRL ) || (instr == `SRLV) ||(instr == `SRA ) || (instr == `SRAV) 
+        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) ||(instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) ||(instr == `SLTU) || (instr == `SLL ) || (instr == `SLLV) || (instr == `SRL ) || (instr == `SRLV) ||(instr == `SRA ) || (instr == `SRAV) ||
+        (instr == `CLO) || (instr == `CLZ)
     );
     assign i = (
         (instr == `ADDI ) || (instr == `ADDIU) || (instr == `ANDI ) || (instr == `ORI  ) || (instr == `XORI ) || (instr == `LUI  ) || (instr == `SLTI ) || (instr == `SLTIU) || (instr == `LW   ) || (instr == `LH   ) || (instr == `LHU  ) || (instr == `LB   ) || (instr == `LBU  ) || (instr == `SW   ) || (instr == `SH   ) || (instr == `SB   ) || (instr == `BEQ  ) || (instr == `BNE  ) || (instr == `BLEZ ) || (instr == `BGTZ ) || (instr == `BGEZ ) || (instr == `BLTZ ) || (instr == `J    ) || (instr == `JAL  )
@@ -39,7 +40,8 @@ module IC (
     wire calc_r, calc_i, mem_r, mem_w, br, jmp, md;
     assign calc_r = (
         (instr == `NOP ) || 
-        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV) 
+        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV) ||
+        (instr == `CLO) || (instr == `CLZ)
     );
     assign calc_i = (
         (instr == `ADDI ) || (instr == `ADDIU) || (instr == `ANDI ) || (instr == `ORI  ) || (instr == `XORI ) || (instr == `LUI  ) || (instr == `SLTI ) || (instr == `SLTIU) 

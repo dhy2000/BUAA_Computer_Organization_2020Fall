@@ -94,5 +94,8 @@
 `define MOVN    52
 `define BGEZAL  53
 `define BLTZAL  54
+// 
+`define CLO     55
+`define CLZ     56
 
 `endif

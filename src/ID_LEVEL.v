@@ -151,15 +151,33 @@ module DECD (
         end
     endfunction
 
+    function [`WIDTH_INSTR-1:0] SpecialV2; // clo, clz
+        input [5:0] opcode;
+        input [5:0] funct;
+        begin
+            if (opcode == 6'b011100) begin
+                if (funct == 6'b100001)
+                    SpecialV2 = `CLO;
+                else if (funct == 6'b100000) 
+                    SpecialV2 = `CLZ;
+                else SpecialV2 = `NOP;
+            end
+            else 
+                SpecialV2 = `NOP;
+        end
+    endfunction
+
     // Determine the Instruction
     wire [`WIDTH_INSTR-1:0] r, ij;
     assign r = Rformat(funct);
     assign ij = IJformat(opcode);
-    wire [`WIDTH_INSTR-1:0] sp_r, sp_i;
+    wire [`WIDTH_INSTR-1:0] sp_r, sp_i, sp_v2;
     assign sp_r = SpecialR(rs, rt, rd, shamt, funct);
     assign sp_i = SpecialI(opcode, rs, rt);
+    assign sp_v2 = SpecialV2(opcode, funct);
     // link these sub-signals
     assign instr = (code == 32'h0000_0000) ? (`NOP) : 
+    (sp_v2 != `NOP) ? (sp_v2) : // clo and clz
     (opcode == 6'b000000) ? (
         // R format
         (sp_r != `NOP) ? (sp_r) : (r)

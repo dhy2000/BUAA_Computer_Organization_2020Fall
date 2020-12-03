@@ -45,7 +45,9 @@ module ALU (
         Alu_Sll     = 11,
         Alu_Srl     = 12,
         Alu_Sra     = 13,
-        Alu_Lui     = 14;
+        Alu_Lui     = 14,
+        Alu_Clo     = 15,
+        Alu_Clz     = 16;
     /* Control */
     // instantiate ic module
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
@@ -74,6 +76,8 @@ module ALU (
         (instr == `SRL || instr == `SRLV) ? (Alu_Srl) : 
         (instr == `SRA || instr == `SRAV) ? (Alu_Sra) : 
         (instr == `LUI) ? (Alu_Lui) : 
+        (instr == `CLO) ? (Alu_Clo) : 
+        (instr == `CLZ) ? (Alu_Clz) : 
         (Alu_Zero) // default 
     );
 
@@ -84,6 +88,22 @@ module ALU (
     wire [31:0] srca, srcb;
     assign srca = ((instr == `SLL || instr == `SRL || instr == `SRA)) ? {27'b0, shamt} : dataRs;
     assign srcb = (format == `FORMAT_I) ? extImm : dataRt;
+
+    function [31:0] countLeading;
+        input [31:0] in;
+        input bit;
+        integer i;
+        reg flg;
+        begin
+            flg = 0;
+            countLeading = 0;
+            for (i = 31; i >= 0; i = i - 1) begin
+                if (!flg && in[i] == bit) countLeading = countLeading + 1;
+                else flg = 1;
+            end
+        end
+    endfunction
+
 
     function [31:0] alu;
         input [31:0] a;
@@ -106,6 +126,8 @@ module ALU (
             Alu_Srl:    alu = (b >> a[4:0]);
             Alu_Sra:    alu = ($signed($signed(b) >>> a[4:0]));
             Alu_Lui:    alu = {b, 16'b0};
+            Alu_Clo:    alu = countLeading(a, 1);
+            Alu_Clz:    alu = countLeading(a, 0);
             default:    alu = 0;
             endcase
         end
