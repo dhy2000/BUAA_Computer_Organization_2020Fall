@@ -68,6 +68,9 @@ module DECD (
             6'b010010: Rformat = `MFLO      ;
             6'b010001: Rformat = `MTHI      ;
             6'b010011: Rformat = `MTLO      ;
+            // duliu
+            6'b001010: Rformat = `MOVZ      ;
+            6'b001011: Rformat = `MOVN      ;
             default: Rformat = `NOP         ;
             endcase
         end
@@ -132,6 +135,10 @@ module DECD (
                     SpecialI = `BGEZ;
                 else if (rt == 5'b00000)
                     SpecialI = `BLTZ;
+                else if (rt == 5'b10000)
+                    SpecialI = `BLTZAL;
+                else if (rt == 5'b10001)
+                    SpecialI = `BGEZAL;
                 else begin
                     // TODO: For On-Course Expansion
                     SpecialI = `NOP;
