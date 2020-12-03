@@ -51,7 +51,8 @@ module IC (
         (instr == `SW) || (instr == `SH) || (instr == `SB) 
     );
     assign br = (
-        (instr == `BEQ ) || (instr == `BNE ) || (instr == `BGEZ) || (instr == `BGTZ) || (instr == `BLEZ) || (instr == `BLTZ) 
+        (instr == `BEQ ) || (instr == `BNE ) || (instr == `BGEZ) || (instr == `BGTZ) || (instr == `BLEZ) || (instr == `BLTZ) ||
+        (instr == `BGEZAL) || (instr == `BLTZAL)
     );
     assign jmp = (
         (instr == `J   ) || (instr == `JAL ) || (instr == `JALR) || (instr == `JR  ) 
