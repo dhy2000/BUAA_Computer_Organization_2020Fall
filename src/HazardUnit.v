@@ -41,7 +41,8 @@ module InstrTuseTnew (
     );
     assign Tuse_rt = (
         (func == `FUNC_CALC_R) ? (
-            ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 1
+            // ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 1
+            1
         ) : 
         (func == `FUNC_CALC_I) ? (`TUSE_INF) : 
         (func == `FUNC_MEM_READ) ? (`TUSE_INF) : 
