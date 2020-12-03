@@ -313,14 +313,15 @@ module ID_LEVEL (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
-    assign regWriteAddr =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
+    assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? 31 : 
+                            (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
                             (instr == `JAL)                  ? 31 :       // JAL
                             ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
                             ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ))  ? addrRt :  // rt
                             0;
                             
     assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 
-                            ((instr == `JAL) || (instr == `JALR))     ?   PC_ID + 8   :   // Jump Link
+                            ((instr == `JAL) || (instr == `JALR) || (instr == `BGEZAL) || (instr == `BLTZAL))     ?   PC_ID + 8   :   // Jump Link
                             ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
                             0; // Default
     /* ------ Part 3: Pipeline Registers ------ */
