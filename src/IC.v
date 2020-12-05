@@ -27,7 +27,8 @@ module IC (
         (instr == `CLO) || (instr == `CLZ)
     );
     assign i = (
-        (instr == `ADDI ) || (instr == `ADDIU) || (instr == `ANDI ) || (instr == `ORI  ) || (instr == `XORI ) || (instr == `LUI  ) || (instr == `SLTI ) || (instr == `SLTIU) || (instr == `LW   ) || (instr == `LH   ) || (instr == `LHU  ) || (instr == `LB   ) || (instr == `LBU  ) || (instr == `SW   ) || (instr == `SH   ) || (instr == `SB   ) || (instr == `BEQ  ) || (instr == `BNE  ) || (instr == `BLEZ ) || (instr == `BGTZ ) || (instr == `BGEZ ) || (instr == `BLTZ ) || (instr == `J    ) || (instr == `JAL  )
+        (instr == `ADDI ) || (instr == `ADDIU) || (instr == `ANDI ) || (instr == `ORI  ) || (instr == `XORI ) || (instr == `LUI  ) || (instr == `SLTI ) || (instr == `SLTIU) || (instr == `LW   ) || (instr == `LH   ) || (instr == `LHU  ) || (instr == `LB   ) || (instr == `LBU  ) || (instr == `SW   ) || (instr == `SH   ) || (instr == `SB   ) || (instr == `BEQ  ) || (instr == `BNE  ) || (instr == `BLEZ ) || (instr == `BGTZ ) || (instr == `BGEZ ) || (instr == `BLTZ ) ||
+        (instr == `BGEZAL) || (instr == `BLTZAL)
     );
     assign j = (
         (instr == `J ) || (instr == `JAL)
