@@ -87,7 +87,9 @@ module ALU (
 
     wire [31:0] srca, srcb;
     assign srca = ((instr == `SLL || instr == `SRL || instr == `SRA)) ? {27'b0, shamt} : dataRs;
-    assign srcb = (format == `FORMAT_I) ? extImm : dataRt;
+    assign srcb = ((instr == `FUNC_CALC_I) || (instr == `FUNC_MEM_READ) || (instr == `FUNC_MEM_WRITE)) ? extImm : 
+                    ((instr == `FUNC_CALC_R)) ? dataRt : 
+                    0; // default
 
     function [31:0] countLeading;
         input [31:0] in;
