@@ -62,7 +62,8 @@ module IC (
     );
     assign md = (
         (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU) ||
-        (instr == `MFHI) || (instr == `MFLO ) || (instr == `MTHI)|| (instr == `MTLO)
+        (instr == `MFHI) || (instr == `MFLO ) || (instr == `MTHI)|| (instr == `MTLO) ||
+        (instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)
     );
 
     assign func =   (calc_r) ? (`FUNC_CALC_R) : 
