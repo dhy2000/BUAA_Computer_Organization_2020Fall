@@ -166,14 +166,15 @@ parameter   EXT_ZERO = 0,
     
     assign busy = (delayCounter > 0) || 
                     ((delayCounter == 0) && (
-                        (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)
+                        (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU) || 
+                        (instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)
                     ));
 
     wire extOp;
-    assign extOp = ((instr == `MULTU) || (instr == `DIVU)) ? EXT_ZERO : EXT_SIGN;
+    assign extOp = ((instr == `MULTU) || (instr == `DIVU) || (instr == `MADDU) || (instr == `MSUBU)) ? EXT_ZERO : EXT_SIGN;
     wire [63:0] extRs, extRt;
-    assign extRs = (instr == `MULTU) ? {32'b0, dataRs} : {{32{dataRs[31]}}, dataRs};
-    assign extRt = (instr == `MULTU) ? {32'b0, dataRt} : {{32{dataRt[31]}}, dataRt};
+    assign extRs = (extOp == EXT_ZERO) ? {32'b0, dataRs} : {{32{dataRs[31]}}, dataRs};
+    assign extRt = (extOp == EXT_ZERO) ? {32'b0, dataRt} : {{32{dataRt[31]}}, dataRt};
     wire [32:0] divuRs, divuRt;
     assign divuRs = {1'b0, dataRs};
     assign divuRt = {1'b0, dataRt};
@@ -224,6 +225,16 @@ parameter   EXT_ZERO = 0,
                     HI <= remainder;
                     LO <= quotient;
                     currOp <= Op_Div;
+                end
+                else if (instr == `MADD || instr == `MADDU) begin
+                    delayCounter <= 5;
+                    {HI, LO} <= {HI, LO} + product;
+                    currOp <= Op_Mult;
+                end
+                else if (instr == `MSUB || instr == `MSUBU) begin
+                    delayCounter <= 5;
+                    {HI, LO} <= {HI, LO} - product;
+                    currOp <= Op_Mult;
                 end
                 else if (instr == `MTHI) begin
                     HI <= dataRs;
