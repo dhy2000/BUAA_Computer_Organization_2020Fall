@@ -131,18 +131,13 @@ module DECD (
         input [4:0] rt;
         begin
             if (opcode == 6'b000001) begin
-                if (rt == 5'b00001) 
-                    SpecialI = `BGEZ;
-                else if (rt == 5'b00000)
-                    SpecialI = `BLTZ;
-                else if (rt == 5'b10000)
-                    SpecialI = `BLTZAL;
-                else if (rt == 5'b10001)
-                    SpecialI = `BGEZAL;
-                else begin
-                    // TODO: For On-Course Expansion
-                    SpecialI = `NOP;
-                end
+                case (rt) 
+                5'b00001: SpecialI = `BGEZ;
+                5'b00000: SpecialI = `BLTZ;
+                5'b10000: SpecialI = `BLTZAL;
+                5'b10001: SpecialI = `BGEZAL;
+                default:  SpecialI = `NOP;
+                endcase
             end
             else begin
                 // TODO: For On-Course Expansion
@@ -156,11 +151,15 @@ module DECD (
         input [5:0] funct;
         begin
             if (opcode == 6'b011100) begin
-                if (funct == 6'b100001)
-                    SpecialV2 = `CLO;
-                else if (funct == 6'b100000) 
-                    SpecialV2 = `CLZ;
-                else SpecialV2 = `NOP;
+                case (funct)
+                6'b100001: SpecialV2 = `CLO;
+                6'b100000: SpecialV2 = `CLZ;
+                6'b000000: SpecialV2 = `MADD;
+                6'b000001: SpecialV2 = `MADDU;
+                6'b000100: SpecialV2 = `MSUB;
+                6'b000101: SpecialV2 = `MSUBU;
+                default:   SpecialV2 = `NOP;
+                endcase
             end
             else 
                 SpecialV2 = `NOP;

@@ -97,5 +97,10 @@
 // 
 `define CLO     55
 `define CLZ     56
+// Mult/Div +
+`define MADD    57
+`define MADDU   58
+`define MSUB    59
+`define MSUBU   60
 
 `endif
