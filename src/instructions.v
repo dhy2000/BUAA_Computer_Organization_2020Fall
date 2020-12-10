@@ -20,7 +20,7 @@
 `define FUNC_BRANCH     4   
 `define FUNC_JUMP       5   
 `define FUNC_MULTDIV    6
-// `define FUNC_CP0        7
+`define FUNC_CP0        7
 // `define FUNC_PRIOR      8
 // `define FUNC_TRAP       9
 `define FUNC_OTHER      15  // reserved
@@ -30,7 +30,7 @@
 `define TUSE_INF        5
 
 /* ------ Label of Instruction Symbol ------ */
-`define WIDTH_INSTR     6
+`define WIDTH_INSTR     7
 `define NOP     0
 // Calculation R-format
 `define ADD     1   // rd <= rs, rt
@@ -102,5 +102,10 @@
 `define MADDU   58
 `define MSUB    59
 `define MSUBU   60
+
+// CP0 and Priority
+`define MFC0    65
+`define MTC0    66
+`define ERET    67
 
 `endif

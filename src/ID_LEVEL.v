@@ -20,7 +20,9 @@ module DECD (
     output wire [4:0] rd,
     output wire [4:0] shamt,
     output wire [15:0] imm,
-    output wire [25:0] jmpaddr
+    output wire [25:0] jmpaddr,
+    // Exception Flag
+    output wire excRI // exception - RI(unRecognized Instruction)
 );
     /* Part 1: Split the machine code */
     wire [5:0] opcode, funct; // [31:26] and [5:0]
@@ -166,6 +168,28 @@ module DECD (
         end
     endfunction
 
+    function [`WIDTH_INSTR-1:0] SpecialCOP0;
+        input [5:0] opcode;
+        input [4:0] rs;
+        input [5:0] funct;
+        begin
+            if (opcode == 6'b010000) begin
+                case (rs)
+                5'b00000: SpecialCOP0 = `MFC0;
+                5'b00100: SpecialCOP0 = `MTC0;
+                default: begin
+                    if (funct == 6'b011000)
+                        SpecialCOP0 = `ERET;
+                    else
+                        SpecialCOP0 = `NOP;
+                end
+                endcase
+            end
+            else 
+                SpecialCOP0 = `NOP;
+        end
+    endfunction
+
     // Determine the Instruction
     wire [`WIDTH_INSTR-1:0] r, ij;
     assign r = Rformat(funct);
@@ -184,6 +208,8 @@ module DECD (
         // IJ format
         (sp_i != `NOP) ? (sp_i) : (ij)
     );
+
+    assign excRI = (code != 32'h0000_0000 && instr == `NOP);
 
 endmodule
 
@@ -316,7 +342,8 @@ module ID_LEVEL (
     DECD decd (
         .code(code_ID), .instr(instr),
         .rs(addrRs), .rt(addrRt), .rd(addrRd),
-        .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr)
+        .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr), 
+        .excRI()
     );
     COMP comp (
         .instr(instr),
