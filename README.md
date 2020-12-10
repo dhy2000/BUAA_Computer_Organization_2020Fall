@@ -1,2 +1,4 @@
-# BUAA_Computer_Organization_2020Fall
-Computer Organization in BUAA, 2020 Fall.
+# P7 MIPS 微系统 (中断和异常)
+
+计算机组成课程设计 P7
+

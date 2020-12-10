@@ -1,0 +1,15 @@
+.vscode/
+document/
+util/
+**.zip
+code.txt
+
+test/
+out/
+
+# ModelSim Project Files
+*.mti
+*.mpf
+*.wlf
+work/
+run.do
