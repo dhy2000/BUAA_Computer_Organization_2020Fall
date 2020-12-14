@@ -1,6 +1,6 @@
 /* 
- * File Name: mips.v
- * Module Name: mips
+ * File Name: CPU.v
+ * Module Name: CPU
  * Description: Top Module of CPU
  */
 `default_nettype none
@@ -50,9 +50,10 @@ module CPU (
     wire MDBusy_EX;
     // MEM
     wire [`WIDTH_INSTR-1:0] Instr_WB;
-    wire [31:0] PC_WB, MemReadData_WB;
+    wire [31:0] PC_WB, MemWord_WB;
     wire [4:0] RegWriteAddr_WB; 
     wire [31:0] RegWriteData_WB;
+    wire [`WIDTH_T-1:0] Tnew_WB;
     // WB
     wire WriteEn_GRF;
     wire [4:0] RegWriteAddr_GRF; 
@@ -118,13 +119,14 @@ module CPU (
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .Tnew_MEM(Tnew_MEM), 
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
-        .memReadData_WB(MemReadData_WB),
-        .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB)
+        .memWord_WB(MemWord_WB),
+        .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
+        .Tnew_WB(Tnew_WB)
     );
 
     WB_TOP wb (
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
-        .memReadData_WB(MemReadData_WB),
+        .memWord_WB(MemWord_WB),
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .regWriteAddr_GRF(RegWriteAddr_GRF), .regWriteData_GRF(RegWriteData_GRF),
         .PC_GRF(PC_GRF)
