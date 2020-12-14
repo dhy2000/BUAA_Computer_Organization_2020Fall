@@ -11,6 +11,8 @@
 
 /* Module: IM , from IM.v */
 `include "IM.v"
+`include "NPC.v"
+`include "PC.v"
 
 module IF_TOP (
     /* Global Inputs */

@@ -8,6 +8,9 @@
 `include "../instructions.v"
 `include "../IC.v"
 
+`include "COMP.v"
+`include "DECD.v"
+
 /* ------ Instruction Decode and Register Read ------ */
 module ID_TOP (
     /* Global Inputs */
