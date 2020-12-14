@@ -4,6 +4,9 @@
  *  Outputs: PC
  *  Description: Program Counter
  */
+`default_nettype none
+`include "../../memconfig.v"
+
 module PC (
     input wire clk, 
     input wire reset,

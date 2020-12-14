@@ -4,6 +4,12 @@
  *  Outputs: NPC
  *  Description: Next PC Source Calculator and Selector
  */
+`default_nettype none
+`include "../instructions.v"
+`include "../IC.v"
+`include "../../memconfig.v"
+
+
 module NPC (
     input wire [`WIDTH_INSTR-1:0] instr,
     input wire cmp,
