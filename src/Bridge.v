@@ -56,18 +56,22 @@ module SouthBridge (
     input wire [31:0] WData, 
     input wire [3:0] WE,  
     output wire [31:0] RData, 
+    output wire [7:2] IRQ, 
     // Device Side
     // Timer 0
     output wire [1:0] Timer0_Addr, 
     output wire [31:0] Timer0_WData, 
     output wire [3:0] Timer0_WE, 
     input wire [31:0] Timer0_RData, 
+    input wire Timer0_IRQ, 
     // Timer 1
     output wire [1:0] Timer1_Addr, 
     output wire [31:0] Timer1_WData, 
     output wire [3:0] Timer1_WE, 
-    input wire [31:0] Timer1_RData
-
+    input wire [31:0] Timer1_RData, 
+    input wire Timer1_IRQ, 
+    // External Interrupt
+    input wire Ext_IRQ
 );
     
 endmodule
