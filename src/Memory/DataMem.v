@@ -19,11 +19,12 @@ module DataMem (
 
     reg [31:0] mem [0: `DM_SIZE_WORD - 1];
 
-    wire [`WIDTH_IM_ADDR-1:2] wordAddr;
-    assign wordAddr = Addr[`WIDTH_IM_ADDR-1:2];
+    wire [`WIDTH_DM_ADDR-1:2] wordAddr;
+    assign wordAddr = Addr[`WIDTH_DM_ADDR-1:2];
 
     wire memword;
     assign memword = mem[wordAddr];
+    assign RData = memword;
 
     function [31:0] replaceWord;
         input [31:0] memword;
@@ -64,6 +65,9 @@ module DataMem (
         end
     endtask
 
+    initial begin
+        resetMem;
+    end
 
     always @(posedge clk) begin
         if (reset) begin

@@ -41,7 +41,7 @@ module NorthBridge (
     assign DM_Addr = Addr2;
     assign DM_WData = WData2;
     assign DM_WE = WE2;
-    assign RData1 = DM_RData;
+    assign RData2 = DM_RData;
 
 endmodule
 

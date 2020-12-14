@@ -164,5 +164,10 @@ module CPU (
 
 
     assign PC = 0;
+    assign BrPC = DM_PC;
+    assign BrAddr = DM_Addr;
+    assign BrWData = DM_WData;
+    assign BrWE = DM_WE;
+    // assign DM_RData = BrRData;
 
 endmodule

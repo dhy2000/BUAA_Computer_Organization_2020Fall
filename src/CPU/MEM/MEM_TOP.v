@@ -88,7 +88,7 @@ module MEM_TOP (
     PREDM predm (
         .instr(instr_MEM), 
         .Addr(aluOut_MEM), .WData(dataRt_use), .PC(PC_MEM), 
-        .DM_PC(DM_PC), .DM_Addr(DM_Addr[31:2]), .DM_WE(DM_WE), 
+        .DM_PC(DM_PC), .DM_Addr(DM_Addr[31:2]), .DM_WE(DM_WE), .DM_WData(DM_WData), 
         .offset(offset)
     );
     assign DM_Addr[1:0] = 0;

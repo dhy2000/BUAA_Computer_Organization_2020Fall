@@ -18,6 +18,7 @@ module PREDM (
     output wire [31:0] DM_PC, 
     output wire [31:2] DM_Addr, 
     output wire [3:0] DM_WE, 
+    output wire [31:0] DM_WData, 
     // output inside cpu
     output wire [1:0] offset
 );
@@ -36,5 +37,6 @@ module PREDM (
     ) : 0;
     
     assign DM_PC = PC;
+    assign DM_WData = WData;
 
 endmodule
