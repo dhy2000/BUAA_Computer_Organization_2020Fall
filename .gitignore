@@ -6,6 +6,7 @@ code.txt
 
 test/
 out/
+log.txt
 
 # ModelSim Project Files
 *.mti
@@ -13,3 +14,5 @@ out/
 *.wlf
 work/
 *.do
+modelsim.ini
+transcript
