@@ -66,7 +66,9 @@ module InstrTuseTnew (
         (func == `FUNC_CALC_I) ? (
             (instr == `LUI) ? 1 : 2
         ) : 
-        (func == `FUNC_MEM_READ) ? 3 : 
+        (func == `FUNC_MEM_READ) ? (
+            (instr == `LW) ? 3 : 5
+        ) : 
         (func == `FUNC_MEM_WRITE) ? 0 : 
         (func == `FUNC_BRANCH) ? 0 : 
         (func == `FUNC_JUMP) ? (
