@@ -4,7 +4,7 @@
  *  Description: Just Send Data and Instr into GRF
  */
 `default_nettype none
-`include "instructions.v"
+`include "../instructions.v"
 
 module WB_TOP (
     /* Data Inputs from Previous Pipeline */

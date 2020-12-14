@@ -4,7 +4,7 @@
  * Description: Top Module of CPU
  */
 `default_nettype none
-`include "../instructions.v"
+`include "instructions.v"
 /* ---------- Parts ---------- */
 `include "IF/IF_TOP.v"
 `include "ID/ID_TOP.v"

@@ -16,5 +16,5 @@ module mips (
     CPU cpu (
         .clk(clk), 
         .reset(reset)
-    )
+    );
 endmodule

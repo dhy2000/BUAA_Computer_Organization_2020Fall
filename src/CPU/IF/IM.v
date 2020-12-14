@@ -8,7 +8,7 @@
 
 `default_nettype none
 
-`include "memconfig.v"
+`include "../../memconfig.v"
 
 module IM (
     input wire [31:0] PC,

@@ -7,9 +7,9 @@
  */
 
 `default_nettype none
-`include "memconfig.v"
-`include "instructions.v"
-`include "IC.v"
+`include "../../memconfig.v"
+`include "../instructions.v"
+`include "../IC.v"
 
 module DM (
     input wire clk,
@@ -20,7 +20,7 @@ module DM (
     input wire [31:0] PC,
     output wire [31:0] RData
     // Connect To Real Memory
-    
+
 );
     // inner control signal
     parameter WIDTH_EXT = 1,

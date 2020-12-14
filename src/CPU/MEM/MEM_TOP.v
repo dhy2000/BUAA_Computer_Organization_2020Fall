@@ -5,8 +5,8 @@
  */
 
 `default_nettype none
-`include "instructions.v"
-`include "IC.v"
+`include "../instructions.v"
+`include "../IC.v"
 
 /* Module: DM, from DM.v */
 `include "DM.v"

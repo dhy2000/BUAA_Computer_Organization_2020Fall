@@ -1,3 +1,7 @@
+`default_nettype none
+`include "../instructions.v"
+`include "../IC.v"
+
 module COMP (
     /* Input */
     input wire [`WIDTH_INSTR-1:0] instr,

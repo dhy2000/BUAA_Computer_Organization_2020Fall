@@ -3,6 +3,10 @@
  * Inputs: (Control: instr), (Data source: dataRs, dataRt, shamt, imm16), 
  * Outputs: out
  */
+`default_nettype none
+
+`include "../instructions.v"
+`include "../IC.v"
 
 module ALU (
     /* Input */

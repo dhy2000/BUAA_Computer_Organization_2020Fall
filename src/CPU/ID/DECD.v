@@ -1,3 +1,6 @@
+`default_nettype none
+`include "../instructions.v"
+`include "../IC.v"
 
 module DECD (
     /* Input */
