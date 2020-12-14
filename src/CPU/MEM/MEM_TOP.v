@@ -24,6 +24,7 @@ module MEM_TOP (
     input wire [31:0]               aluOut_MEM          ,
     input wire [31:0]               dataRt_MEM          ,
     input wire [4:0]                addrRt_MEM          ,
+    input wire [4:0]                addrRd_MEM          ,
     input wire [4:0]                regWriteAddr_MEM    , 
     input wire [31:0]               regWriteData_MEM    ,
     input wire [`WIDTH_T-1:0]       Tnew_MEM            ,

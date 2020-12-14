@@ -28,6 +28,7 @@ module EX_TOP (
     input wire [4:0]                shamt_EX            , 
     input wire [4:0]                addrRs_EX           ,
     input wire [4:0]                addrRt_EX           ,
+    input wire [4:0]                addrRd_EX           ,
     input wire [4:0]                regWriteAddr_EX     , 
     input wire [31:0]               regWriteData_EX     , 
     input wire [`WIDTH_T-1:0]       Tnew_EX             ,
@@ -46,6 +47,7 @@ module EX_TOP (
     // RegUsed
     output reg [4:0]                addrRt_MEM          = 0,
     output reg [31:0]               dataRt_MEM          = 0,
+    output reg [4:0]                addrRd_MEM          = 0,
     // RegWrite
     output reg [4:0]                regWriteAddr_MEM    = 0, 
     output reg [31:0]               regWriteData_MEM    = 0,
@@ -135,6 +137,7 @@ module EX_TOP (
             regWriteData_MEM            <=  0;
             Tnew_MEM                    <=  0;
             addrRt_MEM                  <=  0;
+            addrRd_MEM                  <=  0;
         end
         else if (!stall) begin
             instr_MEM                   <=  instr_EX;
@@ -145,6 +148,7 @@ module EX_TOP (
             regWriteData_MEM            <=  regWriteData;
             Tnew_MEM                    <=  Tnew;
             addrRt_MEM                  <=  addrRt_EX;
+            addrRd_MEM                  <=  addrRd_EX;
         end
     end
 

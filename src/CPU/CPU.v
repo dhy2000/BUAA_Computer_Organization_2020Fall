@@ -40,7 +40,7 @@ module CPU (
     wire Cmp_NPC; 
     wire [31:0] PC_EX, DataRs_EX, DataRt_EX, RegWriteData_EX, JmpReg_NPC;
     wire [4:0] Shamt_EX, RegWriteAddr_EX, RA1_GRF, RA2_GRF;
-    wire [4:0] AddrRs_EX, AddrRt_EX;
+    wire [4:0] AddrRs_EX, AddrRt_EX, AddrRd_EX;
     wire [4:0] AddrRs_ID, AddrRt_ID;
     wire [15:0] Imm16_EX, Imm16_NPC;
     wire [25:0] JmpAddr_NPC;
@@ -51,7 +51,7 @@ module CPU (
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
     wire [31:0] PC_MEM, AluOut_MEM;
     wire [31:0] DataRt_MEM;
-    wire [4:0] AddrRt_MEM;
+    wire [4:0] AddrRt_MEM, AddrRd_MEM;
     wire [4:0] RegWriteAddr_MEM; 
     wire [31:0] RegWriteData_MEM;
     wire [`WIDTH_T-1:0] Tnew_MEM;
@@ -93,7 +93,7 @@ module CPU (
         .instr_EX(Instr_EX), .PC_EX(PC_EX),
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
-        .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX),
+        .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX), .addrRd_EX(AddrRd_EX), 
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
         .Tnew_EX(Tnew_EX), 
         .instr_NPC(Instr_NPC), .cmp_NPC(Cmp_NPC),
@@ -108,14 +108,14 @@ module CPU (
         .instr_EX(Instr_EX), .PC_EX(PC_EX),
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
-        .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX),
+        .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX), .addrRd_EX(AddrRd_EX),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
         .Tnew_EX(Tnew_EX), 
         .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB), // Forward
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
         .aluOut_MEM(AluOut_MEM), 
-        .addrRt_MEM(AddrRt_MEM), .dataRt_MEM(DataRt_MEM),
+        .addrRt_MEM(AddrRt_MEM), .addrRd_MEM(AddrRd_MEM), .dataRt_MEM(DataRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .Tnew_MEM(Tnew_MEM),
         .MDBusy_EX(MDBusy_EX)
@@ -125,7 +125,7 @@ module CPU (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
         .aluOut_MEM(AluOut_MEM), 
-        .addrRt_MEM(AddrRt_MEM), .dataRt_MEM(DataRt_MEM),
+        .addrRt_MEM(AddrRt_MEM), .addrRd_MEM(AddrRd_MEM), .dataRt_MEM(DataRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .Tnew_MEM(Tnew_MEM), 

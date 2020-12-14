@@ -43,6 +43,7 @@ module ID_TOP (
     // RegUsed
     output reg [4:0]                addrRs_EX           = 0,
     output reg [4:0]                addrRt_EX           = 0,
+    output reg [4:0]                addrRd_EX           = 0,
     // RegWrite
     output reg [4:0]                regWriteAddr_EX     = 0, 
     output reg [31:0]               regWriteData_EX     = 0, 
@@ -144,6 +145,7 @@ module ID_TOP (
             shamt_EX            <= 0;
             addrRs_EX           <= 0;
             addrRt_EX           <= 0;
+            addrRd_EX           <= 0;
             regWriteAddr_EX     <= 0;
             regWriteData_EX     <= 0;
             Tnew_EX             <= 0;
@@ -157,6 +159,7 @@ module ID_TOP (
             shamt_EX            <=  shamt;
             addrRs_EX           <=  addrRs;
             addrRt_EX           <=  addrRt;
+            addrRd_EX           <=  addrRd;
             regWriteAddr_EX     <=  regWriteAddr;
             regWriteData_EX     <=  regWriteData;
             Tnew_EX             <=  Tnew;
