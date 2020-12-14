@@ -19,6 +19,8 @@ module DM (
     input wire [31:0] WData,
     input wire [31:0] PC,
     output wire [31:0] RData
+    // Connect To Real Memory
+    
 );
     // inner control signal
     parameter WIDTH_EXT = 1,

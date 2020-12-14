@@ -11,7 +11,7 @@
 /* Module: DM, from DM.v */
 `include "DM.v"
 
-module MEM_LEVEL (
+module MEM_TOP (
     /* Global Inputs */
     // Time Sequence
     input wire                      clk, 

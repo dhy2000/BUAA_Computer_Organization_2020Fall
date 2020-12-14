@@ -6,7 +6,7 @@
 `default_nettype none
 `include "instructions.v"
 
-module WB_LEVEL (
+module WB_TOP (
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_WB            , 
     input wire [31:0]               PC_WB               , 
@@ -35,12 +35,6 @@ module WB_LEVEL (
     assign instr = instr_WB;
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
-
-    // assign writeEn_GRF = (
-    //     ((func == `FUNC_CALC_R) || (func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ)) ? 1 : 
-    //     ((instr == `JAL) || (instr == `JALR)) ? 1 : 
-    //     0
-    // );
 
     /* ------ Part 3: Pipeline Registers ------ */
     assign regWriteAddr_GRF = regWriteAddr_WB;
