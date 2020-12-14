@@ -40,7 +40,11 @@ module NPC (
     assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
     assign extJmp = {PC[31:28], jmpAddr, 2'b0};
 
-    assign NPC = (npcOp == NPC_Order) ? (PC + 4) : 
+    wire terminated;
+    assign terminated = PC >= (`TEXT_STARTADDR + `IM_SIZE);
+
+    assign NPC = (terminated) ? (PC) : 
+                (npcOp == NPC_Order) ? (PC + 4) : 
                 (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
                 (npcOp == NPC_JmpReg) ? (jmpReg) : 
