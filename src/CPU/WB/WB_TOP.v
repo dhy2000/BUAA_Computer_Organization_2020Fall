@@ -5,16 +5,18 @@
  */
 `default_nettype none
 `include "../instructions.v"
+`include "../IC.v"
+`include "EXTDM.v"
 
 module WB_TOP (
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_WB            , 
     input wire [31:0]               PC_WB               , 
-    input wire [31:0]               memReadData_WB      ,
+    input wire [31:0]               memWord_WB          ,
     input wire [4:0]                regWriteAddr_WB     , 
     input wire [31:0]               regWriteData_WB     ,
+    // input wire [`WIDTH_T-1:0]       Tnew_WB             ,
     /* Data Outputs to GRF.Write */
-    // output wire writeEn_GRF, 
     output wire [4:0] regWriteAddr_GRF, 
     output wire [31:0] regWriteData_GRF,
     output wire [31:0] PC_GRF
@@ -26,9 +28,21 @@ module WB_TOP (
             
     */
     /* ------ Part 1: Wires Declaration ------ */
+    wire [31:0] extMemWord;
 
+    wire [4:0] regWriteAddr;
+    wire [31:0] regWriteData;
 
     /* ------ Part 2: Instantiate Modules ------ */
+
+    EXTDM extdm (
+        .memWord(memWord_WB), 
+        .offset(), 
+        .instr(instr_WB), 
+        .extWord(extMemWord)
+    );
+
+
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
     wire [`WIDTH_INSTR-1:0] instr;
@@ -36,9 +50,16 @@ module WB_TOP (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
+
+    assign regWriteAddr = regWriteAddr_WB;
+    assign regWriteData = (
+        ((func == `FUNC_MEM_READ)) ? (extMemWord) : 
+        (regWriteData_WB)
+    );
+
     /* ------ Part 3: Pipeline Registers ------ */
-    assign regWriteAddr_GRF = regWriteAddr_WB;
-    assign regWriteData_GRF = regWriteData_WB;
+    assign regWriteAddr_GRF = regWriteAddr;
+    assign regWriteData_GRF = regWriteData;
     assign PC_GRF = PC_WB;
 
 endmodule
