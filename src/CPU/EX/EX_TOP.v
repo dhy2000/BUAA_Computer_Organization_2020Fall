@@ -42,9 +42,10 @@ module EX_TOP (
     output reg [31:0]               PC_MEM              = 0, 
     // From ALU
     output reg [31:0]               aluOut_MEM          = 0,
-    output reg [31:0]               memWriteData_MEM    = 0,
+
     // RegUsed
     output reg [4:0]                addrRt_MEM          = 0,
+    output reg [31:0]               dataRt_MEM          = 0,
     // RegWrite
     output reg [4:0]                regWriteAddr_MEM    = 0, 
     output reg [31:0]               regWriteData_MEM    = 0,
@@ -62,7 +63,6 @@ module EX_TOP (
     */
     /* ------ Part 1: Wires Declaration ------ */
     wire [31:0] aluOut;
-    wire [31:0] memWriteData;
     wire [31:0] mdOut;
     wire [31:0] exOut;
     wire mdBusy;
@@ -105,7 +105,7 @@ module EX_TOP (
         .out(mdOut), .busy(mdBusy)
     );
 
-    assign memWriteData = dataRt_alu;
+    // assign memWriteData = dataRt_alu;
     
 
     /* ------ Part 2.5 Part of Controls ------ */
@@ -130,7 +130,7 @@ module EX_TOP (
             instr_MEM                   <=  0;
             PC_MEM                      <=  0;
             aluOut_MEM                  <=  0;
-            memWriteData_MEM            <=  0;
+            dataRt_MEM                  <=  0;
             regWriteAddr_MEM            <=  0;
             regWriteData_MEM            <=  0;
             Tnew_MEM                    <=  0;
@@ -140,7 +140,7 @@ module EX_TOP (
             instr_MEM                   <=  instr_EX;
             PC_MEM                      <=  PC_EX;
             aluOut_MEM                  <=  exOut;
-            memWriteData_MEM            <=  memWriteData;
+            dataRt_MEM                  <=  dataRt_alu;
             regWriteAddr_MEM            <=  regWriteAddr;
             regWriteData_MEM            <=  regWriteData;
             Tnew_MEM                    <=  Tnew;

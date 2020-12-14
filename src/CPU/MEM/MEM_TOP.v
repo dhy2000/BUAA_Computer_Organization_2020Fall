@@ -23,7 +23,7 @@ module MEM_TOP (
     input wire [`WIDTH_INSTR-1:0]   instr_MEM           , 
     input wire [31:0]               PC_MEM              , 
     input wire [31:0]               aluOut_MEM          ,
-    input wire [31:0]               memWriteData_MEM    ,
+    input wire [31:0]               dataRt_MEM          ,
     input wire [4:0]                addrRt_MEM          ,
     input wire [4:0]                regWriteAddr_MEM    , 
     input wire [31:0]               regWriteData_MEM    ,
@@ -58,10 +58,10 @@ module MEM_TOP (
     wire [`WIDTH_T-1:0] Tnew;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
-    wire [31:0] memWriteData_use;
-    assign memWriteData_use = (
+    wire [31:0] dataRt_use;
+    assign dataRt_use = (
         (regaddr_WB == addrRt_MEM && regaddr_WB != 0) ? (regdata_WB) : 
-        (memWriteData_MEM)
+        (dataRt_MEM)
     );
     
     assign Tnew = (Tnew_MEM >= 1) ?  (Tnew_MEM - 1) : 0;
@@ -69,7 +69,7 @@ module MEM_TOP (
     /* ------ Part 2: Instantiate Modules ------ */
     DM dm (
         .clk(clk), .reset(reset), .instr(instr_MEM),
-        .Addr(aluOut_MEM), .WData(memWriteData_use), .PC(PC_MEM),
+        .Addr(aluOut_MEM), .WData(dataRt_use), .PC(PC_MEM),
         .RData(memReadData)
     );
 

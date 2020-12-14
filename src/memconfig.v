@@ -21,6 +21,7 @@
 `define IM_SIZE             (`IM_SIZE_WORD << 2)
 
 `define CODE_FILE       "code.txt"  // hextext
+`define HANDLER_FILE    "code_handler.txt" // hextext
 
 
 

@@ -41,7 +41,8 @@ module CPU (
     wire [31:0] RD1_GRF, RD2_GRF;
     // EX
     wire [`WIDTH_INSTR-1:0] Instr_MEM;
-    wire [31:0] PC_MEM, AluOut_MEM, MemWriteData_MEM;
+    wire [31:0] PC_MEM, AluOut_MEM;
+    wire [31:0] DataRt_MEM;
     wire [4:0] AddrRt_MEM;
     wire [4:0] RegWriteAddr_MEM; 
     wire [31:0] RegWriteData_MEM;
@@ -101,8 +102,8 @@ module CPU (
         .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB), // Forward
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
-        .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
-        .addrRt_MEM(AddrRt_MEM), 
+        .aluOut_MEM(AluOut_MEM), 
+        .addrRt_MEM(AddrRt_MEM), .dataRt_MEM(DataRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .Tnew_MEM(Tnew_MEM),
         .MDBusy_EX(MDBusy_EX)
@@ -111,8 +112,8 @@ module CPU (
     MEM_TOP mem (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(1'b0),
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM),
-        .aluOut_MEM(AluOut_MEM), .memWriteData_MEM(MemWriteData_MEM),
-        .addrRt_MEM(AddrRt_MEM),
+        .aluOut_MEM(AluOut_MEM), 
+        .addrRt_MEM(AddrRt_MEM), .dataRt_MEM(DataRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .Tnew_MEM(Tnew_MEM), 
@@ -137,7 +138,7 @@ module CPU (
     );
 
     HazardUnit hazard (
-        .instr_ID(Instr_ID),
+        .instr_ID(Instr_ID), .instr_EX(Instr_EX), .instr_MEM(Instr_MEM), 
         .addrRs_ID(AddrRs_ID), .addrRt_ID(AddrRt_ID),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM),
         .Tnew_EX(Tnew_EX), .Tnew_MEM(Tnew_MEM),

@@ -82,8 +82,8 @@ endmodule
 
 module HazardUnit (
     input wire [`WIDTH_INSTR-1:0] instr_ID, 
-    // input wire [`WIDTH_INSTR-1:0] instr_EX,
-    // input wire [`WIDTH_INSTR-1:0] instr_MEM, 
+    input wire [`WIDTH_INSTR-1:0] instr_EX,
+    input wire [`WIDTH_INSTR-1:0] instr_MEM, 
     input wire [4:0] addrRs_ID, // use
     input wire [4:0] addrRt_ID, // use
     input wire [4:0] regWriteAddr_EX,  // new
