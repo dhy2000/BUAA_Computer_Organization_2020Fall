@@ -3,6 +3,7 @@ document/
 util/
 **.zip
 code.txt
+code_handler.txt
 
 test/
 out/
