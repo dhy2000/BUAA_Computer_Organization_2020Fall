@@ -9,7 +9,7 @@
 `include "../IC.v"
 
 /* Module: DM, from DM.v */
-`include "DM.v"
+// `include "DM.v"
 
 module MEM_TOP (
     /* Global Inputs */
@@ -36,10 +36,12 @@ module MEM_TOP (
     output reg [`WIDTH_INSTR-1:0]   instr_WB            = 0, 
     output reg [31:0]               PC_WB               = 0, 
     // DM
-    output reg [31:0]               memReadData_WB      = 0,
+    output reg [31:0]               memWord_WB          = 0,
     // regwrite
     output reg [4:0]                regWriteAddr_WB     = 0, 
-    output reg [31:0]               regWriteData_WB     = 0
+    output reg [31:0]               regWriteData_WB     = 0,
+    // Tnew
+    output reg [`WIDTH_T-1:0]       Tnew_WB             = 0,
 );
     
     /*
@@ -50,7 +52,7 @@ module MEM_TOP (
             Forward Selector
     */
     /* ------ Part 1: Wires Declaration ------ */
-    wire [31:0] memReadData;
+    wire [31:0] memWord;
 
     // Hazard may use
     wire [4:0] regWriteAddr;
@@ -67,11 +69,12 @@ module MEM_TOP (
     assign Tnew = (Tnew_MEM >= 1) ?  (Tnew_MEM - 1) : 0;
 
     /* ------ Part 2: Instantiate Modules ------ */
-    DM dm (
+    /*DM dm (
         .clk(clk), .reset(reset), .instr(instr_MEM),
         .Addr(aluOut_MEM), .WData(dataRt_use), .PC(PC_MEM),
-        .RData(memReadData)
-    );
+        .RData(memWord)
+    );*/
+
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
@@ -82,7 +85,7 @@ module MEM_TOP (
 
     assign regWriteAddr = regWriteAddr_MEM;
     assign regWriteData = (
-        ((func == `FUNC_MEM_READ)) ? (memReadData) :
+        ((func == `FUNC_MEM_READ)) ? (memWord) :
         (regWriteData_MEM) // not mem-load instruction, use previous
     );
 
@@ -91,16 +94,18 @@ module MEM_TOP (
         if (reset | clr) begin
             instr_WB                <=  0;
             PC_WB                   <=  0;
-            memReadData_WB          <=  0;
+            memWord_WB              <=  0;
             regWriteAddr_WB         <=  0;
             regWriteData_WB         <=  0;
+            Tnew_WB                 <=  0;
         end
         else if (!stall) begin
             instr_WB                <=  instr_MEM;
             PC_WB                   <=  PC_MEM;
-            memReadData_WB          <=  memReadData;
+            memWord_WB              <=  memWord;
             regWriteAddr_WB         <=  regWriteAddr;
             regWriteData_WB         <=  regWriteData;
+            Tnew_WB                 <=  Tnew;
         end
     end
 endmodule
