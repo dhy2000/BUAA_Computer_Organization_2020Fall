@@ -1,6 +1,6 @@
 /* 
- *  File Name: ID_LEVEL.v
- *  Module: DECD(Decoder), COMP(Comparator), ID_LEVEL
+ *  File Name: ID_TOP.v
+ *  Module: ID_TOP
  *  Description: Pack (DECD, COMP, Interfaces for GRF, Pipeline Register) 
  */
 
@@ -9,7 +9,7 @@
 `include "../IC.v"
 
 /* ------ Instruction Decode and Register Read ------ */
-module ID_LEVEL (
+module ID_TOP (
     /* Global Inputs */
     // Time Sequence
     input wire                      clk, 

@@ -11,8 +11,8 @@ module EXTDM (
     parameter   UNIT_Word   = 0,
                 UNIT_Half   = 1,
                 UNIT_Byte   = 2;
-    parameter   EXT_ZERO = 0,
-                EXT_SIGN = 1;
+    parameter   EXT_Zero = 0,
+                EXT_Sign = 1;
 
     wire [1:0] unit;
     wire extop;
@@ -59,8 +59,8 @@ module EXTDM (
 
     assign extWord = (
         (unit == UNIT_Word) ? (memWord) : 
-        (unit == UNIT_Half) ? (extHalf(half, ext)) : 
-        (unit == UNIT_Byte) ? (extByte(byte, ext)) : 
+        (unit == UNIT_Half) ? (extHalf(halfword, extop)) : 
+        (unit == UNIT_Byte) ? (extByte(byte, extop)) : 
         (memWord) // default
     );
     

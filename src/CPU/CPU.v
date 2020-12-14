@@ -18,7 +18,15 @@
 /* ---------- Main Body ---------- */
 module CPU (
     input wire clk,
-    input wire reset
+    input wire reset,
+    /* Ports in P7 */
+    output wire [31:0] PC, 
+    /* Connect With Bridge */
+    output wire [31:0] BrPC, 
+    output wire [31:0] BrAddr, 
+    output wire [31:0] BrWData, 
+    output wire [3:0] BrWE, 
+    input wire [31:0] BrRData
 );
     /*
         5-Level Pipeline: 
@@ -51,9 +59,12 @@ module CPU (
     // MEM
     wire [`WIDTH_INSTR-1:0] Instr_WB;
     wire [31:0] PC_WB, MemWord_WB;
+    wire [1:0] Offset_WB;
     wire [4:0] RegWriteAddr_WB; 
     wire [31:0] RegWriteData_WB;
     wire [`WIDTH_T-1:0] Tnew_WB;
+    wire [31:0] DM_PC, DM_Addr, DM_WData;
+    wire [3:0] DM_WE;
     // WB
     wire WriteEn_GRF;
     wire [4:0] RegWriteAddr_GRF; 
@@ -119,9 +130,10 @@ module CPU (
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .Tnew_MEM(Tnew_MEM), 
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
-        .memWord_WB(MemWord_WB),
+        .memWord_WB(MemWord_WB), .offset_WB(Offset_WB),
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
-        .Tnew_WB(Tnew_WB)
+        .Tnew_WB(Tnew_WB), 
+        .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(BrRData)
     );
 
     WB_TOP wb (
@@ -148,4 +160,9 @@ module CPU (
         .Tnew_ID(Tnew_ID),
         .stall_PC(stall_PC), .stall_ID(stall_ID), .clr_EX(clr_EX)
     );
+
+
+
+    assign PC = 0;
+
 endmodule

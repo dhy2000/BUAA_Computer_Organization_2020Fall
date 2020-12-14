@@ -28,11 +28,13 @@ module PREDM (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
-    assign DM_WE = (func = `FUNC_MEM_WRITE) ? (
+    assign DM_WE = (func == `FUNC_MEM_WRITE) ? (
         (instr == `SW) ? (4'b1111) : 
         (instr == `SH) ? (4'b0011 << (offset[1] << 1)) : 
         (instr == `SB) ? (4'b0001 << (offset)) : 
         (4'b0000)
     ) : 0;
     
+    assign DM_PC = PC;
+
 endmodule

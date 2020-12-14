@@ -8,8 +8,7 @@
 `include "../instructions.v"
 `include "../IC.v"
 
-/* Module: DM, from DM.v */
-// `include "DM.v"
+`include "PREDM.v"
 
 module MEM_TOP (
     /* Global Inputs */
@@ -37,11 +36,18 @@ module MEM_TOP (
     output reg [31:0]               PC_WB               = 0, 
     // DM
     output reg [31:0]               memWord_WB          = 0,
+    output reg [1:0]                offset_WB           = 0,
     // regwrite
     output reg [4:0]                regWriteAddr_WB     = 0, 
     output reg [31:0]               regWriteData_WB     = 0,
     // Tnew
     output reg [`WIDTH_T-1:0]       Tnew_WB             = 0,
+    /* -------- Connect with Real DM -------- */
+    output wire [31:0]              DM_PC, 
+    output wire [31:0]              DM_Addr, 
+    output wire [31:0]              DM_WData, 
+    output wire [3:0]               DM_WE, 
+    input wire [31:0]               DM_RData
 );
     
     /*
@@ -52,7 +58,11 @@ module MEM_TOP (
             Forward Selector
     */
     /* ------ Part 1: Wires Declaration ------ */
+    // predm
+    wire [1:0] offset;
+    // real dm
     wire [31:0] memWord;
+    
 
     // Hazard may use
     wire [4:0] regWriteAddr;
@@ -75,6 +85,16 @@ module MEM_TOP (
         .RData(memWord)
     );*/
 
+    PREDM predm (
+        .instr(instr_MEM), 
+        .Addr(aluOut_MEM), .WData(dataRt_use), .PC(PC_MEM), 
+        .DM_PC(DM_PC), .DM_Addr(DM_Addr[31:2]), .DM_WE(DM_WE), 
+        .offset(offset)
+    );
+    assign DM_Addr[1:0] = 0;
+
+    assign memWord = DM_RData;
+
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
@@ -95,6 +115,7 @@ module MEM_TOP (
             instr_WB                <=  0;
             PC_WB                   <=  0;
             memWord_WB              <=  0;
+            offset_WB               <=  0;
             regWriteAddr_WB         <=  0;
             regWriteData_WB         <=  0;
             Tnew_WB                 <=  0;
@@ -103,6 +124,7 @@ module MEM_TOP (
             instr_WB                <=  instr_MEM;
             PC_WB                   <=  PC_MEM;
             memWord_WB              <=  memWord;
+            offset_WB               <=  offset;
             regWriteAddr_WB         <=  regWriteAddr;
             regWriteData_WB         <=  regWriteData;
             Tnew_WB                 <=  Tnew;

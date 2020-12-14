@@ -4,9 +4,13 @@ module tb_mips;
     reg clk = 0;
     reg reset = 0;
 
+    wire [31:0] addr;
+
     mips uut (
         .clk(clk),
-        .reset(reset)
+        .reset(reset),
+        .interrupt(1'b0), 
+        .addr(addr)
     );
 
     initial begin
