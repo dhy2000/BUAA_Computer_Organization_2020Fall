@@ -22,7 +22,7 @@ module DataMem (
     wire [`WIDTH_DM_ADDR-1:2] wordAddr;
     assign wordAddr = Addr[`WIDTH_DM_ADDR-1:2];
 
-    wire memword;
+    wire [31:0] memword;
     assign memword = mem[wordAddr];
     assign RData = memword;
 
