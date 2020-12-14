@@ -74,4 +74,10 @@ module SouthBridge (
     input wire Ext_IRQ
 );
     
+
+
+
+
+
+    assign IRQ = {3'b0, Ext_IRQ, Timer1_IRQ, Timer0_IRQ};
 endmodule
