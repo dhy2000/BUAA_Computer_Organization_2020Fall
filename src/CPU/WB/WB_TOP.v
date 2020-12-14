@@ -13,6 +13,7 @@ module WB_TOP (
     input wire [`WIDTH_INSTR-1:0]   instr_WB            , 
     input wire [31:0]               PC_WB               , 
     input wire [31:0]               memWord_WB          ,
+    input wire [1:0]                offset_WB           ,
     input wire [4:0]                regWriteAddr_WB     , 
     input wire [31:0]               regWriteData_WB     ,
     // input wire [`WIDTH_T-1:0]       Tnew_WB             ,
@@ -37,7 +38,7 @@ module WB_TOP (
 
     EXTDM extdm (
         .memWord(memWord_WB), 
-        .offset(), 
+        .offset(offset_WB), 
         .instr(instr_WB), 
         .extWord(extMemWord)
     );

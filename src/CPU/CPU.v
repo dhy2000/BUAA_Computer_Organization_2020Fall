@@ -138,7 +138,7 @@ module CPU (
 
     WB_TOP wb (
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
-        .memWord_WB(MemWord_WB),
+        .memWord_WB(MemWord_WB), .offset_WB(Offset_WB), 
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .regWriteAddr_GRF(RegWriteAddr_GRF), .regWriteData_GRF(RegWriteData_GRF),
         .PC_GRF(PC_GRF)
