@@ -41,7 +41,7 @@ module NPC (
     assign extJmp = {PC[31:28], jmpAddr, 2'b0};
 
     wire terminated;
-    assign terminated = PC >= (`TEXT_STARTADDR + `IM_SIZE);
+    assign terminated = (PC == `KTEXT_STARTADDR - 4);
 
     assign NPC = (terminated) ? (PC) : 
                 (npcOp == NPC_Order) ? (PC + 4) : 

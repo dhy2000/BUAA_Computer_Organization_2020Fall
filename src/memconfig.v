@@ -19,6 +19,9 @@
 `define WIDTH_IM_ADDR       (`WIDTH_IM_ADDR_WORD + 2)
 `define IM_SIZE_WORD        (1 << `WIDTH_IM_ADDR_WORD)
 `define IM_SIZE             (`IM_SIZE_WORD << 2)
+/* ------ Exception Handler ------ */
+`define KTEXT_STARTADDR 32'h0000_4180
+`define KTEXT_ENDADDR   32'h0000_4ffc
 
 `define CODE_FILE       "code.txt"  // hextext
 `define HANDLER_FILE    "code_handler.txt" // hextext

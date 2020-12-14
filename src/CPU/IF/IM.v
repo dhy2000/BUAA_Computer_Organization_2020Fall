@@ -28,6 +28,10 @@ module IM (
 
     initial begin
         $readmemh(`CODE_FILE, mem);
+        $readmemh(`HANDLER_FILE, mem, 
+            ((`KTEXT_STARTADDR - `TEXT_STARTADDR) >> 2), 
+            ((`KTEXT_ENDADDR - `TEXT_STARTADDR) >> 2)
+        );
     end
 
     
