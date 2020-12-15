@@ -8,6 +8,7 @@
 
 `default_nettype none
 `include "instructions.v"
+`include "exception.v"
 /* ---------- Parts ---------- */
 // `include "IF_TOP.v"
 // `include "ID_TOP.v"
