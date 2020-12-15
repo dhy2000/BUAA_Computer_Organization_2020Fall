@@ -23,6 +23,9 @@ module NorthBridge (
     input wire [31:0] WData2, 
     input wire [3:0] WE2, 
     output wire [31:0] RData2,
+    // Exception and Interruption
+    output wire [6:2] Exc, 
+    output wire [7:2] HWInt, 
     // Outer Side
     // IM
     output wire [31:0] IM_Addr, 
@@ -34,7 +37,14 @@ module NorthBridge (
     output wire [31:0] DM_Addr, 
     output wire [31:0] DM_WData, 
     output wire [3:0] DM_WE, 
-    input wire [31:0] DM_RData
+    input wire [31:0] DM_RData,
+    // South Bridge
+    output wire [31:0] SBr_PC, 
+    output wire [31:0] SBr_Addr, 
+    output wire [31:0] SBr_WData, 
+    output wire [3:0] SBr_WE, 
+    input wire [31:0] SBr_RData,
+    input wire [3:0] SBr_HWInt
 );
     // DM Only
     assign DM_PC = PC2;
@@ -56,22 +66,22 @@ module SouthBridge (
     input wire [31:0] WData, 
     input wire [3:0] WE,  
     output wire [31:0] RData, 
-    output wire [7:2] IRQ, 
+    output wire [7:2] HWInt, 
     // Device Side
     // Timer 0
-    output wire [1:0] Timer0_Addr, 
+    output wire [31:2] Timer0_Addr, 
     output wire [31:0] Timer0_WData, 
-    output wire [3:0] Timer0_WE, 
+    output wire Timer0_WE, 
     input wire [31:0] Timer0_RData, 
-    input wire Timer0_IRQ, 
+    input wire Timer0_Int, 
     // Timer 1
-    output wire [1:0] Timer1_Addr, 
+    output wire [31:2] Timer1_Addr, 
     output wire [31:0] Timer1_WData, 
-    output wire [3:0] Timer1_WE, 
+    output wire Timer1_WE, 
     input wire [31:0] Timer1_RData, 
-    input wire Timer1_IRQ, 
+    input wire Timer1_Int, 
     // External Interrupt
-    input wire Ext_IRQ
+    input wire Ext_Int
 );
     
 
@@ -79,5 +89,5 @@ module SouthBridge (
 
 
 
-    assign IRQ = {3'b0, Ext_IRQ, Timer1_IRQ, Timer0_IRQ};
+    assign HWInt = {3'b0, Ext_Int, Timer1_Int, Timer0_Int};
 endmodule
