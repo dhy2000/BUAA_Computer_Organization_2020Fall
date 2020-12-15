@@ -8,7 +8,7 @@
 
 `default_nettype none
 `include "instructions.v"
-`include "IC.v"
+// `include "IC.v"
 
 module InstrTuseTnew (
     input wire [`WIDTH_INSTR-1:0] instr, 

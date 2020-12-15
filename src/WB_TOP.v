@@ -7,7 +7,7 @@
  */
 `default_nettype none
 `include "instructions.v"
-`include "IC.v"
+// `include "IC.v"
 
 module EXTDM (
     input wire [31:0] memWord, 

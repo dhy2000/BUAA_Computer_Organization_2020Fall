@@ -9,7 +9,7 @@
 `default_nettype none
 `include "instructions.v"
 `include "memconfig.v"
-`include "IC.v"
+// `include "IC.v"
 `include "exception.v"
 
 module PC (
