@@ -35,6 +35,7 @@ module CPU (
     /* 1. Declare Wires */
     // IF
     wire [31:0] Code_ID, PC_ID;
+    wire [31:0] PC_IF; 
     // ID
     wire [`WIDTH_INSTR-1:0] Instr_EX, Instr_NPC, Instr_ID;
     wire Cmp_NPC; 
@@ -81,7 +82,7 @@ module CPU (
         .clk(clk), .reset(reset), .stall(stall_ID), .clr(1'b0), .stallPC(stall_PC),
         .instr(Instr_NPC), .cmp(Cmp_NPC),
         .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
-        .code_ID(Code_ID), .PC_ID(PC_ID)
+        .code_ID(Code_ID), .PC_ID(PC_ID), .PC_IF(PC_IF)
     );
 
     ID_TOP id (

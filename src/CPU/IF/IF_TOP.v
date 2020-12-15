@@ -31,7 +31,9 @@ module IF_TOP (
     input wire [31:0]               jmpReg,
     /* Data Outputs for Next Pipeline */
     output reg [31:0]               code_ID     = 0, 
-    output reg [31:0]               PC_ID       = 0
+    output reg [31:0]               PC_ID       = 0,
+    /* Other Outputs */
+    output wire [31:0]              PC_IF
 );
     /*
         Modules included: 
@@ -60,6 +62,8 @@ module IF_TOP (
     IM im (
         .PC(PC), .code(code)
     );
+
+    assign PC_IF = PC;
 
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk) begin
