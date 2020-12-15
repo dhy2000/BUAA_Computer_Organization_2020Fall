@@ -9,6 +9,7 @@
 `include "../IC.v"
 
 `include "PREDM.v"
+`include "CP0.v"
 
 module MEM_TOP (
     /* Global Inputs */
@@ -48,7 +49,10 @@ module MEM_TOP (
     output wire [31:0]              DM_Addr, 
     output wire [31:0]              DM_WData, 
     output wire [3:0]               DM_WE, 
-    input wire [31:0]               DM_RData
+    input wire [31:0]               DM_RData, 
+    /* -------- IOs for CP0 -------- */
+    output wire [1:0]               CP0_KCtrl, 
+    output wire [31:2]              CP0_EPC
 );
     
     /*
@@ -63,7 +67,10 @@ module MEM_TOP (
     wire [1:0] offset;
     // real dm
     wire [31:0] memWord;
-    
+    // CP0
+    wire [1:0] KCtrl;
+    wire [31:2] EPC;
+    wire [31:0] CP0Data;
 
     // Hazard may use
     wire [4:0] regWriteAddr;
@@ -80,11 +87,6 @@ module MEM_TOP (
     assign Tnew = (Tnew_MEM >= 1) ?  (Tnew_MEM - 1) : 0;
 
     /* ------ Part 2: Instantiate Modules ------ */
-    /*DM dm (
-        .clk(clk), .reset(reset), .instr(instr_MEM),
-        .Addr(aluOut_MEM), .WData(dataRt_use), .PC(PC_MEM),
-        .RData(memWord)
-    );*/
 
     PREDM predm (
         .instr(instr_MEM), 
@@ -95,6 +97,18 @@ module MEM_TOP (
     assign DM_Addr[1:0] = 0;
 
     assign memWord = DM_RData;
+
+    // CP0
+    CP0 cp0 (
+        .clk(clk), .reset(reset), .PC(PC_MEM), // TODO: the CP0.PC should be Macro PC
+        .WData(dataRt_use), .CP0id(addrRd_MEM), 
+        .instr(instr_MEM), .instr_WB(instr_WB), 
+        .HWInt(), .Exc(), 
+        .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
+    );
+
+    assign CP0_KCtrl = KCtrl;
+    assign CP0_EPC = EPC;
 
 
     /* ------ Part 2.5 Part of Controls ------ */
