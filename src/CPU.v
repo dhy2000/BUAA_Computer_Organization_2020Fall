@@ -9,14 +9,14 @@
 `default_nettype none
 `include "instructions.v"
 /* ---------- Parts ---------- */
-`include "IF_TOP.v"
-`include "ID_TOP.v"
-`include "EX_TOP.v"
-`include "MEM_TOP.v"
-`include "WB_TOP.v"
-`include "GRF.v"
+// `include "IF_TOP.v"
+// `include "ID_TOP.v"
+// `include "EX_TOP.v"
+// `include "MEM_TOP.v"
+// `include "WB_TOP.v"
+// `include "GRF.v"
 
-`include "PipelineControl.v"
+// `include "PipelineControl.v"
 
 /* ---------- Main Body ---------- */
 module CPU (
