@@ -146,7 +146,9 @@ module PREDM (
     ) : 0;
     
     assign DM_PC = PC;
-    assign DM_WData = WData;
+    assign DM_WData = (instr == `SH) ? (WData << (offset[1] << 4)) : 
+                    (instr == `SB) ? (WData << (offset << 3)) : 
+                    (WData);
 
 endmodule
 
