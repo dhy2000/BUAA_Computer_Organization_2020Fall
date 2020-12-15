@@ -22,7 +22,7 @@ module CP0 (
     // Interrupt and Exception Control
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
-    output wire [1:0] KCtrl,       // control signal send to Pipeline Controller
+    output wire [`WIDTH_KCTRL-1:0] KCtrl,       // control signal send to Pipeline Controller
     output reg [31:2] EPC = (`TEXT_STARTADDR >> 2), 
     output wire [31:0] RData
 );
@@ -47,11 +47,13 @@ parameter   idSR    = 12,
     wire Interrupt;
     assign Interrupt = (IM[7:2] & HWInt[7:2]) & IE & (!EXL);
     // Exception Handler
+    // assert: exception will NOT happen in kernel text
     wire Exception;
     assign Exception = (Exc != 0);
 
     // Total Kernal Entry
-    assign ktextEntry = (Interrupt || Exception);
+    assign KCtrl = (Interrupt || Exception) ? (`KCTRL_KTEXT) : 
+                    (instr == `ERET) ? (`KCTRL_ERET) : (`KCTRL_NONE);
 
     // support MFC0, MTC0, ERET
     // MFC0 - Read
