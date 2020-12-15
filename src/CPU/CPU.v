@@ -13,7 +13,7 @@
 `include "WB/WB_TOP.v"
 `include "GRF.v"
 
-`include "HazardUnit.v"
+`include "PipelineControl.v"
 
 /* ---------- Main Body ---------- */
 module CPU (
@@ -66,14 +66,19 @@ module CPU (
     wire [`WIDTH_T-1:0] Tnew_WB;
     wire [31:0] DM_PC, DM_Addr, DM_WData;
     wire [3:0] DM_WE;
+    wire [`WIDTH_KCTRL-1:0] CP0_KCtrl;
+    wire [31:2] CP0_EPC;
     // WB
     wire WriteEn_GRF;
     wire [4:0] RegWriteAddr_GRF; 
     wire [31:0] RegWriteData_GRF;
     wire [31:0] PC_GRF;
-    // Hazard Unit
+    // Pipeline Control Unit
     wire [`WIDTH_T-1:0] Tnew_ID;
-    wire stall_PC, stall_ID, clr_EX;
+    wire [`WIDTH_KCTRL-1:0] KCtrl_NPC;
+    wire stall_PC, stall_ID, clr_ID, clr_EX;
+    wire clr_MEM, clr_WB;
+    wire Dis_MULTDIV, Dis_DM;
 
     /* 2. Instantiate Modules */
     // Attention: GRF
@@ -134,7 +139,8 @@ module CPU (
         .memWord_WB(MemWord_WB), .offset_WB(Offset_WB),
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .Tnew_WB(Tnew_WB), 
-        .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(BrRData)
+        .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(BrRData),
+        .CP0_KCtrl(CP0_KCtrl), .CP0_EPC(CP0_EPC)
     );
 
     WB_TOP wb (
@@ -152,19 +158,25 @@ module CPU (
         .RData1(RD1_GRF), .RData2(RD2_GRF)
     );
 
-    HazardUnit hazard (
-        .instr_ID(Instr_ID), .instr_EX(Instr_EX), .instr_MEM(Instr_MEM), 
+    PipelineControl pipectrl (
+        .PC_IF(PC_IF), .PC_ID(PC_ID), .PC_EX(PC_EX), .PC_MEM(PC_MEM), .PC_WB(PC_WB), 
+        .instr_ID(Instr_ID), .instr_EX(Instr_EX), .instr_MEM(Instr_MEM), .instr_WB(Instr_WB), 
         .addrRs_ID(AddrRs_ID), .addrRt_ID(AddrRt_ID),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM),
         .Tnew_EX(Tnew_EX), .Tnew_MEM(Tnew_MEM),
         .MDBusy(MDBusy_EX),
         .Tnew_ID(Tnew_ID),
-        .stall_PC(stall_PC), .stall_ID(stall_ID), .clr_EX(clr_EX)
+        .KCtrl_CP0(), 
+        .MacroPC(PC), 
+        .stall_PC(stall_PC),
+        .stall_ID(stall_ID), .clr_ID(clr_ID), 
+        .clr_EX(clr_EX), .clr_MEM(clr_MEM), .clr_WB(clr_WB),
+        .dis_MULTDIV(Dis_MULTDIV), .dis_DM(Dis_DM), 
+        .KCtrl_NPC(KCtrl_NPC)
     );
 
 
 
-    assign PC = 0;
     assign BrPC = DM_PC;
     assign BrAddr = DM_Addr;
     assign BrWData = DM_WData;

@@ -51,7 +51,7 @@ module MEM_TOP (
     output wire [3:0]               DM_WE, 
     input wire [31:0]               DM_RData, 
     /* -------- IOs for CP0 -------- */
-    output wire [1:0]               CP0_KCtrl, 
+    output wire [`WIDTH_KCTRL-1:0]  CP0_KCtrl, 
     output wire [31:2]              CP0_EPC
 );
     
