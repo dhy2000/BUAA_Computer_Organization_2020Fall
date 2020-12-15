@@ -8,11 +8,13 @@
 `include "../instructions.v"
 `include "../IC.v"
 `include "../../memconfig.v"
+`include "../../exception.v"
 
 module CP0 (
     input wire clk, 
     input wire reset,
     input wire [31:0] PC,       // Macro PC?
+    // input wire [31:0] PC_WB,    // Maybe not needed?
     input wire [31:0] WData, 
     input wire [4:0] CP0id,     // addrRd
     input wire [`WIDTH_INSTR-1:0] instr, 
@@ -20,7 +22,7 @@ module CP0 (
     // Interrupt and Exception Control
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
-    output wire ktextEntry,       // control signal send to Pipeline Controller
+    output wire [1:0] KCtrl,       // control signal send to Pipeline Controller
     output reg [31:2] EPC = (`TEXT_STARTADDR >> 2), 
     output wire [31:0] RData
 );
@@ -40,14 +42,17 @@ parameter   idSR    = 12,
     wire [31:0] Cause = {BD, 15'b0, IP, 3'b0, ExcCode, 2'b0};
     // PrID
     reg [31:0] PrID = 32'hbaad_face;
-
     
     // Interrupt Handler
     wire Interrupt;
-    assign Interrupt = (IM[7:2] & IP[7:2]) & IE & (!EXL);
+    assign Interrupt = (IM[7:2] & HWInt[7:2]) & IE & (!EXL);
     // Exception Handler
     wire Exception;
-    assign Exception = (ExcCode != 0);
+    assign Exception = (Exc != 0);
+
+    // Total Kernal Entry
+    assign ktextEntry = (Interrupt || Exception);
+
     // support MFC0, MTC0, ERET
     // MFC0 - Read
     assign RData = (instr == `MFC0) ? (
@@ -61,9 +66,7 @@ parameter   idSR    = 12,
     // Check Branching Delay Slot
     wire [`WIDTH_FUNC-1:0] func_WB;
     IC ic_wb (.instr(instr_WB), .format(), .func(func_WB));
-    wire isDelaySlot = (func_WB == `FUNC_BRANCH || func_WB == `FUNC_JUMP);
-
-
+    wire isDelayBranch = (func_WB == `FUNC_BRANCH || func_WB == `FUNC_JUMP);
 
     always @ (posedge clk) begin
         if (reset) begin
@@ -77,16 +80,30 @@ parameter   idSR    = 12,
         end
         else begin
             // SR
-            if (instr == `MTC0 && CP0id == idSR) 
+            if (instr == `ERET) begin // Kernel State, no interrupt
+                EXL <= 0;
+            end
+            else if (Interrupt || Exception) begin
+                EXL <= 1;
+            end
+            else if (instr == `MTC0 && CP0id == idSR) 
                 {IM, EXL, IE} <= {WData[15:10], WData[1], WData[0]};
             // Cause
             IP <= HWInt;
-            ExcCode <= Exc;
-
-
+            if (instr == `ERET) begin
+                ExcCode <= 0;
+                BD <= 0;
+            end
+            else if (Interrupt || Exception) begin
+                ExcCode <= Exc;
+                BD <= isDelayBranch;
+            end
             // EPC
-            if (Interrupt || ExcCode) begin
-                
+            if (Interrupt || Exception) begin
+                EPC <= isDelayBranch ? (PC - 4) : PC;
+            end
+            else if (instr == `MTC0 && CP0id == idEPC) begin
+                EPC <= WData;
             end
 
             // PrID
