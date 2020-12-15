@@ -5,15 +5,14 @@
  */
 `default_nettype none
 
-`include "CPU/CPU.v"
+`include "CPU.v"
 `include "Bridge.v"
 
 // Memory
-`include "Memory/DataMem.v"
-`include "Memory/InstrMem.v"
+`include "DataMem.v"
 
 // Device
-`include "Device/Timer.v"
+`include "Timer.v"
 
 /* ---------- Main Body ---------- */
 module mips (
