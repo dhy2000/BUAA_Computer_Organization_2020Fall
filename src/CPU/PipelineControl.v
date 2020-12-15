@@ -7,8 +7,8 @@
 `define CPU_PIPELINECONTROL_INCLUDED
 
 `default_nettype none
-`include "CPU/instructions.v"
-`include "CPU/IC.v"
+`include "instructions.v"
+`include "IC.v"
 
 module InstrTuseTnew (
     input wire [`WIDTH_INSTR-1:0] instr, 
