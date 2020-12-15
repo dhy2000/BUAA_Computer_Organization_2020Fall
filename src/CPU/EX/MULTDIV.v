@@ -2,8 +2,8 @@
 `define CPU_EX_MULTDIV_INCLUDED
 
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
 
 module MULTDIV (
     /* Input */

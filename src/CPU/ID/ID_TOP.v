@@ -8,11 +8,11 @@
  */
 
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
 
-`include "COMP.v"
-`include "DECD.v"
+`include "CPU/ID/COMP.v"
+`include "CPU/ID/DECD.v"
 
 /* ------ Instruction Decode and Register Read ------ */
 module ID_TOP (

@@ -8,7 +8,7 @@
 
 `default_nettype none
 
-`include "../memconfig.v"
+`include "memconfig.v"
 
 module DataMem (
     input wire clk, 

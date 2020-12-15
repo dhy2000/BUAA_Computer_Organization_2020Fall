@@ -2,8 +2,8 @@
 `define CPU_WB_EXTDM_INCLUDED
 
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
 
 module EXTDM (
     input wire [31:0] memWord, 

@@ -7,11 +7,11 @@
 `define CPU_EX_TOP_INCLUDED
 
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
 
-`include "ALU.v"
-`include "MULTDIV.v"
+`include "CPU/EX/ALU.v"
+`include "CPU/EX/MULTDIV.v"
 
 module EX_TOP (
     /* Global Inputs */

@@ -7,10 +7,10 @@
  *  Description: Next PC Source Calculator and Selector
  */
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
-`include "../../memconfig.v"
-`include "../exception.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
+`include "memconfig.v"
+`include "CPU/exception.v"
 
 
 module NPC (

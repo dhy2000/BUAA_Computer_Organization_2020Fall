@@ -6,9 +6,9 @@
  *  Description: Just Send Data and Instr into GRF
  */
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
-`include "EXTDM.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
+`include "CPU/WB/EXTDM.v"
 
 module WB_TOP (
     /* Data Inputs from Previous Pipeline */

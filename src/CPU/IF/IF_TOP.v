@@ -7,15 +7,15 @@
  */
 
 `default_nettype none
-`include "../instructions.v"
-`include "../../memconfig.v"
-`include "../IC.v"
-`include "../exception.v"
+`include "CPU/instructions.v"
+`include "memconfig.v"
+`include "CPU/IC.v"
+`include "CPU/exception.v"
 
 /* Module: IM , from IM.v */
-`include "IM.v"
-`include "NPC.v"
-`include "PC.v"
+`include "CPU/IF/IM.v"
+`include "CPU/IF/NPC.v"
+`include "CPU/IF/PC.v"
 
 module IF_TOP (
     /* Global Inputs */

@@ -7,9 +7,9 @@
  */
 
 `default_nettype none
-`include "../../memconfig.v"
-`include "../instructions.v"
-`include "../IC.v"
+`include "memconfig.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
 
 module PREDM (
     input wire [`WIDTH_INSTR-1:0] instr, 

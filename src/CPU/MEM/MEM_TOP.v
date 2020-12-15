@@ -7,11 +7,11 @@
  */
 
 `default_nettype none
-`include "../instructions.v"
-`include "../IC.v"
+`include "CPU/instructions.v"
+`include "CPU/IC.v"
 
-`include "PREDM.v"
-`include "CP0.v"
+`include "CPU/MEM/PREDM.v"
+`include "CPU/MEM/CP0.v"
 
 module MEM_TOP (
     /* Global Inputs */
