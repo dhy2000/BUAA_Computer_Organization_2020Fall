@@ -8,6 +8,7 @@
 `include "../instructions.v"
 `include "../../memconfig.v"
 `include "../IC.v"
+`include "../exception.v"
 
 /* Module: IM , from IM.v */
 `include "IM.v"
@@ -29,6 +30,9 @@ module IF_TOP (
     input wire [15:0]               imm16,
     input wire [25:0]               jmpAddr,
     input wire [31:0]               jmpReg,
+    /* Input from CP0 */
+    input wire [`WIDTH_KCTRL-1:0]   KCtrl, 
+    input wire [31:2]               EPC, 
     /* Data Outputs for Next Pipeline */
     output reg [31:0]               code_ID     = 0, 
     output reg [31:0]               PC_ID       = 0,
@@ -50,6 +54,7 @@ module IF_TOP (
         .PC(PC), .instr(instr),
         .imm16(imm16), .cmp(cmp),
         .jmpAddr(jmpAddr), .jmpReg(jmpReg),
+        .KCtrl(KCtrl), .EPC(EPC), 
         .NPC(NPC)
     );
     

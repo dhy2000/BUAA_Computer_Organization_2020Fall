@@ -8,6 +8,7 @@
 `include "../instructions.v"
 `include "../IC.v"
 `include "../../memconfig.v"
+`include "../exception.v"
 
 
 module NPC (
@@ -17,6 +18,9 @@ module NPC (
     input wire [15:0] imm16,
     input wire [25:0] jmpAddr,
     input wire [31:0] jmpReg,
+    /* Control by CP0 */
+    input wire [`WIDTH_KCTRL-1:0] KCtrl, 
+    input wire [31:2] EPC, 
     output wire [31:0] NPC
 );
     parameter WIDTH_NPC = 2,
@@ -44,6 +48,8 @@ module NPC (
     assign terminated = (PC == `KTEXT_STARTADDR - 4);
 
     assign NPC = (terminated) ? (PC) : 
+                (KCtrl == `KCTRL_KTEXT) ? (`KTEXT_STARTADDR) : 
+                (KCtrl == `ERET) ? ({EPC[31:2], 2'b0}) : 
                 (npcOp == NPC_Order) ? (PC + 4) : 
                 (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
