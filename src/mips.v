@@ -37,7 +37,8 @@ module mips (
     wire [6:2] BrExc;
     wire [7:2] HWInt;
 
-    wire [31:0] SBr_PC, SBr_Addr, SBr_WData, SBr_WE;
+    wire [31:0] SBr_PC, SBr_Addr, SBr_WData;
+    wire SBr_WE;
     // DataMem
     wire [31:0] DM_RData;
     // SouthBridge
@@ -82,7 +83,8 @@ module mips (
         // DM
         .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(DM_RData),
         // South Bridge
-        .SBr_PC(SBr_PC), .SBr_Addr(SBr_Addr), .SBr_WData(SBr_WData), .SBr_WE(SBr_WE), .SBr_RData(SBr_RData)
+        .SBr_PC(SBr_PC), .SBr_Addr(SBr_Addr), .SBr_WData(SBr_WData), .SBr_WE(SBr_WE), .SBr_RData(SBr_RData), 
+        .SBr_HWInt(SBr_HWInt)
     );
 
     DataMem dm (

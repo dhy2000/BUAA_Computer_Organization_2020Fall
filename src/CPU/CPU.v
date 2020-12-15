@@ -87,6 +87,7 @@ module CPU (
         .clk(clk), .reset(reset), .stall(stall_ID), .clr(1'b0), .stallPC(stall_PC),
         .instr(Instr_NPC), .cmp(Cmp_NPC),
         .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
+        .KCtrl(KCtrl_NPC), .EPC(CP0_EPC), 
         .code_ID(Code_ID), .PC_ID(PC_ID), .PC_IF(PC_IF)
     );
 

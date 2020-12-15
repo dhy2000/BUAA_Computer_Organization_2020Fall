@@ -42,9 +42,9 @@ module NorthBridge (
     output wire [31:0] SBr_PC, 
     output wire [31:0] SBr_Addr, 
     output wire [31:0] SBr_WData, 
-    output wire [3:0] SBr_WE, 
+    output wire SBr_WE, 
     input wire [31:0] SBr_RData,
-    input wire [3:0] SBr_HWInt
+    input wire [7:2] SBr_HWInt
 );
     // DM Only
     assign DM_PC = PC2;
@@ -64,7 +64,7 @@ module SouthBridge (
     // CPU Side
     input wire [31:0] Addr, 
     input wire [31:0] WData, 
-    input wire [3:0] WE,  
+    input wire WE,  
     output wire [31:0] RData, 
     output wire [7:2] HWInt, 
     // Device Side

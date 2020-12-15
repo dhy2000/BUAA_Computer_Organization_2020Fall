@@ -8,7 +8,7 @@
 `include "../instructions.v"
 `include "../IC.v"
 `include "../../memconfig.v"
-`include "../../exception.v"
+`include "../exception.v"
 
 module CP0 (
     input wire clk, 

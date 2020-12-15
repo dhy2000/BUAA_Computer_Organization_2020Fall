@@ -103,7 +103,7 @@ module MEM_TOP (
         .clk(clk), .reset(reset), .PC(PC_MEM), // TODO: the CP0.PC should be Macro PC
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
         .instr(instr_MEM), .instr_WB(instr_WB), 
-        .HWInt(), .Exc(), 
+        .HWInt(6'b0), .Exc(5'b0), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );
 
