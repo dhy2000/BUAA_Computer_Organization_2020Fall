@@ -5,7 +5,7 @@
  */
 `default_nettype none
 
-`include "CPU/cpu.v"
+`include "CPU/CPU.v"
 `include "Bridge.v"
 
 // Memory
