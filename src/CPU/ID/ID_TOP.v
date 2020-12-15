@@ -1,3 +1,6 @@
+`ifndef CPU_ID_TOP_INCLUDED
+`define CPU_ID_TOP_INCLUDED
+
 /* 
  *  File Name: ID_TOP.v
  *  Module: ID_TOP
@@ -178,3 +181,5 @@ module ID_TOP (
     assign addrRt_ID = addrRt;
     
 endmodule
+
+`endif

@@ -1,3 +1,5 @@
+`ifndef CPU_MEM_CP0_INCLUDED
+`define CPU_MEM_CP0_INCLUDED
 /* 
  *  File Name: CP0.v
  *  Module Name: CP0
@@ -115,3 +117,4 @@ parameter   idSR    = 12,
 
 
 endmodule
+`endif

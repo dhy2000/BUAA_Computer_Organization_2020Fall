@@ -1,3 +1,6 @@
+`ifndef DEVICE_TIMER_INCLUDED
+`define DEVICE_TIMER_INCLUDED
+
 // `timescale 1ns / 1ps
 `default_nettype none
 
@@ -71,3 +74,4 @@ module Timer(
 	end
 
 endmodule
+`endif

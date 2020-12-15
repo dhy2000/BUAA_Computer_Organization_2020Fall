@@ -1,3 +1,6 @@
+`ifndef CPU_EX_MULTDIV_INCLUDED
+`define CPU_EX_MULTDIV_INCLUDED
+
 `default_nettype none
 `include "../instructions.v"
 `include "../IC.v"
@@ -109,3 +112,5 @@ parameter   EXT_ZERO = 0,
         end
     end
 endmodule
+
+`endif

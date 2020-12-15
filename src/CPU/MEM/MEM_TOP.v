@@ -1,3 +1,5 @@
+`ifndef CPU_MEM_TOP_INCLUDED
+`define CPU_MEM_TOP_INCLUDED
 /* 
  *  File Name: MEM_LEVEL.v
  *  Module: DM
@@ -146,3 +148,4 @@ module MEM_TOP (
         end
     end
 endmodule
+`endif

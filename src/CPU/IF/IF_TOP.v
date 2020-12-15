@@ -1,3 +1,5 @@
+`ifndef CPU_IF_TOP_INCLUDED
+`define CPU_IF_TOP_INCLUDED
 /* 
  *  File Name: IF_LEVEL.v
  *  Module: NPC, PC, IM
@@ -83,3 +85,4 @@ module IF_TOP (
     end
 
 endmodule
+`endif

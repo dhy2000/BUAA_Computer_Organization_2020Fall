@@ -3,6 +3,9 @@
  * Module Name: DataMem
  * Description: Data Memory
  */
+`ifndef MEMORY_DATAMEM_INCLUDED
+`define MEMORY_DATAMEM_INCLUDED
+
 `default_nettype none
 
 `include "../memconfig.v"
@@ -79,9 +82,6 @@ module DataMem (
             end
         end
     end
-
-
-
-
-
 endmodule
+
+`endif

@@ -1,3 +1,5 @@
+`ifndef CPU_IF_PC_INCLUDED
+`define CPU_IF_PC_INCLUDED
 /*
  *  Module: PC
  *  Inputs: clk, reset, En, NPC
@@ -39,3 +41,5 @@ module PC (
     end
 
 endmodule
+
+`endif

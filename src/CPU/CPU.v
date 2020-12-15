@@ -3,6 +3,9 @@
  * Module Name: CPU
  * Description: Top Module of CPU
  */
+`ifndef CPU_CPU_INCLUDED
+`define CPU_CPU_INCLUDED
+
 `default_nettype none
 `include "instructions.v"
 /* ---------- Parts ---------- */
@@ -183,3 +186,5 @@ module CPU (
     // assign DM_RData = BrRData;
 
 endmodule
+
+`endif

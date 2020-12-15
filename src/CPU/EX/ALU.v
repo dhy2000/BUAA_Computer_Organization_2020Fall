@@ -1,3 +1,5 @@
+`ifndef CPU_EX_ALU_INCLUDED
+`define CPU_EX_ALU_INCLUDED
 /*
  * Module:  ALU
  * Inputs: (Control: instr), (Data source: dataRs, dataRt, shamt, imm16), 
@@ -132,3 +134,5 @@ module ALU (
     assign out = alu(srca, srcb, aluOp);
 
 endmodule
+
+`endif

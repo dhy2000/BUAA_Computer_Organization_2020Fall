@@ -5,6 +5,8 @@
  *  Outputs: (RData1, RData2)
  *  Description: General Register File
  */
+`ifndef CPU_GRF_INCLUDED
+`define CPU_GRF_INCLUDED
 
 `default_nettype none
 
@@ -66,3 +68,5 @@ module GRF (
     end
 
 endmodule
+
+`endif

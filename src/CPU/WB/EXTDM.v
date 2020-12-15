@@ -1,3 +1,6 @@
+`ifndef CPU_WB_EXTDM_INCLUDED
+`define CPU_WB_EXTDM_INCLUDED
+
 `default_nettype none
 `include "../instructions.v"
 `include "../IC.v"
@@ -65,3 +68,5 @@ module EXTDM (
     );
     
 endmodule
+
+`endif

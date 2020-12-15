@@ -3,6 +3,8 @@
  *  Module: EX_TOP
  *  Description: Pack ALU and forward logic and pipeline register into a top module
  */
+`ifndef CPU_EX_TOP_INCLUDED
+`define CPU_EX_TOP_INCLUDED
 
 `default_nettype none
 `include "../instructions.v"
@@ -153,3 +155,5 @@ module EX_TOP (
     end
 
 endmodule
+
+`endif

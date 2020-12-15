@@ -1,3 +1,6 @@
+`ifndef CPU_ID_COMP_INCLUDED
+`define CPU_ID_COMP_INCLUDED
+
 `default_nettype none
 `include "../instructions.v"
 `include "../IC.v"
@@ -34,3 +37,5 @@ module COMP (
     assign cmp = compare(dataRs, dataRt, instr);
     
 endmodule
+
+`endif

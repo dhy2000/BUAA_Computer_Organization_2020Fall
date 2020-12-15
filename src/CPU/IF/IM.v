@@ -1,3 +1,5 @@
+`ifndef CPU_IF_IM_INCLUDED
+`define CPU_IF_IM_INCLUDED
 /*
  *  File Name: IM.v
  *  Module: IM
@@ -36,3 +38,5 @@ module IM (
 
     
 endmodule
+
+`endif

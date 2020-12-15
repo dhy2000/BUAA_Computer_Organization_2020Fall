@@ -1,3 +1,5 @@
+`ifndef CPU_WB_TOP_INCLUDED
+`define CPU_WB_TOP_INCLUDED
 /* 
  *  File Name: WB_LEVEL.v
  *  Module: (External) GRF
@@ -64,3 +66,4 @@ module WB_TOP (
     assign PC_GRF = PC_WB;
 
 endmodule
+`endif

@@ -1,3 +1,5 @@
+`ifndef CPU_MEM_PREDM_INCLUDED
+`define CPU_MEM_PREDM_INCLUDED
 /*
  * File Name: PREDM.v
  * Module Name: PREDM
@@ -40,3 +42,4 @@ module PREDM (
     assign DM_WData = WData;
 
 endmodule
+`endif

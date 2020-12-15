@@ -1,3 +1,5 @@
+`ifndef CPU_IF_NPC_INCLUDED
+`define CPU_IF_NPC_INCLUDED
 /*
  *  Module: NPC
  *  Inputs: (instr, cmp), (PC, imm16, jmpaddr, jmpreg)
@@ -57,3 +59,4 @@ module NPC (
                 (PC + 4);
     // assign PCToLink = PC + 8; // Delay Slot.
 endmodule
+`endif

@@ -1,8 +1,10 @@
 /*
- *  File Name: HazardUnit.v
- *  Module: HazardUnit
- *  Description: Control the stalls of Pipeline(Forward control is inner the level top module)
+ *  File Name: PipelineControl.v
+ *  Module: PipelineControl
+ *  Description: Control the stalls and flushes of Pipeline(Forward control is inner the level top module)
  */
+`ifndef CPU_PIPELINECONTROL_INCLUDED
+`define CPU_PIPELINECONTROL_INCLUDED
 
 `default_nettype none
 `include "instructions.v"
@@ -172,3 +174,5 @@ module PipelineControl (
 
 
 endmodule
+
+`endif 

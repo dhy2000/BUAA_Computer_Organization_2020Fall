@@ -1,3 +1,6 @@
+`ifndef CPU_ID_DECD_INCLUDED
+`define CPU_ID_DECD_INCLUDED
+
 `default_nettype none
 `include "../instructions.v"
 `include "../IC.v"
@@ -206,3 +209,5 @@ module DECD (
     assign excRI = (code != 32'h0000_0000 && instr == `NOP);
 
 endmodule
+
+`endif
