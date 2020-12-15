@@ -166,7 +166,7 @@ module CPU (
         .Tnew_EX(Tnew_EX), .Tnew_MEM(Tnew_MEM),
         .MDBusy(MDBusy_EX),
         .Tnew_ID(Tnew_ID),
-        .KCtrl_CP0(), 
+        .KCtrl_CP0(CP0_KCtrl),
         .MacroPC(PC), 
         .stall_PC(stall_PC),
         .stall_ID(stall_ID), .clr_ID(clr_ID), 
@@ -174,8 +174,6 @@ module CPU (
         .dis_MULTDIV(Dis_MULTDIV), .dis_DM(Dis_DM), 
         .KCtrl_NPC(KCtrl_NPC)
     );
-
-
 
     assign BrPC = DM_PC;
     assign BrAddr = DM_Addr;
