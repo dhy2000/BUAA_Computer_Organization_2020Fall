@@ -12,7 +12,7 @@
 module CP0 (
     input wire clk, 
     input wire reset,
-    input wire [31:0] PC, 
+    input wire [31:0] PC,       // Macro PC?
     input wire [31:0] WData, 
     input wire [4:0] CP0id,     // addrRd
     input wire [`WIDTH_INSTR-1:0] instr, 
@@ -20,7 +20,7 @@ module CP0 (
     // Interrupt and Exception Control
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
-    output wire ExcEntry,       // control signal send to NPC@IF
+    output wire ktextEntry,       // control signal send to Pipeline Controller
     output reg [31:2] EPC = (`TEXT_STARTADDR >> 2), 
     output wire [31:0] RData
 );
@@ -45,7 +45,9 @@ parameter   idSR    = 12,
     // Interrupt Handler
     wire Interrupt;
     assign Interrupt = (IM[7:2] & IP[7:2]) & IE & (!EXL);
-
+    // Exception Handler
+    wire Exception;
+    assign Exception = (ExcCode != 0);
     // support MFC0, MTC0, ERET
     // MFC0 - Read
     assign RData = (instr == `MFC0) ? (
@@ -56,7 +58,11 @@ parameter   idSR    = 12,
         0
     ) : 0;
 
-    // 
+    // Check Branching Delay Slot
+    wire [`WIDTH_FUNC-1:0] func_WB;
+    IC ic_wb (.instr(instr_WB), .format(), .func(func_WB));
+    wire isDelaySlot = (func_WB == `FUNC_BRANCH || func_WB == `FUNC_JUMP);
+
 
 
     always @ (posedge clk) begin
