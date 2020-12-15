@@ -1,7 +1,7 @@
 /* 
  * File Name: mips.v
  * Module Name: mips
- * Description: Top Module of CPU
+ * Description: Top Module of the MIPS MicroSystem
  */
 `default_nettype none
 
