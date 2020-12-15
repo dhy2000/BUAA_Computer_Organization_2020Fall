@@ -27,5 +27,13 @@
 `define HANDLER_FILE    "code_handler.txt" // hextext
 
 
+/* ------ Device Address ------ */
+`define TIMER0_STARTADDR    32'h0000_7F00
+`define TIMER0_ENDADDR      32'h0000_7F08
+
+`define TIMER1_STARTADDR    32'h0000_7F10
+`define TIMER1_ENDADDR      32'h0000_7F18
+
+
 
 `endif
