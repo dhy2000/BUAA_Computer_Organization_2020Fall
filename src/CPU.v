@@ -7,16 +7,16 @@
 `define CPU_CPU_INCLUDED
 
 `default_nettype none
-`include "CPU/instructions.v"
+`include "instructions.v"
 /* ---------- Parts ---------- */
-`include "CPU/IF/IF_TOP.v"
-`include "CPU/ID/ID_TOP.v"
-`include "CPU/EX/EX_TOP.v"
-`include "CPU/MEM/MEM_TOP.v"
-`include "CPU/WB/WB_TOP.v"
-`include "CPU/GRF.v"
+`include "IF_TOP.v"
+`include "ID_TOP.v"
+`include "EX_TOP.v"
+`include "MEM_TOP.v"
+`include "WB_TOP.v"
+`include "GRF.v"
 
-`include "CPU/PipelineControl.v"
+`include "PipelineControl.v"
 
 /* ---------- Main Body ---------- */
 module CPU (

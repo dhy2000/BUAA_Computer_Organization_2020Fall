@@ -10,7 +10,7 @@
 `define INSTR_CLASSIFIER_INCLUDED
 
 `default_nettype none
-`include "CPU/instructions.v"
+`include "instructions.v"
 
 module IC (
     /* Input */
