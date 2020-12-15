@@ -140,14 +140,14 @@ module PREDM (
 
     assign DM_WE = (func == `FUNC_MEM_WRITE) ? (
         (instr == `SW) ? (4'b1111) : 
-        (instr == `SH) ? (4'b0011 << (offset[1] << 1)) : 
+        (instr == `SH) ? (4'b0011 << ({1'b0, offset[1]} << 1)) : 
         (instr == `SB) ? (4'b0001 << (offset)) : 
         (4'b0000)
     ) : 0;
     
     assign DM_PC = PC;
-    assign DM_WData = (instr == `SH) ? (WData << (offset[1] << 4)) : 
-                    (instr == `SB) ? (WData << (offset << 3)) : 
+    assign DM_WData = (instr == `SH) ? (WData << ({4'b0, offset[1]} << 4)) : 
+                    (instr == `SB) ? (WData << ({3'b0, offset} << 3)) : 
                     (WData);
 
 endmodule
