@@ -30,7 +30,9 @@ module CPU (
     output wire [31:0] BrAddr, 
     output wire [31:0] BrWData, 
     output wire [3:0] BrWE, 
-    input wire [31:0] BrRData
+    input wire [31:0] BrRData, 
+    input wire [6:2] BrExc,
+    input wire [7:2] HWInt 
 );
     /*
         5-Level Pipeline: 
