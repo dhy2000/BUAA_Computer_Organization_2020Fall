@@ -105,7 +105,7 @@ parameter   idSR    = 12,
                 BD <= 0;
             end
             else if (Interrupt || Exception) begin
-                ExcCode <= Exc;
+                ExcCode <= (Interrupt) ? 0 : Exc;
                 BD <= isDelayBranch;
             end
             // EPC
