@@ -166,7 +166,7 @@ module PipelineControl (
     wire [`WIDTH_FUNC-1:0] func_WB;
     IC ic (.instr(instr_WB), .format(), .func(func_WB));
 
-    assign MacroPC = ((func_WB == `FUNC_BRANCH) || (func_WB == `FUNC_JUMP)) ? (PC_WB) :  // Branch Delay Slot
+    assign MacroPC = // ((func_WB == `FUNC_BRANCH) || (func_WB == `FUNC_JUMP)) ? (PC_WB) :  // Branch Delay Slot
                         (PC_MEM) ? (PC_MEM) : 
                         (PC_EX) ? (PC_EX) : 
                         (PC_ID) ? (PC_ID) : 
