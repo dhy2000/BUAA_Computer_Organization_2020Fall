@@ -25,7 +25,7 @@ module CP0 (
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
     output wire [`WIDTH_KCTRL-1:0] KCtrl,       // control signal send to Pipeline Controller
-    output reg [31:2] EPC = (`TEXT_STARTADDR >> 2), 
+    output wire [31:2] EPC,
     output wire [31:0] RData
 );
 parameter   idSR    = 12, 
@@ -42,6 +42,9 @@ parameter   idSR    = 12,
     reg [6:2] ExcCode = 6'b000000;
     reg BD = 0;
     wire [31:0] Cause = {BD, 15'b0, IP, 3'b0, ExcCode, 2'b0};
+    // EPC
+    reg [31:0] epc = (`TEXT_STARTADDR);
+    assign EPC = epc[31:2];
     // PrID
     reg [31:0] PrID = 32'hbaad_face;
     
@@ -62,7 +65,7 @@ parameter   idSR    = 12,
     assign RData = (instr == `MFC0) ? (
         (CP0id == idSR) ? (SR) : 
         (CP0id == idCause) ? (Cause) : 
-        (CP0id == idEPC) ? (EPC) : 
+        (CP0id == idEPC) ? ({EPC, 2'b0}) : 
         (CP0id == idPrID) ? (PrID) : 
         0
     ) : 0;
@@ -80,7 +83,7 @@ parameter   idSR    = 12,
             IP <= 0;
             ExcCode <= 0;
             BD <= 0;
-            EPC <= (`TEXT_STARTADDR >> 2);
+            epc <= (`TEXT_STARTADDR);
         end
         else begin
             // SR
@@ -104,10 +107,10 @@ parameter   idSR    = 12,
             end
             // EPC
             if (Interrupt || Exception) begin
-                EPC <= isDelayBranch ? (PC - 4) : PC;
+                epc <= isDelayBranch ? (PC - 4) : PC;
             end
             else if (instr == `MTC0 && CP0id == idEPC) begin
-                EPC <= WData;
+                epc <= WData;
             end
 
             // PrID
@@ -295,6 +298,7 @@ module MEM_TOP (
 
     assign regWriteAddr = regWriteAddr_MEM;
     assign regWriteData = (
+        ((func == `FUNC_CP0) && (instr == `MFC0)) ? (CP0Data) : 
         ((func == `FUNC_MEM_READ)) ? (memWord) :
         (regWriteData_MEM) // not mem-load instruction, use previous
     );

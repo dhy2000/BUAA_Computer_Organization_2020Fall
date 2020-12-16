@@ -87,7 +87,7 @@ module NPC (
 
     assign NPC = (terminated) ? (PC) : 
                 (KCtrl == `KCTRL_KTEXT) ? (`KTEXT_STARTADDR) : 
-                (KCtrl == `ERET) ? ({EPC[31:2], 2'b0}) : 
+                (KCtrl == `KCTRL_ERET) ? ({EPC[31:2], 2'b0}) : 
                 (npcOp == NPC_Order) ? (PC + 4) : 
                 (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
