@@ -51,7 +51,7 @@ parameter   idSR    = 12,
     
     // Interrupt Handler
     wire Interrupt;
-    assign Interrupt = (IM[7:2] & HWInt[7:2]) & IE & (!EXL);
+    assign Interrupt = (IM[7:2] & HWInt[7:2]) && IE && (!EXL);
     // Exception Handler
     // assert: exception will NOT happen in kernel text
     wire Exception;
