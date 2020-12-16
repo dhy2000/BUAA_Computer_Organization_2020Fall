@@ -20,10 +20,15 @@ module PC (
     // data
     input wire [31:0] NPC, // next PC
     // output
-    output wire [31:0] PC
+    output wire [31:0] PC,
+    // exception flag
+    output wire [6:2] exc
 );
     reg [31:0] pc = `TEXT_STARTADDR;
     assign PC = pc;
+
+    // Exception
+    assign exc = ((!(PC >= `TEXT_STARTADDR && PC <= `TEXT_ENDADDR)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
     
     initial begin
         pc <= `TEXT_STARTADDR;
@@ -140,6 +145,7 @@ module IF_TOP (
     /* Data Outputs for Next Pipeline */
     output reg [31:0]               code_ID     = 0, 
     output reg [31:0]               PC_ID       = 0,
+    output reg [6:2]                Exc_ID      = 0,
     /* Other Outputs */
     output wire [31:0]              PC_IF
 );
@@ -151,6 +157,7 @@ module IF_TOP (
     */
     /* ------ Part 1: Wires Declaration ------ */
     wire [31:0] NPC, PC, code;
+    wire [6:2] excPC;
 
     /* ------ Part 2: Instantiate Modules ------ */
 
@@ -165,7 +172,8 @@ module IF_TOP (
     PC pc (
         .clk(clk), .reset(reset),
         .En(~stallPC), // 
-        .NPC(NPC), .PC(PC)
+        .NPC(NPC), .PC(PC), 
+        .exc(excPC)
     );
 
     IM im (
@@ -179,10 +187,12 @@ module IF_TOP (
         if (reset | clr) begin
             code_ID         <=  0;
             PC_ID           <=  0;
+            Exc_ID          <=  0;
         end
         else if (!stall) begin
             code_ID         <=  code;
             PC_ID           <=  PC;
+            Exc_ID          <=  excPC;
         end
     end
 

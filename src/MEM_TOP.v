@@ -123,13 +123,17 @@ module PREDM (
     input wire [31:0] Addr, 
     input wire [31:0] WData, 
     input wire [31:0] PC, 
+    // control signal
+    input wire enable, 
     // Link To DM
     output wire [31:0] DM_PC, 
     output wire [31:2] DM_Addr, 
     output wire [3:0] DM_WE, 
     output wire [31:0] DM_WData, 
     // output inside cpu
-    output wire [1:0] offset
+    output wire [1:0] offset, 
+    // exception
+    output wire [6:2] exc
 );
     // split the address
     assign DM_Addr = Addr[31:2];
@@ -138,7 +142,8 @@ module PREDM (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
-    assign DM_WE = (func == `FUNC_MEM_WRITE) ? (
+    assign DM_WE = (!enable) ? 0 : 
+        (func == `FUNC_MEM_WRITE) ? (
         (instr == `SW) ? (4'b1111) : 
         (instr == `SH) ? (4'b0011 << ({1'b0, offset[1]} << 1)) : 
         (instr == `SB) ? (4'b0001 << (offset)) : 
@@ -150,6 +155,25 @@ module PREDM (
                     (instr == `SB) ? (WData << ({3'b0, offset} << 3)) : 
                     (WData);
 
+    // Exceptions
+    assign exc = (
+        ((instr == `LW) && (Addr[1:0] != 0)) ? (`EXC_ADEL) : // load not-aligned word
+        ((instr == `LH || instr == `LHU) && (Addr[0] != 0)) ? (`EXC_ADEL) : // load not-aligned halfword
+        ((instr == `LH || instr == `LHU) && !(Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR)) ? (`EXC_ADEL) : // load non-whole word on timer register
+        ((func == `FUNC_MEM_READ) && !(
+            (Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR) || 
+            (Addr >= `TIMER0_STARTADDR && Addr <= `TIMER0_ENDADDR) || 
+            (Addr >= `TIMER1_STARTADDR && Addr <= `TIMER1_ENDADDR))) ? (`EXC_ADEL) : // Not-Valid Address Space
+        ((instr == `SW) && (Addr[1:0] != 0)) ? (`EXC_ADES) : // store not-aligned word
+        ((instr == `SH) && (Addr[0] != 0)) ? (`EXC_ADES) : // store not-aligned halfword
+        ((instr == `SH || instr == `SB) && !(Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR)) ? (`EXC_ADES) : 
+        ((func == `FUNC_MEM_WRITE) && !(
+            (Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR) || 
+            (Addr >= `TIMER0_STARTADDR && Addr <= `TIMER0_ENDADDR) || 
+            (Addr >= `TIMER1_STARTADDR && Addr <= `TIMER1_ENDADDR))) ? (`EXC_ADES) :
+        ((func == `FUNC_MEM_WRITE) && (Addr == 32'h0000_7F08 || Addr == 32'h0000_7F18)) ? (`EXC_ADES) :
+        0
+    );
 endmodule
 
 module MEM_TOP (
@@ -163,6 +187,7 @@ module MEM_TOP (
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_MEM           , 
     input wire [31:0]               PC_MEM              , 
+    input wire [6:2]                Exc_MEM             ,
     input wire [31:0]               aluOut_MEM          ,
     input wire [31:0]               dataRt_MEM          ,
     input wire [4:0]                addrRt_MEM          ,
@@ -173,6 +198,8 @@ module MEM_TOP (
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [4:0]                regaddr_WB, 
     input wire [31:0]               regdata_WB, 
+    /* Input Control Signals */
+    input wire                      dis_DM, 
     /* Data Outputs to Next Pipeline */
     // instruction
     output reg [`WIDTH_INSTR-1:0]   instr_WB            = 0, 
@@ -208,6 +235,7 @@ module MEM_TOP (
     /* ------ Part 1: Wires Declaration ------ */
     // predm
     wire [1:0] offset;
+    wire [6:2] excDM;
     // real dm
     wire [31:0] memWord;
     // CP0
@@ -219,6 +247,8 @@ module MEM_TOP (
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
     wire [`WIDTH_T-1:0] Tnew;
+    // Exception
+    wire [6:2] Exc;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
     wire [31:0] dataRt_use;
@@ -232,21 +262,23 @@ module MEM_TOP (
     /* ------ Part 2: Instantiate Modules ------ */
 
     PREDM predm (
-        .instr(instr_MEM), 
+        .instr(instr_MEM), .enable(~dis_DM), 
         .Addr(aluOut_MEM), .WData(dataRt_use), .PC(PC_MEM), 
         .DM_PC(DM_PC), .DM_Addr(DM_Addr[31:2]), .DM_WE(DM_WE), .DM_WData(DM_WData), 
-        .offset(offset)
+        .offset(offset), .exc(excDM)
     );
     assign DM_Addr[1:0] = 0;
 
     assign memWord = DM_RData;
+
+    assign Exc = excDM ? excDM : (Exc_MEM);
 
     // CP0
     CP0 cp0 (
         .clk(clk), .reset(reset), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
         .instr(instr_MEM), .instr_WB(instr_WB), 
-        .HWInt(CP0_HWInt), .Exc(5'b0), 
+        .HWInt(CP0_HWInt), .Exc(Exc), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );
 

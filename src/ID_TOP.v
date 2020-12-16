@@ -261,6 +261,7 @@ module ID_TOP (
     /* Data Inputs from Previous Pipeline */
     input wire [31:0]               code_ID, // Machine Code from IM@IF
     input wire [31:0]               PC_ID,   // PC from PC@IF
+    input wire [6:2]                Exc_ID,  // Exc from PC@IF
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [4:0]                regaddr_EX, 
     input wire [31:0]               regdata_EX, 
@@ -273,6 +274,7 @@ module ID_TOP (
     // Instruction
     output reg [`WIDTH_INSTR-1:0]   instr_EX            = 0, 
     output reg [31:0]               PC_EX               = 0, 
+    output reg [6:2]                Exc_EX              = 0,
     // Decoder
     output reg [31:0]               dataRs_EX           = 0, // Need Forward
     output reg [31:0]               dataRt_EX           = 0, // Need Forward
@@ -319,6 +321,7 @@ module ID_TOP (
     wire [4:0] addrRs, addrRt, addrRd;
     wire [15:0] imm16; wire [4:0] shamt;
     wire [25:0] jmpAddr;
+    wire [6:2] excDecd;
     wire cmp;
     wire [31:0] luiExtImm;
     // Hazard may use
@@ -326,6 +329,8 @@ module ID_TOP (
     wire [31:0] regWriteData;
     // Tnew
     wire [`WIDTH_T-1:0] Tnew;
+    // Exception
+    wire [6:2] Exc;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
     // GRF already supports inner forward.
@@ -347,7 +352,7 @@ module ID_TOP (
         .code(code_ID), .instr(instr),
         .rs(addrRs), .rt(addrRt), .rd(addrRd),
         .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr), 
-        .excRI()
+        .excRI(ExcDecd)
     );
     COMP comp (
         .instr(instr),
@@ -355,6 +360,8 @@ module ID_TOP (
         .cmp(cmp)
     );
     assign luiExtImm = {imm16, 16'b0};
+
+    assign Exc = (excDecd) ? excDecd : Exc_ID;
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
@@ -377,6 +384,7 @@ module ID_TOP (
         if (reset | clr) begin
             instr_EX            <= 0;
             PC_EX               <= 0;
+            Exc_EX              <= 0;
             dataRs_EX           <= 0;
             dataRt_EX           <= 0;
             imm16_EX            <= 0;
@@ -391,6 +399,7 @@ module ID_TOP (
         else if (!stall) begin
             instr_EX            <=  instr;
             PC_EX               <=  PC_ID;
+            Exc_EX              <=  Exc;
             dataRs_EX           <=  dataRs_use;
             dataRt_EX           <=  dataRt_use;
             imm16_EX            <=  imm16;

@@ -20,7 +20,9 @@ module ALU (
     input wire [15:0] imm16, 
     input wire [4:0] shamt,
     /* Output */
-    output wire [31:0] out
+    output wire [31:0] out,
+    // Exception
+    output wire [6:2] exc
 );
     /* Inner control signal */
     parameter WIDTH_Ext = 1,
@@ -133,6 +135,15 @@ module ALU (
 
     assign out = alu(srca, srcb, aluOp);
 
+    /* Exception */
+    wire [32:0] tmpA = {srca[31], srca}, tmpB = {srcb[31], srcb};
+    wire [32:0] tmpSum = tmpA + tmpB, tmpDif = tmpA - tmpB;
+    wire ovfSum = (tmpSum[32] != tmpSum[31]), ovfDif = (tmpDif[32] != tmpDif[31]);
+
+    assign exc = ((func == `FUNC_MEM_READ) && ovfSum) ? (`EXC_ADEL) : 
+                ((func == `FUNC_MEM_WRITE) && ovfSum) ? (`EXC_ADES) : 
+                ((instr == `ADD || instr == `ADDI) && ovfSum) ? (`EXC_OV) : 
+                ((instr == `SUB) && ovfDif) ? (`EXC_OV) : 0;
 endmodule
 
 module MULTDIV (
@@ -142,6 +153,7 @@ module MULTDIV (
     input wire reset, 
     // Control
     input wire [`WIDTH_INSTR-1:0] instr,
+    input wire enable, 
     // Data
     input wire [31:0] dataRs, 
     input wire [31:0] dataRt, 
@@ -210,33 +222,35 @@ parameter   EXT_ZERO = 0,
                 delayCounter <= delayCounter - 1;
             end
             else begin
-                if (instr == `MULT || instr == `MULTU) begin
-                    delayCounter <= 5;
-                    HI <= product[63:32];
-                    LO <= product[31:0];
-                    currOp <= Op_Mult;
-                end
-                else if (instr == `DIV || instr == `DIVU) begin
-                    delayCounter <= 10;
-                    HI <= remainder;
-                    LO <= quotient;
-                    currOp <= Op_Div;
-                end
-                else if (instr == `MADD || instr == `MADDU) begin
-                    delayCounter <= 5;
-                    {HI, LO} <= {HI, LO} + product;
-                    currOp <= Op_Mult;
-                end
-                else if (instr == `MSUB || instr == `MSUBU) begin
-                    delayCounter <= 5;
-                    {HI, LO} <= {HI, LO} - product;
-                    currOp <= Op_Mult;
-                end
-                else if (instr == `MTHI) begin
-                    HI <= dataRs;
-                end
-                else if (instr == `MTLO) begin
-                    LO <= dataRs;
+                if (enable) begin
+                    if (instr == `MULT || instr == `MULTU) begin
+                        delayCounter <= 5;
+                        HI <= product[63:32];
+                        LO <= product[31:0];
+                        currOp <= Op_Mult;
+                    end
+                    else if (instr == `DIV || instr == `DIVU) begin
+                        delayCounter <= 10;
+                        HI <= remainder;
+                        LO <= quotient;
+                        currOp <= Op_Div;
+                    end
+                    else if (instr == `MADD || instr == `MADDU) begin
+                        delayCounter <= 5;
+                        {HI, LO} <= {HI, LO} + product;
+                        currOp <= Op_Mult;
+                    end
+                    else if (instr == `MSUB || instr == `MSUBU) begin
+                        delayCounter <= 5;
+                        {HI, LO} <= {HI, LO} - product;
+                        currOp <= Op_Mult;
+                    end
+                    else if (instr == `MTHI) begin
+                        HI <= dataRs;
+                    end
+                    else if (instr == `MTLO) begin
+                        LO <= dataRs;
+                    end
                 end
             end
         end
@@ -254,6 +268,7 @@ module EX_TOP (
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_EX            , 
     input wire [31:0]               PC_EX               , 
+    input wire [6:2]                Exc_EX              ,
     input wire [31:0]               dataRs_EX           , 
     input wire [31:0]               dataRt_EX           , 
     input wire [15:0]               imm16_EX            , 
@@ -269,10 +284,13 @@ module EX_TOP (
     input wire [31:0]               regdata_MEM, 
     input wire [4:0]                regaddr_WB, 
     input wire [31:0]               regdata_WB, 
+    /* Input External Control Signals */
+    input wire                      dis_MULTDIV,
     /* Data Outputs to Next Pipeline */
     // Instruction
     output reg [`WIDTH_INSTR-1:0]   instr_MEM           = 0, 
     output reg [31:0]               PC_MEM              = 0, 
+    output reg [6:2]                Exc_MEM             = 0,
     // From ALU
     output reg [31:0]               aluOut_MEM          = 0,
 
@@ -300,10 +318,13 @@ module EX_TOP (
     wire [31:0] mdOut;
     wire [31:0] exOut;
     wire mdBusy;
+    wire [6:2] excAlu;
     // Hazard may use
     wire [4:0] regWriteAddr;
     wire [31:0] regWriteData;
     wire [`WIDTH_T-1:0] Tnew;
+    // Exception
+    wire [6:2] Exc;
 
     /* ------ Part 1.5: Select Data Source(Forward) ------ */
 
@@ -323,18 +344,20 @@ module EX_TOP (
 
     assign MDBusy_EX = mdBusy; // Busy Signal
 
+    assign Exc = (excAlu) ? excAlu : Exc_EX; // TODO: add ALU Exception
+
     /* ------ Part 2: Instantiate Modules ------ */
 
     ALU alu (
         .instr(instr_EX),
         .dataRs(dataRs_alu), .dataRt(dataRt_alu),
         .imm16(imm16_EX), .shamt(shamt_EX),
-        .out(aluOut)
+        .out(aluOut), .exc(excAlu)
     );
 
     MULTDIV md (
         .clk(clk), .reset(reset), 
-        .instr(instr_EX), 
+        .instr(instr_EX), .enable(~dis_MULTDIV), 
         .dataRs(dataRs_alu), .dataRt(dataRt_alu), 
         .out(mdOut), .busy(mdBusy)
     );
@@ -363,6 +386,7 @@ module EX_TOP (
         if (reset | clr) begin
             instr_MEM                   <=  0;
             PC_MEM                      <=  0;
+            Exc_MEM                     <=  0;
             aluOut_MEM                  <=  0;
             dataRt_MEM                  <=  0;
             regWriteAddr_MEM            <=  0;
@@ -374,6 +398,7 @@ module EX_TOP (
         else if (!stall) begin
             instr_MEM                   <=  instr_EX;
             PC_MEM                      <=  PC_EX;
+            Exc_MEM                     <=  Exc;
             aluOut_MEM                  <=  exOut;
             dataRt_MEM                  <=  dataRt_alu;
             regWriteAddr_MEM            <=  regWriteAddr;
