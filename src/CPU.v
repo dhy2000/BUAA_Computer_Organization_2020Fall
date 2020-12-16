@@ -147,6 +147,7 @@ module CPU (
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .Tnew_WB(Tnew_WB), 
         .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(BrRData),
+        .CP0_HWInt(HWInt), .CP0_PC(PC), 
         .CP0_KCtrl(CP0_KCtrl), .CP0_EPC(CP0_EPC)
     );
 

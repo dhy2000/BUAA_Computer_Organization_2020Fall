@@ -192,6 +192,8 @@ module MEM_TOP (
     output wire [3:0]               DM_WE, 
     input wire [31:0]               DM_RData, 
     /* -------- IOs for CP0 -------- */
+    input wire [31:0]               CP0_PC, 
+    input wire [7:2]                CP0_HWInt,
     output wire [`WIDTH_KCTRL-1:0]  CP0_KCtrl, 
     output wire [31:2]              CP0_EPC
 );
@@ -241,10 +243,10 @@ module MEM_TOP (
 
     // CP0
     CP0 cp0 (
-        .clk(clk), .reset(reset), .PC(PC_MEM), // TODO: the CP0.PC should be Macro PC
+        .clk(clk), .reset(reset), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
         .instr(instr_MEM), .instr_WB(instr_WB), 
-        .HWInt(6'b0), .Exc(5'b0), 
+        .HWInt(CP0_HWInt), .Exc(5'b0), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );
 
