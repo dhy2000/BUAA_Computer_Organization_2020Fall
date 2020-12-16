@@ -9,7 +9,7 @@
 
 `default_nettype none
 `include "instructions.v"
-// `include "IC.v"
+`include "exception.v"
 
 module DECD (
     /* Input */
@@ -321,7 +321,7 @@ module ID_TOP (
     wire [4:0] addrRs, addrRt, addrRd;
     wire [15:0] imm16; wire [4:0] shamt;
     wire [25:0] jmpAddr;
-    wire [6:2] excDecd;
+    wire excRI;
     wire cmp;
     wire [31:0] luiExtImm;
     // Hazard may use
@@ -352,7 +352,7 @@ module ID_TOP (
         .code(code_ID), .instr(instr),
         .rs(addrRs), .rt(addrRt), .rd(addrRd),
         .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr), 
-        .excRI(excDecd)
+        .excRI(excRI)
     );
     COMP comp (
         .instr(instr),
@@ -361,7 +361,7 @@ module ID_TOP (
     );
     assign luiExtImm = {imm16, 16'b0};
 
-    assign Exc = (excDecd) ? excDecd : Exc_ID;
+    assign Exc = (excRI) ? (`EXC_RI) : Exc_ID;
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
