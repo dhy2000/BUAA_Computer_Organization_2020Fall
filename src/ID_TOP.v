@@ -352,7 +352,7 @@ module ID_TOP (
         .code(code_ID), .instr(instr),
         .rs(addrRs), .rt(addrRt), .rd(addrRd),
         .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr), 
-        .excRI(ExcDecd)
+        .excRI(excDecd)
     );
     COMP comp (
         .instr(instr),

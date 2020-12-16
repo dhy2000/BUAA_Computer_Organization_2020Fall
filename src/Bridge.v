@@ -59,7 +59,7 @@ module NorthBridge (
     // South Bridge
     assign SBr_PC = PC2;
     assign SBr_Addr = Addr2;
-    assign SBr_WData = WData;
+    assign SBr_WData = WData2;
     assign SBr_WE = (
         (Addr2 >= `TIMER0_STARTADDR && Addr2 <= `TIMER0_ENDADDR) ||
         (Addr2 >= `TIMER1_STARTADDR && Addr2 <= `TIMER1_ENDADDR)

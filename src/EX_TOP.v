@@ -8,6 +8,7 @@
 
 `default_nettype none
 `include "instructions.v"
+`include "exception.v"
 // `include "IC.v"
 
 module ALU (
