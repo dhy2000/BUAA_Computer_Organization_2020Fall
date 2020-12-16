@@ -77,6 +77,7 @@ module CPU (
     wire [3:0] DM_WE;
     wire [`WIDTH_KCTRL-1:0] CP0_KCtrl;
     wire [31:2] CP0_EPC;
+    wire CP0_BD;
     // WB
     wire WriteEn_GRF;
     wire [4:0] RegWriteAddr_GRF; 
@@ -87,7 +88,7 @@ module CPU (
     wire [`WIDTH_KCTRL-1:0] KCtrl_NPC;
     wire stall_PC, stall_ID, clr_ID, clr_EX;
     wire clr_MEM, clr_WB;
-    wire Dis_MULTDIV, Dis_DM;
+    wire Dis_MULTDIV, Dis_DM, Dis_GRF;
 
     /* 2. Instantiate Modules */
     // Attention: GRF
@@ -154,13 +155,14 @@ module CPU (
         .Tnew_WB(Tnew_WB), 
         .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(BrRData),
         .CP0_HWInt(HWInt), .CP0_PC(PC), 
-        .CP0_KCtrl(CP0_KCtrl), .CP0_EPC(CP0_EPC)
+        .CP0_KCtrl(CP0_KCtrl), .CP0_EPC(CP0_EPC), .CP0_BD(CP0_BD)
     );
 
     WB_TOP wb (
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
         .memWord_WB(MemWord_WB), .offset_WB(Offset_WB), 
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
+        .dis_GRF(Dis_GRF), 
         .regWriteAddr_GRF(RegWriteAddr_GRF), .regWriteData_GRF(RegWriteData_GRF),
         .PC_GRF(PC_GRF)
     );
@@ -180,12 +182,12 @@ module CPU (
         .Tnew_EX(Tnew_EX), .Tnew_MEM(Tnew_MEM),
         .MDBusy(MDBusy_EX),
         .Tnew_ID(Tnew_ID),
-        .KCtrl_CP0(CP0_KCtrl),
+        .KCtrl_CP0(CP0_KCtrl), .BD_CP0(CP0_BD), 
         .MacroPC(PC), 
         .stall_PC(stall_PC),
         .stall_ID(stall_ID), .clr_ID(clr_ID), 
         .clr_EX(clr_EX), .clr_MEM(clr_MEM), .clr_WB(clr_WB),
-        .dis_MULTDIV(Dis_MULTDIV), .dis_DM(Dis_DM), 
+        .dis_MULTDIV(Dis_MULTDIV), .dis_DM(Dis_DM), .dis_GRF(Dis_GRF), 
         .KCtrl_NPC(KCtrl_NPC)
     );
 

@@ -105,6 +105,7 @@ module PipelineControl (
     input wire MDBusy,     // multdiv unit
     /* Control by CP0 */
     input wire [`WIDTH_KCTRL-1:0] KCtrl_CP0, 
+    input wire BD_CP0, 
     // Output Tnew to pipeline
     output wire [`WIDTH_T-1:0] Tnew_ID, 
     // Macro PC
@@ -119,6 +120,7 @@ module PipelineControl (
     // Disable Function Parts to prevent write
     output wire dis_MULTDIV, 
     output wire dis_DM, 
+    output wire dis_GRF, 
     // NPC Ctrl
     output wire [`WIDTH_KCTRL-1:0] KCtrl_NPC
 );
@@ -155,6 +157,7 @@ module PipelineControl (
     wire flushAll = (KCtrl_CP0 == `KCTRL_KTEXT || KCtrl_CP0 == `KCTRL_ERET);
     assign KCtrl_NPC = KCtrl_CP0;
     assign {dis_MULTDIV, dis_DM} = (flushAll)? 2'b11 : 2'b00;
+    assign dis_GRF = (flushAll && BD_CP0) ? 1'b1 : 1'b0;
     assign {clr_ID, cp0_clrEX, clr_MEM, clr_WB} = (flushAll) ? 4'b1111 : 4'b0000;
 
 

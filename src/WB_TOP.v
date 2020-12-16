@@ -82,6 +82,7 @@ module WB_TOP (
     input wire [1:0]                offset_WB           ,
     input wire [4:0]                regWriteAddr_WB     , 
     input wire [31:0]               regWriteData_WB     ,
+    input wire                      dis_GRF             ,
     // input wire [`WIDTH_T-1:0]       Tnew_WB             ,
     /* Data Outputs to GRF.Write */
     output wire [4:0] regWriteAddr_GRF, 
@@ -118,7 +119,7 @@ module WB_TOP (
     IC ic (.instr(instr), .format(format), .func(func));
 
 
-    assign regWriteAddr = regWriteAddr_WB;
+    assign regWriteAddr = (dis_GRF) ? 0 : regWriteAddr_WB;
     assign regWriteData = (
         ((func == `FUNC_MEM_READ)) ? (extMemWord) : 
         (regWriteData_WB)

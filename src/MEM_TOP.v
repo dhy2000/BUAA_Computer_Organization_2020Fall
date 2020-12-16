@@ -25,6 +25,7 @@ module CP0 (
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
     output wire [`WIDTH_KCTRL-1:0] KCtrl,       // control signal send to Pipeline Controller
+    output wire isBD,                           // whether the exception instr is in the delay slot
     output wire [31:2] EPC,
     output wire [31:0] RData
 );
@@ -74,6 +75,8 @@ parameter   idSR    = 12,
     wire [`WIDTH_FUNC-1:0] func_WB;
     IC ic_wb (.instr(instr_WB), .format(), .func(func_WB));
     wire isDelayBranch = (func_WB == `FUNC_BRANCH || func_WB == `FUNC_JUMP);
+
+    assign isBD = (Interrupt || Exception) ? isDelayBranch : 0;
 
     always @ (posedge clk) begin
         if (reset) begin
@@ -225,7 +228,8 @@ module MEM_TOP (
     input wire [31:0]               CP0_PC, 
     input wire [7:2]                CP0_HWInt,
     output wire [`WIDTH_KCTRL-1:0]  CP0_KCtrl, 
-    output wire [31:2]              CP0_EPC
+    output wire [31:2]              CP0_EPC,
+    output wire                     CP0_BD, 
 );
     
     /*
@@ -281,7 +285,7 @@ module MEM_TOP (
         .clk(clk), .reset(reset), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
         .instr(instr_MEM), .instr_WB(instr_WB), 
-        .HWInt(CP0_HWInt), .Exc(Exc), 
+        .HWInt(CP0_HWInt), .Exc(Exc), .isBD(CP0_BD), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );
 
