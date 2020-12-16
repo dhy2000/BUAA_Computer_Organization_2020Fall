@@ -38,7 +38,7 @@ module IC (
                     (j) ? (`FORMAT_J) : 
                     (`FORMAT_R) ;
     // func
-    wire calc_r, calc_i, mem_r, mem_w, br, jmp, md;
+    wire calc_r, calc_i, mem_r, mem_w, br, jmp, md, cp0;
     assign calc_r = (
         (instr == `NOP ) || 
         (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV) ||
@@ -65,6 +65,9 @@ module IC (
         (instr == `MFHI) || (instr == `MFLO ) || (instr == `MTHI)|| (instr == `MTLO) ||
         (instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)
     );
+    assign cp0 = (
+        (instr == `MFC0 || instr == `MTC0 || instr == `ERET)
+    );
 
     assign func =   (calc_r) ? (`FUNC_CALC_R) : 
                     (calc_i) ? (`FUNC_CALC_I) : 
@@ -73,6 +76,7 @@ module IC (
                     (br) ? (`FUNC_BRANCH) : 
                     (jmp) ? (`FUNC_JUMP) : 
                     (md) ? (`FUNC_MULTDIV) : 
+                    (cp0) ? (`FUNC_CP0) : 
                     (`FUNC_OTHER) ;
     // 
 

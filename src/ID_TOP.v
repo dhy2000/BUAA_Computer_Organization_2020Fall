@@ -197,13 +197,15 @@ module DECD (
     wire [`WIDTH_INSTR-1:0] r, ij;
     assign r = Rformat(funct);
     assign ij = IJformat(opcode);
-    wire [`WIDTH_INSTR-1:0] sp_r, sp_i, sp_v2;
+    wire [`WIDTH_INSTR-1:0] sp_r, sp_i, sp_v2, sp_cop0;
     assign sp_r = SpecialR(rs, rt, rd, shamt, funct);
     assign sp_i = SpecialI(opcode, rs, rt);
     assign sp_v2 = SpecialV2(opcode, funct);
+    assign sp_cop0 = SpecialCOP0(opcode, rs, funct);
     // link these sub-signals
     assign instr = (code == 32'h0000_0000) ? (`NOP) : 
     (sp_v2 != `NOP) ? (sp_v2) : // clo and clz
+    (sp_cop0 != `NOP) ? (sp_cop0) : // cp0
     (opcode == 6'b000000) ? (
         // R format
         (sp_r != `NOP) ? (sp_r) : (r)
@@ -372,7 +374,7 @@ module ID_TOP (
                             (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
                             (instr == `JAL)                  ? 31 :       // JAL
                             ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
-                            ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ))  ? addrRt :  // rt
+                            ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ) || (instr == `MFC0))  ? addrRt :  // rt
                             0;
                             
     assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 
