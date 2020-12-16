@@ -154,7 +154,7 @@ module PipelineControl (
     wire cp0_clrEX;
     wire flushAll = (KCtrl_CP0 == `KCTRL_KTEXT || KCtrl_CP0 == `KCTRL_ERET);
     assign KCtrl_NPC = KCtrl_CP0;
-
+    assign {dis_MULTDIV, dis_DM} = (flushAll)? 2'b11 : 2'b00;
     assign {clr_ID, cp0_clrEX, clr_MEM, clr_WB} = (flushAll) ? 4'b1111 : 4'b0000;
 
 
