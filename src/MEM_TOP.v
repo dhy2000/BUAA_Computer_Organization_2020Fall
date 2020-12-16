@@ -229,7 +229,7 @@ module MEM_TOP (
     input wire [7:2]                CP0_HWInt,
     output wire [`WIDTH_KCTRL-1:0]  CP0_KCtrl, 
     output wire [31:2]              CP0_EPC,
-    output wire                     CP0_BD, 
+    output wire                     CP0_BD
 );
     
     /*
