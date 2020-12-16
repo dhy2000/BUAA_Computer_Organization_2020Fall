@@ -26,7 +26,7 @@ module Timer(
 	reg [1:0] state;
 	reg [31:0] mem [2:0];
 	
-	reg _IRQ;
+	reg _IRQ = 0;
 	assign IRQ = `ctrl[3] & _IRQ;
 	
 	assign Dout = mem[Addr[3:2]];
