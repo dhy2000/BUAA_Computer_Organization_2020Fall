@@ -67,7 +67,9 @@ module mips (
         .BrAddr(BrAddr), 
         .BrWData(BrWData), 
         .BrWE(BrWE), 
-        .BrRData(BrRData)
+        .BrRData(BrRData),
+        .BrExc(BrExc),
+        .HWInt(HWInt)
     );
 
     NorthBridge nbridge (
@@ -78,7 +80,7 @@ module mips (
         // CPU Exception and Interruption
         .Exc(BrExc), .HWInt(HWInt), 
         // IM
-        .IM_Addr(), .IM_WData(), .IM_WE(), .IM_RData(32'b0), 
+        // .IM_Addr(), .IM_WData(), .IM_WE(), .IM_RData(32'b0), 
         // DM
         .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(DM_RData),
         // South Bridge
