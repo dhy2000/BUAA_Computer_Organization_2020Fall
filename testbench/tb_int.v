@@ -36,6 +36,8 @@ module tb_mips_interrupt;
 		// Wait 100 ns for global reset to finish
 		// Add stimulus here
 
+		#500000 $finish;
+
 	end
    always #2 clk = ~clk;
 

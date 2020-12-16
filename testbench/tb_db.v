@@ -35,7 +35,7 @@ module tb_mips_dbint;
 		#20 reset = 0;
 		// Wait 100 ns for global reset to finish
 		// Add stimulus here
-
+		#500000 $finish;
 	end
    always #2 clk = ~clk;
 
