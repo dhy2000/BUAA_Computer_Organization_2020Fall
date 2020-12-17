@@ -74,8 +74,8 @@ module DECD (
             6'b010001: Rformat = `MTHI      ;
             6'b010011: Rformat = `MTLO      ;
             // duliu
-            6'b001010: Rformat = `MOVZ      ;
-            6'b001011: Rformat = `MOVN      ;
+            // 6'b001010: Rformat = `MOVZ      ;
+            // 6'b001011: Rformat = `MOVN      ;
             default: Rformat = `NOP         ;
             endcase
         end
@@ -157,8 +157,8 @@ module DECD (
         begin
             if (opcode == 6'b011100) begin
                 case (funct)
-                6'b100001: SpecialV2 = `CLO;
-                6'b100000: SpecialV2 = `CLZ;
+                // 6'b100001: SpecialV2 = `CLO;
+                // 6'b100000: SpecialV2 = `CLZ;
                 6'b000000: SpecialV2 = `MADD;
                 6'b000001: SpecialV2 = `MADDU;
                 6'b000100: SpecialV2 = `MSUB;
