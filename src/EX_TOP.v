@@ -344,7 +344,7 @@ module EX_TOP (
 
     assign MDBusy_EX = mdBusy; // Busy Signal
 
-    assign Exc = (excAlu) ? excAlu : Exc_EX; // TODO: add ALU Exception
+    assign Exc = Exc_EX ? Exc_EX : excAlu;
 
     /* ------ Part 2: Instantiate Modules ------ */
 

@@ -363,7 +363,7 @@ module ID_TOP (
     );
     assign luiExtImm = {imm16, 16'b0};
 
-    assign Exc = (excRI) ? (`EXC_RI) : Exc_ID;
+    assign Exc = (Exc_ID) ? Exc_ID : (excRI ? (`EXC_RI) : 0);
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module

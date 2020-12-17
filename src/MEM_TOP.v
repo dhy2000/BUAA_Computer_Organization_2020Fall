@@ -278,7 +278,7 @@ module MEM_TOP (
 
     assign memWord = DM_RData;
 
-    assign Exc = excDM ? excDM : (Exc_MEM);
+    assign Exc = Exc_MEM ? Exc_MEM : excDM;
 
     // CP0
     CP0 cp0 (
