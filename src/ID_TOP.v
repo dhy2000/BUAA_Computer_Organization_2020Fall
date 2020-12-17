@@ -139,8 +139,8 @@ module DECD (
                 case (rt) 
                 5'b00001: SpecialI = `BGEZ;
                 5'b00000: SpecialI = `BLTZ;
-                5'b10000: SpecialI = `BLTZAL;
-                5'b10001: SpecialI = `BGEZAL;
+                // 5'b10000: SpecialI = `BLTZAL;
+                // 5'b10001: SpecialI = `BGEZAL;
                 default:  SpecialI = `NOP;
                 endcase
             end
@@ -159,10 +159,10 @@ module DECD (
                 case (funct)
                 // 6'b100001: SpecialV2 = `CLO;
                 // 6'b100000: SpecialV2 = `CLZ;
-                6'b000000: SpecialV2 = `MADD;
-                6'b000001: SpecialV2 = `MADDU;
-                6'b000100: SpecialV2 = `MSUB;
-                6'b000101: SpecialV2 = `MSUBU;
+                // 6'b000000: SpecialV2 = `MADD;
+                // 6'b000001: SpecialV2 = `MADDU;
+                // 6'b000100: SpecialV2 = `MSUB;
+                // 6'b000101: SpecialV2 = `MSUBU;
                 default:   SpecialV2 = `NOP;
                 endcase
             end
