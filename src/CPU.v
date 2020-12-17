@@ -179,6 +179,7 @@ module CPU (
     PipelineControl pipectrl (
         .PC_IF(PC_IF), .PC_ID(PC_ID), .PC_EX(PC_EX), .PC_MEM(PC_MEM), .PC_WB(PC_WB), 
         .instr_ID(Instr_ID), .instr_EX(Instr_EX), .instr_MEM(Instr_MEM), .instr_WB(Instr_WB), 
+        .Exc_ID(Exc_ID), .Exc_EX(Exc_EX), .Exc_MEM(Exc_MEM),
         .addrRs_ID(AddrRs_ID), .addrRt_ID(AddrRt_ID),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM),
         .Tnew_EX(Tnew_EX), .Tnew_MEM(Tnew_MEM),

@@ -102,6 +102,10 @@ module PipelineControl (
     input wire [`WIDTH_INSTR-1:0] instr_EX,
     input wire [`WIDTH_INSTR-1:0] instr_MEM, 
     input wire [`WIDTH_INSTR-1:0] instr_WB, 
+    // Exception Code on every stage
+    input wire [6:2] Exc_ID, 
+    input wire [6:2] Exc_EX,
+    input wire [6:2] Exc_MEM, 
     /* Hazard Stall */
     input wire [4:0] addrRs_ID, // use
     input wire [4:0] addrRt_ID, // use
@@ -175,9 +179,9 @@ module PipelineControl (
     IC ic (.instr(instr_WB), .format(), .func(func_WB));
 
     assign MacroPC = // ((func_WB == `FUNC_BRANCH) || (func_WB == `FUNC_JUMP)) ? (PC_WB) :  // Branch Delay Slot
-                        (PC_MEM) ? (PC_MEM) : 
-                        (PC_EX) ? (PC_EX) : 
-                        (PC_ID) ? (PC_ID) : 
+                        (PC_MEM || Exc_MEM) ? (PC_MEM) : 
+                        (PC_EX || Exc_EX) ? (PC_EX) : 
+                        (PC_ID || Exc_ID) ? (PC_ID) : 
                         (PC_IF) ? (PC_IF) : 0;
     /* Merge output signals */
     assign stall_PC = (!flushAll) && (stall_stallPC);
