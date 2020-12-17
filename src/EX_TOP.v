@@ -389,6 +389,7 @@ module EX_TOP (
             instr_MEM                   <=  0;
             PC_MEM                      <=  0;
             Exc_MEM                     <=  0;
+            BD_MEM                      <=  0;
             aluOut_MEM                  <=  0;
             dataRt_MEM                  <=  0;
             regWriteAddr_MEM            <=  0;
@@ -401,6 +402,7 @@ module EX_TOP (
             instr_MEM                   <=  instr_EX;
             PC_MEM                      <=  PC_EX;
             Exc_MEM                     <=  Exc;
+            BD_MEM                      <=  BD_EX;
             aluOut_MEM                  <=  exOut;
             dataRt_MEM                  <=  dataRt_alu;
             regWriteAddr_MEM            <=  regWriteAddr;
