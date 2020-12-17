@@ -20,7 +20,8 @@ module CP0 (
     input wire [31:0] WData, 
     input wire [4:0] CP0id,     // addrRd
     input wire [`WIDTH_INSTR-1:0] instr, 
-    input wire [`WIDTH_INSTR-1:0] instr_WB, // to check delay slot
+    // input wire [`WIDTH_INSTR-1:0] instr_WB, // to check delay slot
+    input wire BDFlag, 
     // Interrupt and Exception Control
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
@@ -72,11 +73,11 @@ parameter   idSR    = 12,
     ) : 0;
 
     // Check Branching Delay Slot
-    wire [`WIDTH_FUNC-1:0] func_WB;
-    IC ic_wb (.instr(instr_WB), .format(), .func(func_WB));
-    wire isDelayBranch = (func_WB == `FUNC_BRANCH || func_WB == `FUNC_JUMP);
+    // wire [`WIDTH_FUNC-1:0] func_WB;
+    // IC ic_wb (.instr(instr_WB), .format(), .func(func_WB));
+    wire isDelayBranch = BDFlag;
 
-    assign isBD = (Interrupt || Exception) ? isDelayBranch : 0;
+    assign isBD = (Interrupt || Exception) ? BDFlag : 0;
 
     always @ (posedge clk) begin
         if (reset) begin
@@ -194,6 +195,7 @@ module MEM_TOP (
     input wire [`WIDTH_INSTR-1:0]   instr_MEM           , 
     input wire [31:0]               PC_MEM              , 
     input wire [6:2]                Exc_MEM             ,
+    input wire                      BD_MEM              ,
     input wire [31:0]               aluOut_MEM          ,
     input wire [31:0]               dataRt_MEM          ,
     input wire [4:0]                addrRt_MEM          ,
@@ -284,7 +286,7 @@ module MEM_TOP (
     CP0 cp0 (
         .clk(clk), .reset(reset), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
-        .instr(instr_MEM), .instr_WB(instr_WB), 
+        .instr(instr_MEM), .BDFlag(BD_MEM), 
         .HWInt(CP0_HWInt), .Exc(Exc), .isBD(CP0_BD), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );

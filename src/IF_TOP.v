@@ -59,7 +59,8 @@ module NPC (
     /* Control by CP0 */
     input wire [`WIDTH_KCTRL-1:0] KCtrl, 
     input wire [31:2] EPC, 
-    output wire [31:0] NPC
+    output wire [31:0] NPC,
+    output wire isJmp
 );
     parameter WIDTH_NPC = 2,
             NPC_Order   = 0,
@@ -77,6 +78,8 @@ module NPC (
         ((func == `FUNC_BRANCH) && cmp) ? (NPC_Branch) : 
         (NPC_Order)
     );
+
+    assign isJmp = (func == `FUNC_BRANCH || func == `FUNC_JUMP);
 
     wire [31:0] extImm, extJmp;
     assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
@@ -145,6 +148,7 @@ module IF_TOP (
     output reg [31:0]               code_ID     = 0, 
     output reg [31:0]               PC_ID       = 0,
     output reg [6:2]                Exc_ID      = 0,
+    output reg                      BD_ID       = 0, 
     /* Other Outputs */
     output wire [31:0]              PC_IF
 );
@@ -156,7 +160,9 @@ module IF_TOP (
     */
     /* ------ Part 1: Wires Declaration ------ */
     wire [31:0] NPC, PC, code;
+    wire isJmp;
     wire [6:2] excPC;
+    wire BD; // is Branching Delay
 
     /* ------ Part 2: Instantiate Modules ------ */
 
@@ -165,7 +171,7 @@ module IF_TOP (
         .imm16(imm16), .cmp(cmp),
         .jmpAddr(jmpAddr), .jmpReg(jmpReg),
         .KCtrl(KCtrl), .EPC(EPC), 
-        .NPC(NPC)
+        .NPC(NPC), .isJmp(isJmp)
     );
     
     PC pc (
@@ -181,17 +187,21 @@ module IF_TOP (
 
     assign PC_IF = PC;
 
+    assign BD = isJmp;
+
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk) begin
         if (reset | clr) begin
             code_ID         <=  0;
             PC_ID           <=  0;
             Exc_ID          <=  0;
+            BD_ID           <=  0;
         end
         else if (!stall) begin
             code_ID         <=  code;
             PC_ID           <=  PC;
             Exc_ID          <=  excPC;
+            BD_ID           <=  BD;
         end
     end
 

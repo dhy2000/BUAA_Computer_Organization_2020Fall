@@ -269,6 +269,7 @@ module EX_TOP (
     input wire [`WIDTH_INSTR-1:0]   instr_EX            , 
     input wire [31:0]               PC_EX               , 
     input wire [6:2]                Exc_EX              ,
+    input wire                      BD_EX               ,
     input wire [31:0]               dataRs_EX           , 
     input wire [31:0]               dataRt_EX           , 
     input wire [15:0]               imm16_EX            , 
@@ -291,6 +292,7 @@ module EX_TOP (
     output reg [`WIDTH_INSTR-1:0]   instr_MEM           = 0, 
     output reg [31:0]               PC_MEM              = 0, 
     output reg [6:2]                Exc_MEM             = 0,
+    output reg                      BD_MEM              = 0,
     // From ALU
     output reg [31:0]               aluOut_MEM          = 0,
 

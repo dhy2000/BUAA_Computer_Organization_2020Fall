@@ -264,6 +264,7 @@ module ID_TOP (
     input wire [31:0]               code_ID, // Machine Code from IM@IF
     input wire [31:0]               PC_ID,   // PC from PC@IF
     input wire [6:2]                Exc_ID,  // Exc from PC@IF
+    input wire                      BD_ID,   // Branching Delay Flag from IF
     /* Data Inputs from Forward (Data to Write back to GRF) */
     input wire [4:0]                regaddr_EX, 
     input wire [31:0]               regdata_EX, 
@@ -277,6 +278,7 @@ module ID_TOP (
     output reg [`WIDTH_INSTR-1:0]   instr_EX            = 0, 
     output reg [31:0]               PC_EX               = 0, 
     output reg [6:2]                Exc_EX              = 0,
+    output reg                      BD_EX               = 0,
     // Decoder
     output reg [31:0]               dataRs_EX           = 0, // Need Forward
     output reg [31:0]               dataRt_EX           = 0, // Need Forward
@@ -387,6 +389,7 @@ module ID_TOP (
             instr_EX            <= 0;
             PC_EX               <= 0;
             Exc_EX              <= 0;
+            BD_EX               <= 0;
             dataRs_EX           <= 0;
             dataRt_EX           <= 0;
             imm16_EX            <= 0;
@@ -402,6 +405,7 @@ module ID_TOP (
             instr_EX            <=  instr;
             PC_EX               <=  PC_ID;
             Exc_EX              <=  Exc;
+            BD_EX               <=  BD_ID;
             dataRs_EX           <=  dataRs_use;
             dataRt_EX           <=  dataRt_use;
             imm16_EX            <=  imm16;
