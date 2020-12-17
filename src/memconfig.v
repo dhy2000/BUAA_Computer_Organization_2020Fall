@@ -7,20 +7,20 @@
 `define MEMORY_CONFIGURATION_INCLUDED
 
 /* ------ DATA MEMORY ------ */
-`define DATA_STARTADDR  32'h0000_0000
+`define DATA_STARTADDR      32'h0000_0000
 `define WIDTH_DM_ADDR_WORD  12  // 12: 4096 * 4 Bytes
 `define WIDTH_DM_ADDR       (`WIDTH_DM_ADDR_WORD + 2)
 `define DM_SIZE_WORD        (1 << `WIDTH_DM_ADDR_WORD)
 `define DM_SIZE             (`DM_SIZE_WORD << 2)
-`define DATA_ENDADDR        (`DATA_STARTADDR + `DM_SIZE - 4)
+`define DATA_ENDADDR        32'h0000_2ffc
 
 /* ------ TEXT MEMORY ------ */
-`define TEXT_STARTADDR  32'h0000_3000
+`define TEXT_STARTADDR      32'h0000_3000
 `define WIDTH_IM_ADDR_WORD  12  // 12: 4096 * 4 Bytes
 `define WIDTH_IM_ADDR       (`WIDTH_IM_ADDR_WORD + 2)
 `define IM_SIZE_WORD        (1 << `WIDTH_IM_ADDR_WORD)
 `define IM_SIZE             (`IM_SIZE_WORD << 2)
-`define TEXT_ENDADDR        (`TEXT_STARTADDR + `IM_SIZE - 4)
+`define TEXT_ENDADDR        32'h0000_4ffc
 /* ------ Exception Handler ------ */
 `define KTEXT_STARTADDR 32'h0000_4180
 `define KTEXT_ENDADDR   32'h0000_4ffc
