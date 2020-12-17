@@ -68,7 +68,6 @@ module mips (
         .BrWData(BrWData), 
         .BrWE(BrWE), 
         .BrRData(BrRData),
-        .BrExc(BrExc),
         .HWInt(HWInt)
     );
 
@@ -77,8 +76,8 @@ module mips (
         .Addr1(32'b0), .WData1(32'b0), .WE1(4'b0), .RData1(), 
         // CPU Port 2
         .PC2(BrPC), .Addr2(BrAddr), .WData2(BrWData), .WE2(BrWE), .RData2(BrRData),
-        // CPU Exception and Interruption
-        .Exc(BrExc), .HWInt(HWInt), 
+        // CPU Interruption
+        .HWInt(HWInt), 
         // IM
         // .IM_Addr(), .IM_WData(), .IM_WE(), .IM_RData(32'b0), 
         // DM

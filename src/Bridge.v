@@ -26,8 +26,7 @@ module NorthBridge (
     input wire [31:0] WData2, 
     input wire [3:0] WE2, 
     output wire [31:0] RData2,
-    // Exception and Interruption
-    output wire [6:2] Exc, 
+    // Interruption
     output wire [7:2] HWInt, 
     // Outer Side
     // // IM
