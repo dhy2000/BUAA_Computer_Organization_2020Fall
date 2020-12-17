@@ -63,7 +63,7 @@ module InstrTuseTnew (
         ) : 
         (func == `FUNC_CP0) ? (
             (instr == `MTC0) ? 2 : (`TUSE_INF)
-        )
+        ) : 
         (`TUSE_INF)
     );
 
@@ -86,7 +86,7 @@ module InstrTuseTnew (
         ) : 
         (func == `FUNC_CP0) ? (
             (instr == `MFC0) ? 3 : 0
-        )
+        ) : 
         0   // NOP
     );
 
