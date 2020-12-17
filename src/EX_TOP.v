@@ -229,7 +229,7 @@ parameter   EXT_ZERO = 0,
                         LO <= product[31:0];
                         currOp <= Op_Mult;
                     end
-                    else if (instr == `DIV || instr == `DIVU) begin
+                    else if ((instr == `DIV || instr == `DIVU) && dataRt != 0) begin
                         delayCounter <= 10;
                         HI <= remainder;
                         LO <= quotient;
