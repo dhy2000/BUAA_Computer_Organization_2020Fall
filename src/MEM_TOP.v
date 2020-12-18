@@ -166,7 +166,7 @@ module PREDM (
     assign exc = (
         ((instr == `LW) && (Addr[1:0] != 0)) ? (`EXC_ADEL) : // load not-aligned word
         ((instr == `LH || instr == `LHU) && (Addr[0] != 0)) ? (`EXC_ADEL) : // load not-aligned halfword
-        ((instr == `LH || instr == `LHU) && !(Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR)) ? (`EXC_ADEL) : // load non-whole word on timer register
+        ((instr == `LH || instr == `LHU || instr == `LB || instr == `LBU) && !(Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR)) ? (`EXC_ADEL) : // load non-whole word on timer register
         ((func == `FUNC_MEM_READ) && !(
             (Addr >= `DATA_STARTADDR && Addr <= `DATA_ENDADDR) || 
             (Addr >= `TIMER0_STARTADDR && Addr <= `TIMER0_ENDADDR) || 
