@@ -42,7 +42,7 @@ module CPU (
     wire [31:0] Code_ID, PC_ID;
     wire [31:0] PC_IF; 
     wire [6:2] Exc_ID;
-    wire BD_ID;
+    wire BD_ID, BD_IF;
     // ID
     wire [`WIDTH_INSTR-1:0] Instr_EX, Instr_NPC, Instr_ID;
     wire Cmp_NPC; 
@@ -91,6 +91,7 @@ module CPU (
     wire stall_PC, stall_ID, clr_ID, clr_EX;
     wire clr_MEM, clr_WB;
     wire Dis_MULTDIV, Dis_DM, Dis_GRF;
+    wire MacroBD;
 
     /* 2. Instantiate Modules */
     // Attention: GRF
@@ -101,7 +102,7 @@ module CPU (
         .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
         .KCtrl(KCtrl_NPC), .EPC(CP0_EPC), 
         .code_ID(Code_ID), .PC_ID(PC_ID), .PC_IF(PC_IF), 
-        .Exc_ID(Exc_ID), .BD_ID(BD_ID)
+        .Exc_ID(Exc_ID), .BD_ID(BD_ID), .BD_IF(BD_IF)
     );
 
     ID_TOP id (
@@ -150,7 +151,7 @@ module CPU (
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .Tnew_MEM(Tnew_MEM), 
-        .dis_DM(Dis_DM), 
+        .dis_DM(Dis_DM), .BD_Macro(MacroBD), 
         .instr_WB(Instr_WB), .PC_WB(PC_WB),
         .memWord_WB(MemWord_WB), .offset_WB(Offset_WB),
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
@@ -179,6 +180,7 @@ module CPU (
     PipelineControl pipectrl (
         .PC_IF(PC_IF), .PC_ID(PC_ID), .PC_EX(PC_EX), .PC_MEM(PC_MEM), .PC_WB(PC_WB), 
         .instr_ID(Instr_ID), .instr_EX(Instr_EX), .instr_MEM(Instr_MEM), .instr_WB(Instr_WB), 
+        .BD_IF(BD_IF), .BD_ID(BD_ID), .BD_EX(BD_EX), .BD_MEM(BD_MEM), 
         .Exc_ID(Exc_ID), .Exc_EX(Exc_EX), .Exc_MEM(Exc_MEM),
         .addrRs_ID(AddrRs_ID), .addrRt_ID(AddrRt_ID),
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteAddr_MEM(RegWriteAddr_MEM),
@@ -186,7 +188,7 @@ module CPU (
         .MDBusy(MDBusy_EX),
         .Tnew_ID(Tnew_ID),
         .KCtrl_CP0(CP0_KCtrl), .BD_CP0(CP0_BD), 
-        .MacroPC(PC), 
+        .MacroPC(PC), .MacroBD(MacroBD), 
         .stall_PC(stall_PC),
         .stall_ID(stall_ID), .clr_ID(clr_ID), 
         .clr_EX(clr_EX), .clr_MEM(clr_MEM), .clr_WB(clr_WB),

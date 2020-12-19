@@ -150,7 +150,8 @@ module IF_TOP (
     output reg [6:2]                Exc_ID      = 0,
     output reg                      BD_ID       = 0, 
     /* Other Outputs */
-    output wire [31:0]              PC_IF
+    output wire [31:0]              PC_IF, 
+    output wire                     BD_IF
 );
     /*
         Modules included: 
@@ -186,8 +187,8 @@ module IF_TOP (
     );
 
     assign PC_IF = PC;
-
     assign BD = isJmp;
+    assign BD_IF = BD;
 
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk) begin

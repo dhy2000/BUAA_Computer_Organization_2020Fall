@@ -207,6 +207,7 @@ module MEM_TOP (
     input wire [31:0]               regdata_WB, 
     /* Input Control Signals */
     input wire                      dis_DM, 
+    input wire                      BD_Macro,   // sync with macro pc
     /* Data Outputs to Next Pipeline */
     // instruction
     output reg [`WIDTH_INSTR-1:0]   instr_WB            = 0, 
@@ -285,7 +286,7 @@ module MEM_TOP (
     CP0 cp0 (
         .clk(clk), .reset(reset), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
-        .instr(instr_MEM), .BDFlag(BD_MEM), 
+        .instr(instr_MEM), .BDFlag(BD_Macro), 
         .HWInt(CP0_HWInt), .Exc(Exc), .isBD(CP0_BD), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );

@@ -102,6 +102,10 @@ module PipelineControl (
     input wire [`WIDTH_INSTR-1:0] instr_EX,
     input wire [`WIDTH_INSTR-1:0] instr_MEM, 
     input wire [`WIDTH_INSTR-1:0] instr_WB, 
+    input wire BD_IF, 
+    input wire BD_ID, 
+    input wire BD_EX, 
+    input wire BD_MEM, 
     // Exception Code on every stage
     input wire [6:2] Exc_ID, 
     input wire [6:2] Exc_EX,
@@ -121,6 +125,7 @@ module PipelineControl (
     output wire [`WIDTH_T-1:0] Tnew_ID, 
     // Macro PC
     output wire [31:0] MacroPC, 
+    output wire MacroBD, // BD flag sync with MacroPC
     // Output Pipeline Control Signals
     output wire stall_PC, 
     output wire stall_ID, 
@@ -178,11 +183,15 @@ module PipelineControl (
     wire [`WIDTH_FUNC-1:0] func_WB;
     IC ic (.instr(instr_WB), .format(), .func(func_WB));
 
-    assign MacroPC = // ((func_WB == `FUNC_BRANCH) || (func_WB == `FUNC_JUMP)) ? (PC_WB) :  // Branch Delay Slot
-                        (PC_MEM || Exc_MEM) ? (PC_MEM) : 
+    assign MacroPC =    (PC_MEM || Exc_MEM) ? (PC_MEM) : 
                         (PC_EX || Exc_EX) ? (PC_EX) : 
                         (PC_ID || Exc_ID) ? (PC_ID) : 
                         (PC_IF) ? (PC_IF) : 0;
+    assign MacroBD = (PC_MEM || Exc_MEM) ? (BD_MEM) : 
+                        (PC_EX || Exc_EX) ? (BD_EX) : 
+                        (PC_ID || Exc_ID) ? (BD_ID) : 
+                        (PC_IF) ? (BD_IF) : 0;
+
     /* Merge output signals */
     assign stall_PC = (!flushAll) && (stall_stallPC);
     assign stall_ID = (!flushAll) && (stall_stallID);
