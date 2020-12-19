@@ -183,7 +183,7 @@ module PipelineControl (
     wire [`WIDTH_FUNC-1:0] func_WB;
     IC ic (.instr(instr_WB), .format(), .func(func_WB));
 
-    assign MacroPC =    (PC_MEM || Exc_MEM) ? (PC_MEM) : 
+    assign MacroPC = (PC_MEM || Exc_MEM) ? (PC_MEM) : 
                         (PC_EX || Exc_EX) ? (PC_EX) : 
                         (PC_ID || Exc_ID) ? (PC_ID) : 
                         (PC_IF) ? (PC_IF) : 0;
