@@ -88,9 +88,9 @@ module NPC (
     wire terminated;
     assign terminated = (PC == `KTEXT_STARTADDR - 4);
 
-    assign NPC = (terminated) ? (PC) : 
-                (KCtrl == `KCTRL_KTEXT) ? (`KTEXT_STARTADDR) : 
+    assign NPC = (KCtrl == `KCTRL_KTEXT) ? (`KTEXT_STARTADDR) : 
                 (KCtrl == `KCTRL_ERET) ? ({EPC[31:2], 2'b0}) : 
+                (terminated) ? (PC) : 
                 (npcOp == NPC_Order) ? (PC + 4) : 
                 (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
@@ -113,7 +113,7 @@ module IM (
     wire [31:0] memword;
     assign memword = (PC >= `TEXT_STARTADDR && PC < (`TEXT_STARTADDR + `IM_SIZE)) ? mem[wordIndex] : 0;
 
-    assign code = memword;
+    assign code = (^memword === 1'bx) ? 0 : memword;
 
     initial begin
         $readmemh(`CODE_FILE, mem);
