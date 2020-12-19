@@ -27,7 +27,7 @@ module PC (
     assign PC = pc;
 
     // Exception
-    assign exc = ((!(PC >= `TEXT_STARTADDR && PC <= `TEXT_ENDADDR)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
+    assign exc = ((!(PC >= `TEXT_STARTADDR && PC < `TEXT_ENDADDR)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
     
     initial begin
         pc <= `TEXT_STARTADDR;
