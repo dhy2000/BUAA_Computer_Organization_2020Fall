@@ -96,7 +96,7 @@ module NPC (
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
                 (npcOp == NPC_JmpReg) ? (jmpReg) : 
                 (PC + 4);
-    // assign PCToLink = PC + 8; // Delay Slot.
+
 endmodule
 
 module IM (

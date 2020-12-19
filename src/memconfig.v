@@ -23,7 +23,7 @@
 `define TEXT_ENDADDR        32'h0000_5000 // [start, end)
 /* ------ Exception Handler ------ */
 `define KTEXT_STARTADDR 32'h0000_4180
-`define KTEXT_ENDADDR   32'h0000_5000 // [start, end)
+`define KTEXT_ENDADDR   32'h0000_4ffc // [start, end)
 
 `define CODE_FILE       "code.txt"  // hextext
 `define HANDLER_FILE    "code_handler.txt" // hextext

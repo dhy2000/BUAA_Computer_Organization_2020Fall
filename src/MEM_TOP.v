@@ -111,10 +111,10 @@ parameter   idSR    = 12,
             end
             // EPC
             if (Interrupt || Exception) begin
-                epc <= isDelayBranch ? (PC - 4) : PC;
+                epc <= ((isDelayBranch ? (PC - 4) : PC) << 2) >> 2;
             end
             else if (instr == `MTC0 && CP0id == idEPC) begin
-                epc <= WData;
+                epc <= {WData[31:2], 2'b00};
             end
 
             // PrID
