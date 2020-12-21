@@ -9,6 +9,8 @@ module ButtonSwitch (
     input wire [3:0] key_input, 
     output reg [3:0] key_state
 );
+    assign Dout = {28'd0, key_state};
+
     parameter FILTER_DURATION = 32'd25_000; // 1ms
     // IDLE <===> FILTER
     localparam _IDLE = 1'b0, _FILTER = 1'b1;
