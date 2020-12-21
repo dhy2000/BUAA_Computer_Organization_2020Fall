@@ -4,7 +4,7 @@ module LED (
     input wire clk, 
     input wire rst_n, 
     input wire WE, 
-    input wire [3:0] Din, 
+    input wire [31:0] Din, 
     output wire [31:0] Dout, 
     /* ------ */
     output reg [3:0] led
@@ -18,7 +18,7 @@ module LED (
         end
         else begin
             if (WE) begin
-                led <= Din;
+                led <= Din[3:0];
             end
         end
     end
