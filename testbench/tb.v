@@ -2,20 +2,19 @@
 
 module tb_mips;
     reg clk = 0;
-    reg reset = 0;
+    reg rst_n = 0;
 
     wire [31:0] addr;
 
     mips uut (
         .clk(clk),
-        .reset(reset),
+        .rst_n(rst_n),
         .interrupt(1'b0), 
         .addr(addr)
     );
 
     initial begin
-        reset = 1;
-        #20 reset = 0;
+        #20 rst_n = 1;
         #5000000 $finish;
     end
 
