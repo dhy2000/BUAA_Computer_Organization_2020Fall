@@ -28,6 +28,7 @@ module mips (
     wire [31:0] BrAddr;
     wire [31:0] BrWData;
     wire [3:0] BrWE;
+    wire [31:0] IMPC;
     
     // NorthBridge
     wire [31:0] BrRData;
@@ -40,6 +41,8 @@ module mips (
     wire SBr_WE;
     // DataMem
     wire [31:0] DM_RData;
+    // InstrMem
+    wire [31:0] IM_Code;
     // SouthBridge
     wire [31:0] SBr_RData;
     wire [7:2] SBr_HWInt;
@@ -68,18 +71,16 @@ module mips (
         .BrWData(BrWData), 
         .BrWE(BrWE), 
         .BrRData(BrRData),
-        .HWInt(HWInt)
+        .HWInt(HWInt),
+        .IMPC(IMPC),
+        .IMCode(IM_Code) 
     );
 
     NorthBridge nbridge (
-        // CPU Port 1
-        .Addr1(32'b0), .WData1(32'b0), .WE1(4'b0), .RData1(), 
-        // CPU Port 2
-        .PC2(BrPC), .Addr2(BrAddr), .WData2(BrWData), .WE2(BrWE), .RData2(BrRData),
+        // CPU Port
+        .PC(BrPC), .Addr(BrAddr), .WData(BrWData), .WE(BrWE), .RData(BrRData),
         // CPU Interruption
         .HWInt(HWInt), 
-        // IM
-        // .IM_Addr(), .IM_WData(), .IM_WE(), .IM_RData(32'b0), 
         // DM
         .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(DM_RData),
         // South Bridge
@@ -90,6 +91,10 @@ module mips (
     DataMem dm (
         .clk(clk), .reset(reset), 
         .PC(DM_PC), .Addr(DM_Addr[31:2]), .WData(DM_WData), .WE(DM_WE), .RData(DM_RData)
+    );
+
+    InstrMem im (
+        .PC(IMPC), .code(IM_Code)
     );
 
     SouthBridge sbridge (

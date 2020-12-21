@@ -15,17 +15,12 @@
  */
 module NorthBridge (
     // CPU Side
-    // RW Port 1 (For IM)
-    input wire [31:0] Addr1, 
-    input wire [31:0] WData1, 
-    input wire [3:0] WE1, 
-    output wire [31:0] RData1,
     // RW Port 2 (For DM)
-    input wire [31:0] PC2, 
-    input wire [31:0] Addr2, 
-    input wire [31:0] WData2, 
-    input wire [3:0] WE2, 
-    output wire [31:0] RData2,
+    input wire [31:0] PC, 
+    input wire [31:0] Addr, 
+    input wire [31:0] WData, 
+    input wire [3:0] WE, 
+    output wire [31:0] RData,
     // Interruption
     output wire [7:2] HWInt, 
     // Outer Side
@@ -49,24 +44,24 @@ module NorthBridge (
     input wire [7:2] SBr_HWInt
 );
     // DM
-    assign DM_PC = PC2;
-    assign DM_Addr = Addr2;
-    assign DM_WData = WData2;
+    assign DM_PC = PC;
+    assign DM_Addr = Addr;
+    assign DM_WData = WData;
     
-    assign DM_WE = (Addr2 >= `DATA_STARTADDR && Addr2 < `DATA_ENDADDR) ? (WE2) : 4'b0;
+    assign DM_WE = (Addr >= `DATA_STARTADDR && Addr < `DATA_ENDADDR) ? (WE) : 4'b0;
 
     // South Bridge
-    assign SBr_PC = PC2;
-    assign SBr_Addr = Addr2;
-    assign SBr_WData = WData2;
+    assign SBr_PC = PC;
+    assign SBr_Addr = Addr;
+    assign SBr_WData = WData;
     assign SBr_WE = (
-        (Addr2 >= `TIMER0_STARTADDR && Addr2 < `TIMER0_ENDADDR) ||
-        (Addr2 >= `TIMER1_STARTADDR && Addr2 < `TIMER1_ENDADDR)
-    ) ? (&WE2) : 0;
+        (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ||
+        (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR)
+    ) ? (&WE) : 0;
 
-    assign RData2 = (Addr2 >= `DATA_STARTADDR && Addr2 < `DATA_ENDADDR) ? (DM_RData) : 
-                    (Addr2 >= `TIMER0_STARTADDR && Addr2 < `TIMER0_ENDADDR) ? (SBr_RData) : 
-                    (Addr2 >= `TIMER1_STARTADDR && Addr2 < `TIMER1_ENDADDR) ? (SBr_RData) : 
+    assign RData =  (Addr >= `DATA_STARTADDR && Addr < `DATA_ENDADDR) ? (DM_RData) : 
+                    (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ? (SBr_RData) : 
+                    (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ? (SBr_RData) : 
                     0 ;
     assign HWInt = SBr_HWInt;
 

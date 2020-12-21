@@ -31,7 +31,10 @@ module CPU (
     output wire [31:0] BrWData, 
     output wire [3:0] BrWE, 
     input wire [31:0] BrRData, 
-    input wire [7:2] HWInt 
+    input wire [7:2] HWInt, 
+    /* IM */
+    output wire [31:0] IMPC, 
+    input wire [31:0] IMCode
 );
     /*
         5-Level Pipeline: 
@@ -102,7 +105,8 @@ module CPU (
         .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
         .KCtrl(KCtrl_NPC), .EPC(CP0_EPC), 
         .code_ID(Code_ID), .PC_ID(PC_ID), .PC_IF(PC_IF), 
-        .Exc_ID(Exc_ID), .BD_ID(BD_ID), .BD_IF(BD_IF)
+        .Exc_ID(Exc_ID), .BD_ID(BD_ID), .BD_IF(BD_IF),
+        .IM_PC(IMPC), .IM_code(IMCode)
     );
 
     ID_TOP id (

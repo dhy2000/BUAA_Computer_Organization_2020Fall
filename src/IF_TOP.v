@@ -99,33 +99,6 @@ module NPC (
 
 endmodule
 
-module IM (
-    input wire [31:0] PC,
-    output wire [31:0] code
-);
-    // Memory
-    reg [31:0] mem [0: `IM_SIZE_WORD - 1];
-    wire [31:0] baseAddr;
-    assign baseAddr = PC - `TEXT_STARTADDR;
-    wire [`WIDTH_IM_ADDR-1:2] wordIndex;
-    assign wordIndex = baseAddr[`WIDTH_IM_ADDR-1:2];
-
-    wire [31:0] memword;
-    assign memword = (PC >= `TEXT_STARTADDR && PC < (`TEXT_STARTADDR + `IM_SIZE)) ? mem[wordIndex] : 0;
-
-    assign code = (^memword === 1'bx) ? 0 : memword;
-
-    initial begin
-        $readmemh(`CODE_FILE, mem);
-        $readmemh(`HANDLER_FILE, mem, 
-            ((`KTEXT_STARTADDR - `TEXT_STARTADDR) >> 2), 
-            ((`KTEXT_ENDADDR - `TEXT_STARTADDR) >> 2)
-        );
-    end
-
-    
-endmodule
-
 module IF_TOP (
     /* Global Inputs */
     // Time Sequence
@@ -149,16 +122,13 @@ module IF_TOP (
     output reg [31:0]               PC_ID       = 0,
     output reg [6:2]                Exc_ID      = 0,
     output reg                      BD_ID       = 0, 
+    /* Interfaces for IM */
+    output wire [31:0]              IM_PC, 
+    input wire [31:0]               IM_code, 
     /* Other Outputs */
     output wire [31:0]              PC_IF, 
     output wire                     BD_IF
 );
-    /*
-        Modules included: 
-            PC, NPC, IM
-        (Pseudo) Modules:
-            
-    */
     /* ------ Part 1: Wires Declaration ------ */
     wire [31:0] NPC, PC, code;
     wire isJmp;
@@ -182,9 +152,8 @@ module IF_TOP (
         .exc(excPC)
     );
 
-    IM im (
-        .PC(PC), .code(code)
-    );
+    assign IM_PC = PC;
+    assign code = IM_code;
 
     assign PC_IF = PC;
     assign BD = isJmp;
