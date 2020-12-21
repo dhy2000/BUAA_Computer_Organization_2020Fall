@@ -23,7 +23,7 @@
 `define TEXT_ENDADDR        32'h0000_5000 // [start, end)
 /* ------ Exception Handler ------ */
 `define KTEXT_STARTADDR 32'h0000_4180
-`define KTEXT_ENDADDR   32'h0000_4ffc // [start, end)
+`define KTEXT_ENDADDR   32'h0000_4ffc // [start, end]
 
 `define CODE_FILE       "code.txt"  // hextext
 `define HANDLER_FILE    "code_handler.txt" // hextext
@@ -31,11 +31,18 @@
 
 /* ------ Device Address ------ */
 `define TIMER0_STARTADDR    32'h0000_7F00
-`define TIMER0_ENDADDR      32'h0000_7F0B // [start, end)
+`define TIMER0_ENDADDR      32'h0000_7F0B // [start, end]
 
 `define TIMER1_STARTADDR    32'h0000_7F10
-`define TIMER1_ENDADDR      32'h0000_7F1B // [start, end)
+`define TIMER1_ENDADDR      32'h0000_7F1B // [start, end]
 
+`define LED_ADDR            32'h0000_7F20
 
+`define DIGITALTUBE_ADDR    32'h0000_7F30
+
+`define BUTTONSWITCH_ADDR   32'h0000_7F40
+
+`define BUZZER_STARTADDR    32'h0000_7F50
+`define BUZZER_ENDADDR      32'h0000_7F5B
 
 `endif

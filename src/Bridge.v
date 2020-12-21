@@ -22,11 +22,6 @@ module NorthBridge (
     // Interruption
     output wire [7:2] HWInt, 
     // Outer Side
-    // // IM
-    // output wire [31:0] IM_Addr, 
-    // output wire [31:0] IM_WData, 
-    // output wire [3:0] IM_WE, 
-    // input wire [31:0] IM_RData, 
     // DM
     output wire [31:0] DM_PC, 
     output wire [31:0] DM_Addr, 
@@ -54,12 +49,20 @@ module NorthBridge (
     assign SBr_WData = WData;
     assign SBr_WE = (
         (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ||
-        (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR)
+        (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) || 
+        (Addr == `LED_ADDR) || 
+        (Addr == `DIGITALTUBE_ADDR) || 
+        (Addr == `BUTTONSWITCH_ADDR) || 
+        (Addr >= `BUZZER_STARTADDR && Addr < `BUZZER_ENDADDR)
     ) ? (&WE) : 0;
 
     assign RData =  (Addr >= `DATA_STARTADDR && Addr < `DATA_ENDADDR) ? (DM_RData) : 
                     (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ? (SBr_RData) : 
                     (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ? (SBr_RData) : 
+                    (Addr == `LED_ADDR) ? (SBr_RData) : 
+                    (Addr == `DIGITALTUBE_ADDR) ? (SBr_RData) : 
+                    (Addr == `BUTTONSWITCH_ADDR) ? (SBr_RData) : 
+                    (Addr >= `BUZZER_STARTADDR && Addr < `BUZZER_ENDADDR) ? (SBr_RData) : 
                     0 ;
     assign HWInt = SBr_HWInt;
 
@@ -90,8 +93,22 @@ module SouthBridge (
     output wire Timer1_WE, 
     input wire [31:0] Timer1_RData, 
     input wire Timer1_Int, 
-    // External Interrupt
-    input wire Ext_Int
+    // LED
+    output wire [31:0] LED_WData, 
+    output wire LED_WE, 
+    input wire [31:0] LED_RData, 
+    // Digital Tube
+    output wire [31:0] DigitalTube_WData, 
+    output wire DigitalTube_WE, 
+    input wire [31:0] DigitalTube_RData, 
+    // Button Switch
+    input wire [31:0] ButtonSwitch_RData, 
+    input wire [31:0] ButtonSwitch_Int, 
+    // Buzzer
+    output wire [31:2] Buzzer_Addr, 
+    output wire [31:0] Buzzer_WData, 
+    output wire Buzzer_WE, 
+    output wire [31:0] Buzzer_RData
 );
     assign Timer0_Addr = Addr[31:2];
     assign Timer0_WData = WData;
@@ -101,9 +118,23 @@ module SouthBridge (
     assign Timer1_WData = WData;
     assign Timer1_WE = (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ? (WE) : 0;
 
+    assign LED_WData = WData;
+    assign LED_WE = (Addr == `LED_ADDR) ? (WE) : 0;
+    
+    assign DigitalTube_WData = WData;
+    assign DigitalTube_WE = (Addr == `DIGITALTUBE_ADDR) ? (WE) : 0;
+
+    assign Buzzer_Addr = Addr[31:2];
+    assign Buzzer_WE = (Addr >= `BUZZER_STARTADDR && Addr < `BUZZER_ENDADDR) ? (WE) : 0;
+    assign Buzzer_WData = WData;
+
     assign RData = (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ? (Timer0_RData) : 
                     (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ? (Timer1_RData) : 
+                    (Addr == `LED_ADDR) ? (LED_RData) : 
+                    (Addr == `DIGITALTUBE_ADDR) ? (DigitalTube_RData) : 
+                    (Addr == `BUTTONSWITCH_ADDR) ? (ButtonSwitch_RData) : 
+                    (Addr >= `BUZZER_STARTADDR && Addr < `BUZZER_ENDADDR) ? (Buzzer_RData) : 
                     0;
 
-    assign HWInt = {3'b0, Ext_Int, Timer1_Int, Timer0_Int};
+    assign HWInt = {3'b0, ButtonSwitch_Int, Timer1_Int, Timer0_Int};
 endmodule

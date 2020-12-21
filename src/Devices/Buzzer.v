@@ -11,9 +11,9 @@ module Buzzer(
     input wire rst_n, 
     input wire clk_cpu, // slow clock
     input wire [31:2] Addr, 
-    input wire [31:0] DIn, 
+    input wire [31:0] Din, 
     input wire WE, 
-    output wire [31:0] DOut, 
+    output wire [31:0] Dout, 
     // Output
     output reg buzz
 );
@@ -21,8 +21,8 @@ module Buzzer(
     reg state;
     localparam CLK_FREQ = 32'd50_000_000;
     reg [31:0] mem[2:0];
-    assign DOut = mem[Addr[3:2]];
-    wire [31:0] din = (Addr[3:2] == 0) ? {31'b0, DIn[0]} : DIn;
+    assign Dout = mem[Addr[3:2]];
+    wire [31:0] din = (Addr[3:2] == 0) ? {31'b0, Din[0]} : Din;
     integer i;
     reg [31:0] freq_count, dur_count;
     

@@ -7,7 +7,7 @@ module DigitalTube(
     input wire [31:0] Din, 
     output wire [31:0] Dout, 
     /* ------ ------ */
-    input wire clk_scan, 
+    // input wire clk_scan, 
     output reg [3:0] sel, 
     output wire [7:0] digit
 );
