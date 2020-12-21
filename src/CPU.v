@@ -1,28 +1,10 @@
-/* 
- * File Name: CPU.v
- * Module Name: CPU
- * Description: Top Module of CPU
- */
-`ifndef CPU_CPU_INCLUDED
-`define CPU_CPU_INCLUDED
-
 `default_nettype none
 `include "instructions.v"
 `include "exception.v"
-/* ---------- Parts ---------- */
-// `include "IF_TOP.v"
-// `include "ID_TOP.v"
-// `include "EX_TOP.v"
-// `include "MEM_TOP.v"
-// `include "WB_TOP.v"
-// `include "GRF.v"
 
-// `include "PipelineControl.v"
-
-/* ---------- Main Body ---------- */
 module CPU (
     input wire clk,
-    input wire reset,
+    input wire rst_n,
     /* Ports in P7 */
     output wire [31:0] PC, 
     /* Connect With Bridge */
@@ -100,7 +82,7 @@ module CPU (
     // Attention: GRF
 
     IF_TOP ifu (
-        .clk(clk), .reset(reset), .stall(stall_ID), .clr(clr_ID), .stallPC(stall_PC),
+        .clk(clk), .rst_n(rst_n), .stall(stall_ID), .clr(clr_ID), .stallPC(stall_PC),
         .instr(Instr_NPC), .cmp(Cmp_NPC),
         .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
         .KCtrl(KCtrl_NPC), .EPC(CP0_EPC), 
@@ -110,7 +92,7 @@ module CPU (
     );
 
     ID_TOP id (
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(clr_EX),
+        .clk(clk), .rst_n(rst_n), .stall(1'b0), .clr(clr_EX),
         .code_ID(Code_ID), .PC_ID(PC_ID), .Exc_ID(Exc_ID), .BD_ID(BD_ID), 
         .regaddr_EX(RegWriteAddr_EX), .regdata_EX(RegWriteData_EX), // Forward
         .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
@@ -129,7 +111,7 @@ module CPU (
     );
 
     EX_TOP ex (
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(clr_MEM),
+        .clk(clk), .rst_n(rst_n), .stall(1'b0), .clr(clr_MEM),
         .instr_EX(Instr_EX), .PC_EX(PC_EX), .Exc_EX(Exc_EX), .BD_EX(BD_EX), 
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
@@ -148,7 +130,7 @@ module CPU (
     );
 
     MEM_TOP mem (
-        .clk(clk), .reset(reset), .stall(1'b0), .clr(clr_WB),
+        .clk(clk), .rst_n(rst_n), .stall(1'b0), .clr(clr_WB),
         .instr_MEM(Instr_MEM), .PC_MEM(PC_MEM), .Exc_MEM(Exc_MEM), .BD_MEM(BD_MEM), 
         .aluOut_MEM(AluOut_MEM), 
         .addrRt_MEM(AddrRt_MEM), .addrRd_MEM(AddrRd_MEM), .dataRt_MEM(DataRt_MEM),
@@ -175,7 +157,7 @@ module CPU (
     );
 
     GRF grf (
-        .clk(clk), .reset(reset), .PC(PC_GRF),
+        .clk(clk), .rst_n(rst_n), .PC(PC_GRF),
         .RAddr1(RA1_GRF), .RAddr2(RA2_GRF),
         .WAddr(RegWriteAddr_GRF), .WData(RegWriteData_GRF),
         .RData1(RD1_GRF), .RData2(RD2_GRF)
@@ -207,5 +189,3 @@ module CPU (
     // assign DM_RData = BrRData;
 
 endmodule
-
-`endif

@@ -3,16 +3,13 @@
  * Module Name: DataMem
  * Description: Data Memory
  */
-`ifndef MEMORY_DATAMEM_INCLUDED
-`define MEMORY_DATAMEM_INCLUDED
-
 `default_nettype none
 
 `include "memconfig.v"
 
 module DataMem (
     input wire clk, 
-    input wire reset, 
+    input wire rst_n, 
     input wire [31:0] PC, 
     input wire [31:2] Addr,  // word-aligned, start at 0
     input wire [31:0] WData, 
@@ -72,8 +69,8 @@ module DataMem (
         resetMem;
     end
 
-    always @(posedge clk) begin
-        if (reset) begin
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             resetMem;
         end
         else begin
@@ -83,5 +80,3 @@ module DataMem (
         end
     end
 endmodule
-
-`endif

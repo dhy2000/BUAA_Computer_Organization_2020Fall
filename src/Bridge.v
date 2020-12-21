@@ -3,8 +3,6 @@
  * Module Name: NorthBridge, SouthBridge
  * Description: Map the address space into separated devices.
  */
-`ifndef BRIDGE_INCLUDED
-`define BRIDGE_INCLUDED
 
 `default_nettype none
 `include "memconfig.v"
@@ -109,5 +107,3 @@ module SouthBridge (
 
     assign HWInt = {3'b0, Ext_Int, Timer1_Int, Timer0_Int};
 endmodule
-
-`endif

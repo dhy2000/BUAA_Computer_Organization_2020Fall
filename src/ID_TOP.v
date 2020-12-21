@@ -1,11 +1,3 @@
-`ifndef CPU_ID_TOP_INCLUDED
-`define CPU_ID_TOP_INCLUDED
-
-/* 
- *  File Name: ID_TOP.v
- *  Module: ID_TOP
- *  Description: Pack (DECD, COMP, Interfaces for GRF, Pipeline Register) 
- */
 
 `default_nettype none
 `include "instructions.v"
@@ -256,7 +248,7 @@ module ID_TOP (
     /* Global Inputs */
     // Time Sequence
     input wire                      clk, 
-    input wire                      reset, 
+    input wire                      rst_n, 
     // Pipeline Registers
     input wire                      stall, 
     input wire                      clr, 
@@ -384,8 +376,8 @@ module ID_TOP (
                             ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
                             0; // Default
     /* ------ Part 3: Pipeline Registers ------ */
-    always @ (posedge clk) begin
-        if (reset | clr) begin
+    always @ (posedge clk or negedge rst_n) begin
+        if ((!rst_n) | clr) begin
             instr_EX            <= 0;
             PC_EX               <= 0;
             Exc_EX              <= 0;
@@ -431,5 +423,3 @@ module ID_TOP (
     assign addrRt_ID = addrRt;
     
 endmodule
-
-`endif

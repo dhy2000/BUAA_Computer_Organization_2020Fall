@@ -3,9 +3,6 @@
  *  Module: EX_TOP
  *  Description: Pack ALU and forward logic and pipeline register into a top module
  */
-`ifndef CPU_EX_TOP_INCLUDED
-`define CPU_EX_TOP_INCLUDED
-
 `default_nettype none
 `include "instructions.v"
 `include "exception.v"
@@ -150,7 +147,7 @@ module MULTDIV (
     /* Input */
     // Time Sequential
     input wire clk, 
-    input wire reset, 
+    input wire rst_n, 
     // Control
     input wire [`WIDTH_INSTR-1:0] instr,
     input wire enable, 
@@ -208,8 +205,8 @@ parameter   EXT_ZERO = 0,
     assign remainder = (extOp == EXT_ZERO) ? rem_u : rem_s;
     
     
-    always @(posedge clk) begin
-        if (reset) begin
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             HI <= 0;
             LO <= 0;
             delayCounter <= 0;
@@ -261,7 +258,7 @@ module EX_TOP (
     /* Global Inputs */
     // Time Sequence
     input wire                      clk, 
-    input wire                      reset, 
+    input wire                      rst_n, 
     // Pipeline Registers
     input wire                      stall, 
     input wire                      clr, 
@@ -358,7 +355,7 @@ module EX_TOP (
     );
 
     MULTDIV md (
-        .clk(clk), .reset(reset), 
+        .clk(clk), .rst_n(rst_n), 
         .instr(instr_EX), .enable(~dis_MULTDIV), 
         .dataRs(dataRs_alu), .dataRt(dataRt_alu), 
         .out(mdOut), .busy(mdBusy)
@@ -384,8 +381,8 @@ module EX_TOP (
     assign exOut = (instr == `MFLO || instr == `MFHI) ? mdOut : aluOut;
 
     /* ------ Part 3: Pipeline Registers ------ */
-    always @(posedge clk) begin
-        if (reset | clr) begin
+    always @(posedge clk or negedge rst_n) begin
+        if ((!rst_n) | clr) begin
             instr_MEM                   <=  0;
             PC_MEM                      <=  0;
             Exc_MEM                     <=  0;
@@ -414,5 +411,3 @@ module EX_TOP (
     end
 
 endmodule
-
-`endif

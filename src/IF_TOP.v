@@ -1,11 +1,3 @@
-`ifndef CPU_IF_TOP_INCLUDED
-`define CPU_IF_TOP_INCLUDED
-/* 
- *  File Name: IF_LEVEL.v
- *  Module: NPC, PC, IM
- *  Description: Pack (NPC, PC, IM) into a top module 
- */
-
 `default_nettype none
 `include "instructions.v"
 `include "memconfig.v"
@@ -13,7 +5,7 @@
 
 module PC (
     input wire clk, 
-    input wire reset,
+    input wire rst_n,
     // control
     input wire En,  // Write Enable, 0 if the pipeline stalls
     // data
@@ -33,8 +25,8 @@ module PC (
         pc <= `TEXT_STARTADDR;
     end
     
-    always @(posedge clk ) begin
-        if (reset) begin
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             pc <= `TEXT_STARTADDR;
         end
         else begin
@@ -103,7 +95,7 @@ module IF_TOP (
     /* Global Inputs */
     // Time Sequence
     input wire                      clk, 
-    input wire                      reset, 
+    input wire                      rst_n, 
     // Pipeline Registers
     input wire                      stall, 
     input wire                      clr, 
@@ -146,7 +138,7 @@ module IF_TOP (
     );
     
     PC pc (
-        .clk(clk), .reset(reset),
+        .clk(clk), .rst_n(rst_n),
         .En(~stallPC), // 
         .NPC(NPC), .PC(PC), 
         .exc(excPC)
@@ -160,8 +152,8 @@ module IF_TOP (
     assign BD_IF = BD;
 
     /* ------ Part 3: Pipeline Registers ------ */
-    always @(posedge clk) begin
-        if (reset | clr) begin
+    always @(posedge clk or negedge rst_n) begin
+        if ((!rst_n) | clr) begin
             code_ID         <=  0;
             PC_ID           <=  0;
             Exc_ID          <=  0;
@@ -176,4 +168,3 @@ module IF_TOP (
     end
 
 endmodule
-`endif

@@ -5,19 +5,10 @@
  */
 `default_nettype none
 
-// `include "CPU.v"
-// `include "Bridge.v"
-
-// Memory
-// `include "DataMem.v"
-
-// Device
-// `include "Timer.v"
-
 /* ---------- Main Body ---------- */
 module mips (
     input wire clk,
-    input wire reset, 
+    input wire rst_n, 
     input wire interrupt, 
     output wire [31:0] addr
 );
@@ -64,7 +55,7 @@ module mips (
     assign addr = PC;
     CPU cpu (
         .clk(clk), 
-        .reset(reset), 
+        .rst_n(rst_n), 
         .PC(PC), 
         .BrPC(BrPC), 
         .BrAddr(BrAddr), 
@@ -89,7 +80,7 @@ module mips (
     );
 
     DataMem dm (
-        .clk(clk), .reset(reset), 
+        .clk(clk), .rst_n(rst_n), 
         .PC(DM_PC), .Addr(DM_Addr[31:2]), .WData(DM_WData), .WE(DM_WE), .RData(DM_RData)
     );
 
@@ -109,13 +100,13 @@ module mips (
     );
 
     Timer timer0 (
-        .clk(clk), .reset(reset), 
+        .clk(clk), .rst_n(rst_n), 
         .Addr(Timer0_Addr), .WE(Timer0_WE), .Din(Timer0_WData), 
         .Dout(Timer0_RData), .IRQ(Timer0_Int)
     );
 
     Timer timer1 (
-        .clk(clk), .reset(reset), 
+        .clk(clk), .rst_n(rst_n), 
         .Addr(Timer1_Addr), .WE(Timer1_WE), .Din(Timer1_WData), 
         .Dout(Timer1_RData), .IRQ(Timer1_Int)
     );

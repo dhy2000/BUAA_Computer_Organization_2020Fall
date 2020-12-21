@@ -5,14 +5,11 @@
  *  Outputs: (RData1, RData2)
  *  Description: General Register File
  */
-`ifndef CPU_GRF_INCLUDED
-`define CPU_GRF_INCLUDED
-
 `default_nettype none
 
 module GRF (
     input wire clk,
-    input wire reset,
+    input wire rst_n,
     input wire [4:0] RAddr1, 
     input wire [4:0] RAddr2,
     // input wire writeEn,
@@ -56,8 +53,8 @@ module GRF (
         resetReg;
     end
 
-    always @(posedge clk) begin
-        if (reset) begin
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             resetReg;
         end
         else begin
@@ -68,5 +65,3 @@ module GRF (
     end
 
 endmodule
-
-`endif

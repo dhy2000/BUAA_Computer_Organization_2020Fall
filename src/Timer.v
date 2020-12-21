@@ -15,7 +15,7 @@
 
 module Timer(
     input wire clk,
-    input wire reset,
+    input wire rst_n,
     input wire [31:2] Addr,
     input wire WE,
     input wire [31:0] Din,
@@ -34,8 +34,8 @@ module Timer(
 	wire [31:0] load = Addr[3:2] == 0 ? {28'h0, Din[3:0]} : Din;
 	
 	integer i;
-	always @(posedge clk) begin
-		if(reset) begin
+	always @(posedge clk or negedge rst_n) begin
+		if(!rst_n) begin
 			state <= 0; 
 			for(i = 0; i < 3; i = i+1) mem[i] <= 0;
 			_IRQ <= 0;

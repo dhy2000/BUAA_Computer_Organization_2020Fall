@@ -1,5 +1,3 @@
-`ifndef CPU_MEM_TOP_INCLUDED
-`define CPU_MEM_TOP_INCLUDED
 /* 
  *  File Name: MEM_LEVEL.v
  *  Module: DM
@@ -13,7 +11,7 @@
 
 module CP0 (
     input wire clk, 
-    input wire reset,
+    input wire rst_n,
     input wire [31:0] PC,       // Macro PC?
     // input wire [31:0] PC_WB,    // Maybe not needed?
     input wire [31:0] WData, 
@@ -78,8 +76,8 @@ parameter   idSR    = 12,
 
     assign isBD = (Interrupt || Exception) ? BDFlag : 0;
 
-    always @ (posedge clk) begin
-        if (reset) begin
+    always @ (posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             EXL <= 0;
             IE <= 1;
             IM <= 6'b111111;
@@ -186,7 +184,7 @@ module MEM_TOP (
     /* Global Inputs */
     // Time Sequence
     input wire                      clk, 
-    input wire                      reset, 
+    input wire                      rst_n, 
     // Pipeline Registers
     input wire                      stall, 
     input wire                      clr, 
@@ -284,7 +282,7 @@ module MEM_TOP (
 
     // CP0
     CP0 cp0 (
-        .clk(clk), .reset(reset), .PC(CP0_PC),
+        .clk(clk), .rst_n(rst_n), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
         .instr(instr_MEM), .BDFlag(BD_Macro), 
         .HWInt(CP0_HWInt), .Exc(Exc), .isBD(CP0_BD), 
@@ -310,8 +308,8 @@ module MEM_TOP (
     );
 
     /* ------ Part 3: Pipeline Registers ------ */
-    always @(posedge clk) begin
-        if (reset | clr) begin
+    always @(posedge clk or negedge rst_n) begin
+        if ((!rst_n) | clr) begin
             instr_WB                <=  0;
             PC_WB                   <=  0;
             memWord_WB              <=  0;
@@ -331,4 +329,3 @@ module MEM_TOP (
         end
     end
 endmodule
-`endif
