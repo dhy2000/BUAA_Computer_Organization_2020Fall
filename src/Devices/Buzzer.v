@@ -1,7 +1,5 @@
 `default_nettype none
 
-`define CTRL mem[0]
-
 `define CTRL mem[0] // [0]: 1 - enable, 0 - disable
 `define FREQ mem[1] // the frequency of the note
 `define DUR  mem[2] // the duration of the note
