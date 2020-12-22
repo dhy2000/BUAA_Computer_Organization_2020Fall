@@ -88,14 +88,14 @@ module ALU (
 
     function [31:0] countLeading;
         input [31:0] in;
-        input bit;
+        input _bit;
         integer i;
         reg flg;
         begin
             flg = 0;
             countLeading = 0;
             for (i = 31; i >= 0; i = i - 1) begin
-                if (!flg && in[i] == bit) countLeading = countLeading + 1;
+                if (!flg && in[i] == _bit) countLeading = countLeading + 1;
                 else flg = 1;
             end
         end

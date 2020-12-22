@@ -38,18 +38,18 @@ module EXTDM (
 
     wire [15:0] halfword;
     assign halfword = memWord[offset[1] * 16 +: 16];
-    wire [7:0] byte;
-    assign byte = memWord[offset * 8 +: 8];
+    wire [7:0] _byte;
+    assign _byte = memWord[offset * 8 +: 8];
 
     // extend
     function [31:0] extByte;
-        input [7:0] byte;
+        input [7:0] _byte;
         input ext;
         begin
             if (ext == EXT_Zero)
-                extByte = {24'b0, byte};
+                extByte = {24'b0, _byte};
             else 
-                extByte = {{24{byte[7]}}, byte};
+                extByte = {{24{_byte[7]}}, _byte};
         end
     endfunction
     function [31:0] extHalf;
@@ -67,7 +67,7 @@ module EXTDM (
     assign extWord = (
         (unit == UNIT_Word) ? (memWord) : 
         (unit == UNIT_Half) ? (extHalf(halfword, extop)) : 
-        (unit == UNIT_Byte) ? (extByte(byte, extop)) : 
+        (unit == UNIT_Byte) ? (extByte(_byte, extop)) : 
         (memWord) // default
     );
     
