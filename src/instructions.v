@@ -8,9 +8,9 @@
 
 /* ------ Classify by Instruction Format ------ */
 `define WIDTH_FORMAT    2   // width of the signal
-`define FORMAT_R        0
-`define FORMAT_I        1
-`define FORMAT_J        2
+// `define FORMAT_R        0
+// `define FORMAT_I        1
+// `define FORMAT_J        2
 /* ------ Classify by Function Type ------ */
 `define WIDTH_FUNC      4   // width of the signal
 `define FUNC_CALC_R     0   // refined classification should be inside ALU
@@ -19,7 +19,7 @@
 `define FUNC_MEM_WRITE  3   
 `define FUNC_BRANCH     4   
 `define FUNC_JUMP       5   
-`define FUNC_MULTDIV    6
+// `define FUNC_MULTDIV    6
 `define FUNC_CP0        7
 // `define FUNC_PRIOR      8
 // `define FUNC_TRAP       9
@@ -80,28 +80,28 @@
 `define JAL     40
 `define JALR    41
 `define JR      42
-// Mult/Div
-`define MULT    43
-`define MULTU   44
-`define DIV     45
-`define DIVU    46
-`define MFHI    47
-`define MFLO    48
-`define MTHI    49
-`define MTLO    50
-// Duliu
-`define MOVZ    51
-`define MOVN    52
-`define BGEZAL  53
-`define BLTZAL  54
-// 
-`define CLO     55
-`define CLZ     56
-// Mult/Div +
-`define MADD    57
-`define MADDU   58
-`define MSUB    59
-`define MSUBU   60
+// // Mult/Div
+// `define MULT    43
+// `define MULTU   44
+// `define DIV     45
+// `define DIVU    46
+// `define MFHI    47
+// `define MFLO    48
+// `define MTHI    49
+// `define MTLO    50
+// // Duliu
+// `define MOVZ    51
+// `define MOVN    52
+// `define BGEZAL  53
+// `define BLTZAL  54
+// // 
+// `define CLO     55
+// `define CLZ     56
+// // Mult/Div +
+// `define MADD    57
+// `define MADDU   58
+// `define MSUB    59
+// `define MSUBU   60
 
 // CP0 and Priority
 `define MFC0    65

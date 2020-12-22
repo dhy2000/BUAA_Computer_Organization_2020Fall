@@ -40,9 +40,9 @@ module ALU (
         Alu_Sll     = 11,
         Alu_Srl     = 12,
         Alu_Sra     = 13,
-        Alu_Lui     = 14,
-        Alu_Clo     = 15,
-        Alu_Clz     = 16;
+        Alu_Lui     = 14;
+        // Alu_Clo     = 15,
+        // Alu_Clz     = 16;
     /* Control */
     // instantiate ic module
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
@@ -71,8 +71,8 @@ module ALU (
         (instr == `SRL || instr == `SRLV) ? (Alu_Srl) : 
         (instr == `SRA || instr == `SRAV) ? (Alu_Sra) : 
         (instr == `LUI) ? (Alu_Lui) : 
-        (instr == `CLO) ? (Alu_Clo) : 
-        (instr == `CLZ) ? (Alu_Clz) : 
+        // (instr == `CLO) ? (Alu_Clo) : 
+        // (instr == `CLZ) ? (Alu_Clz) : 
         (Alu_Zero) // default 
     );
 
@@ -86,20 +86,20 @@ module ALU (
                     ((func == `FUNC_CALC_R)) ? dataRt : 
                     0; // default
 
-    function [31:0] countLeading;
-        input [31:0] in;
-        input _bit;
-        integer i;
-        reg flg;
-        begin
-            flg = 0;
-            countLeading = 0;
-            for (i = 31; i >= 0; i = i - 1) begin
-                if (!flg && in[i] == _bit) countLeading = countLeading + 1;
-                else flg = 1;
-            end
-        end
-    endfunction
+    // function [31:0] countLeading;
+    //     input [31:0] in;
+    //     input _bit;
+    //     integer i;
+    //     reg flg;
+    //     begin
+    //         flg = 0;
+    //         countLeading = 0;
+    //         for (i = 31; i >= 0; i = i - 1) begin
+    //             if (!flg && in[i] == _bit) countLeading = countLeading + 1;
+    //             else flg = 1;
+    //         end
+    //     end
+    // endfunction
 
 
     function [31:0] alu;
@@ -123,8 +123,8 @@ module ALU (
             Alu_Srl:    alu = (b >> a[4:0]);
             Alu_Sra:    alu = ($signed($signed(b) >>> a[4:0]));
             Alu_Lui:    alu = {b, 16'b0};
-            Alu_Clo:    alu = countLeading(a, 1);
-            Alu_Clz:    alu = countLeading(a, 0);
+            // Alu_Clo:    alu = countLeading(a, 1);
+            // Alu_Clz:    alu = countLeading(a, 0);
             default:    alu = 0;
             endcase
         end
@@ -158,100 +158,10 @@ module MULTDIV (
     output wire busy, 
     output wire [31:0] out
 );
-parameter WIDTH_OP  = 2,
-            Nop     = 0,
-            Op_Mult = 1,
-            Op_Div  = 2;
-parameter   EXT_ZERO = 0,
-            EXT_SIGN = 1;
 
-    reg [31:0] HI = 0, LO = 0;
-    reg [3:0] delayCounter = 0;
-    reg [WIDTH_OP-1:0] currOp;
-    
-    assign busy = (delayCounter > 0) || 
-                    ((delayCounter == 0) && (
-                        (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU) || 
-                        (instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)
-                    ));
+    assign out = 0;
+    assign busy = 0;
 
-    wire extOp;
-    assign extOp = ((instr == `MULTU) || (instr == `DIVU) || (instr == `MADDU) || (instr == `MSUBU)) ? EXT_ZERO : EXT_SIGN;
-    wire [63:0] extRs, extRt;
-    assign extRs = (extOp == EXT_ZERO) ? {32'b0, dataRs} : {{32{dataRs[31]}}, dataRs};
-    assign extRt = (extOp == EXT_ZERO) ? {32'b0, dataRt} : {{32{dataRt[31]}}, dataRt};
-    wire [32:0] divuRs, divuRt;
-    assign divuRs = {1'b0, dataRs};
-    assign divuRt = {1'b0, dataRt};
-
-    assign out = (busy) ? 0 : (
-        (instr == `MFHI) ? (HI) : 
-        (instr == `MFLO) ? (LO) : 
-        0
-    );
-
-    wire [63:0] product;
-    assign product = extRs * extRt;
-
-    wire [31:0] quo_s, rem_s;   // signed div
-    wire [31:0] quo_u, rem_u;   // unsigned div
-    assign quo_s = $signed(dataRs) / $signed(dataRt);
-    assign rem_s = $signed(dataRs) % $signed(dataRt);
-    assign quo_u = divuRs / divuRt;
-    assign rem_u = divuRs % divuRt;
-
-    wire [31:0] quotient, remainder;
-    assign quotient = (extOp == EXT_ZERO) ? quo_u : quo_s;
-    assign remainder = (extOp == EXT_ZERO) ? rem_u : rem_s;
-    
-    
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            HI <= 0;
-            LO <= 0;
-            delayCounter <= 0;
-            currOp <= Nop;
-        end
-        else begin
-            if (delayCounter != 0) begin
-                if (delayCounter == 1) 
-                    currOp <= Nop;
-                delayCounter <= delayCounter - 1;
-            end
-            else begin
-                if (enable) begin
-                    if (instr == `MULT || instr == `MULTU) begin
-                        delayCounter <= 5;
-                        HI <= product[63:32];
-                        LO <= product[31:0];
-                        currOp <= Op_Mult;
-                    end
-                    else if ((instr == `DIV || instr == `DIVU) && dataRt != 0) begin
-                        delayCounter <= 10;
-                        HI <= remainder;
-                        LO <= quotient;
-                        currOp <= Op_Div;
-                    end
-                    else if (instr == `MADD || instr == `MADDU) begin
-                        delayCounter <= 5;
-                        {HI, LO} <= {HI, LO} + product;
-                        currOp <= Op_Mult;
-                    end
-                    else if (instr == `MSUB || instr == `MSUBU) begin
-                        delayCounter <= 5;
-                        {HI, LO} <= {HI, LO} - product;
-                        currOp <= Op_Mult;
-                    end
-                    else if (instr == `MTHI) begin
-                        HI <= dataRs;
-                    end
-                    else if (instr == `MTLO) begin
-                        LO <= dataRs;
-                    end
-                end
-            end
-        end
-    end
 endmodule
 
 module EX_TOP (
@@ -316,7 +226,7 @@ module EX_TOP (
     wire [31:0] aluOut;
     wire [31:0] mdOut;
     wire [31:0] exOut;
-    wire mdBusy;
+    // wire mdBusy;
     wire [6:2] excAlu;
     // Hazard may use
     wire [4:0] regWriteAddr;
@@ -341,7 +251,7 @@ module EX_TOP (
 
     assign Tnew = (Tnew_EX >= 1) ? (Tnew_EX - 1) : 0; // TODO: mult/div module stalls
 
-    assign MDBusy_EX = mdBusy; // Busy Signal
+    assign MDBusy_EX = 0; // Busy Signal
 
     assign Exc = Exc_EX ? Exc_EX : excAlu;
 
@@ -358,7 +268,7 @@ module EX_TOP (
         .clk(clk), .rst_n(rst_n), 
         .instr(instr_EX), .enable(~dis_MULTDIV), 
         .dataRs(dataRs_alu), .dataRt(dataRt_alu), 
-        .out(mdOut), .busy(mdBusy)
+        .out(mdOut), .busy()
     );
 
     // assign memWriteData = dataRt_alu;
@@ -373,12 +283,13 @@ module EX_TOP (
 
     assign regWriteAddr = regWriteAddr_EX;
     assign regWriteData = (
-        ((instr == `MFLO) || (instr == `MFHI)) ? (mdOut) : 
+        // ((instr == `MFLO) || (instr == `MFHI)) ? (mdOut) : 
         ((func == `FUNC_CALC_R) || (func == `FUNC_CALC_I)) ? (aluOut) :
         (regWriteData_EX) // not alu instruction, use previous
     );
     
-    assign exOut = (instr == `MFLO || instr == `MFHI) ? mdOut : aluOut;
+    // assign exOut = (instr == `MFLO || instr == `MFHI) ? mdOut : aluOut;
+    assign exOut = aluOut;
 
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk or negedge rst_n) begin

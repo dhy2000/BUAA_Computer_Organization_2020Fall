@@ -22,7 +22,7 @@ module InstrTuseTnew (
     IC ic (.instr(instr), .format(format), .func(func));
 
     assign Tuse_rs = (
-        (instr == `MOVN || instr == `MOVZ) ? 0 : 
+        // (instr == `MOVN || instr == `MOVZ) ? 0 : 
         // Calc_R
         (func == `FUNC_CALC_R) ? (
             ((instr == `SLL) || (instr == `SRL) || (instr == `SRA)) ? (`TUSE_INF) : 1
@@ -36,18 +36,18 @@ module InstrTuseTnew (
         (func == `FUNC_JUMP) ? (
             ((instr == `JR) || (instr == `JALR)) ? 0 : (`TUSE_INF)
         ) : 
-        (func == `FUNC_MULTDIV) ? (
-            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
-            ((instr == `MTHI) || (instr == `MTLO)) ? 1 : 
-            (`TUSE_INF)
-        ) : 
+        // (func == `FUNC_MULTDIV) ? (
+        //     ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+        //     ((instr == `MTHI) || (instr == `MTLO)) ? 1 : 
+        //     (`TUSE_INF)
+        // ) : 
         (func == `FUNC_CP0) ? (`TUSE_INF) : 
         (`TUSE_INF)
     );
     assign Tuse_rt = (
-        (instr == `MOVN || instr == `MOVZ) ? 0 : 
+        // (instr == `MOVN || instr == `MOVZ) ? 0 : 
         (func == `FUNC_CALC_R) ? (
-            ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 
+            // ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 
             1
         ) : 
         (func == `FUNC_CALC_I) ? (`TUSE_INF) : 
@@ -57,10 +57,10 @@ module InstrTuseTnew (
             ((instr == `BEQ) || (instr == `BNE)) ? 0 : (`TUSE_INF)
         ) : 
         (func == `FUNC_JUMP) ? (`TUSE_INF) : 
-        (func == `FUNC_MULTDIV) ? (
-            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
-            (`TUSE_INF)
-        ) : 
+        // (func == `FUNC_MULTDIV) ? (
+        //     ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+        //     (`TUSE_INF)
+        // ) : 
         (func == `FUNC_CP0) ? (
             (instr == `MTC0) ? 2 : (`TUSE_INF)
         ) : 
@@ -68,7 +68,7 @@ module InstrTuseTnew (
     );
 
     assign Tnew_ID = (
-        (instr == `MOVZ || instr == `MOVN) ? 1 : 
+        // (instr == `MOVZ || instr == `MOVN) ? 1 : 
         (func == `FUNC_CALC_R) ? 2 : 
         (func == `FUNC_CALC_I) ? (
             (instr == `LUI) ? 1 : 2
@@ -81,9 +81,9 @@ module InstrTuseTnew (
         (func == `FUNC_JUMP) ? (
             ((instr == `JAL) || (instr == `JALR)) ? 1 : 0
         ) : 
-        (func == `FUNC_MULTDIV) ? (
-            ((instr == `MFLO) || (instr == `MFHI)) ? 2 : 0
-        ) : 
+        // (func == `FUNC_MULTDIV) ? (
+        //     ((instr == `MFLO) || (instr == `MFHI)) ? 2 : 0
+        // ) : 
         (func == `FUNC_CP0) ? (
             (instr == `MFC0) ? 3 : 0
         ) : 
@@ -161,12 +161,12 @@ module PipelineControl (
         (Tnew_MEM > Tuse_rt && regWriteAddr_MEM == addrRt_ID)
     );
 
-    wire stall_md;
-    assign stall_md = (MDBusy) && (func_ID == `FUNC_MULTDIV);
+    // wire stall_md;
+    // assign stall_md = (MDBusy) && (func_ID == `FUNC_MULTDIV);
 
     wire stall_stallPC, stall_clrEX, stall_stallID;
 
-    assign {stall_stallPC, stall_stallID, stall_clrEX} = (stall_rs || stall_rt || stall_md) ? 3'b111 : 3'b000;
+    assign {stall_stallPC, stall_stallID, stall_clrEX} = (stall_rs || stall_rt) ? 3'b111 : 3'b000;
 
     /* Part 2. Interrupt and Exception by CP0 */
     wire cp0_clrEX;

@@ -57,14 +57,14 @@ module DECD (
             6'b001001: Rformat = `JALR      ;
             6'b001000: Rformat = `JR        ;
             // multdiv
-            6'b011000: Rformat = `MULT      ;
-            6'b011001: Rformat = `MULTU     ;
-            6'b011010: Rformat = `DIV       ;
-            6'b011011: Rformat = `DIVU      ;
-            6'b010000: Rformat = `MFHI      ;
-            6'b010010: Rformat = `MFLO      ;
-            6'b010001: Rformat = `MTHI      ;
-            6'b010011: Rformat = `MTLO      ;
+            // 6'b011000: Rformat = `MULT      ;
+            // 6'b011001: Rformat = `MULTU     ;
+            // 6'b011010: Rformat = `DIV       ;
+            // 6'b011011: Rformat = `DIVU      ;
+            // 6'b010000: Rformat = `MFHI      ;
+            // 6'b010010: Rformat = `MFLO      ;
+            // 6'b010001: Rformat = `MTHI      ;
+            // 6'b010011: Rformat = `MTLO      ;
             // duliu
             // 6'b001010: Rformat = `MOVZ      ;
             // 6'b001011: Rformat = `MOVN      ;
@@ -143,25 +143,25 @@ module DECD (
         end
     endfunction
 
-    function [`WIDTH_INSTR-1:0] SpecialV2; // clo, clz
-        input [5:0] opcode;
-        input [5:0] funct;
-        begin
-            if (opcode == 6'b011100) begin
-                case (funct)
-                // 6'b100001: SpecialV2 = `CLO;
-                // 6'b100000: SpecialV2 = `CLZ;
-                // 6'b000000: SpecialV2 = `MADD;
-                // 6'b000001: SpecialV2 = `MADDU;
-                // 6'b000100: SpecialV2 = `MSUB;
-                // 6'b000101: SpecialV2 = `MSUBU;
-                default:   SpecialV2 = `NOP;
-                endcase
-            end
-            else 
-                SpecialV2 = `NOP;
-        end
-    endfunction
+    // function [`WIDTH_INSTR-1:0] SpecialV2; // clo, clz
+    //     input [5:0] opcode;
+    //     input [5:0] funct;
+    //     begin
+    //         if (opcode == 6'b011100) begin
+    //             case (funct)
+    //             // 6'b100001: SpecialV2 = `CLO;
+    //             // 6'b100000: SpecialV2 = `CLZ;
+    //             // 6'b000000: SpecialV2 = `MADD;
+    //             // 6'b000001: SpecialV2 = `MADDU;
+    //             // 6'b000100: SpecialV2 = `MSUB;
+    //             // 6'b000101: SpecialV2 = `MSUBU;
+    //             default:   SpecialV2 = `NOP;
+    //             endcase
+    //         end
+    //         else 
+    //             SpecialV2 = `NOP;
+    //     end
+    // endfunction
 
     function [`WIDTH_INSTR-1:0] SpecialCOP0;
         input [5:0] opcode;
@@ -192,11 +192,11 @@ module DECD (
     wire [`WIDTH_INSTR-1:0] sp_r, sp_i, sp_v2, sp_cop0;
     assign sp_r = SpecialR(rs, rt, rd, shamt, funct);
     assign sp_i = SpecialI(opcode, rs, rt);
-    assign sp_v2 = SpecialV2(opcode, funct);
+    // assign sp_v2 = SpecialV2(opcode, funct);
     assign sp_cop0 = SpecialCOP0(opcode, rs, funct);
     // link these sub-signals
     assign instr = (code == 32'h0000_0000) ? (`NOP) : 
-    (sp_v2 != `NOP) ? (sp_v2) : // clo and clz
+    // (sp_v2 != `NOP) ? (sp_v2) : // clo and clz
     (sp_cop0 != `NOP) ? (sp_cop0) : // cp0
     (opcode == 6'b000000) ? (
         // R format
@@ -230,10 +230,10 @@ module COMP (
             `BGTZ:  compare = (rs[31] == 0) && (rs != 0);
             `BLEZ:  compare = (rs[31] == 1) || (rs == 0);
             `BLTZ:  compare = (rs[31] == 1);
-            `BGEZAL: compare = (rs[31] == 0);
-            `BLTZAL: compare = (rs[31] == 1);
-            `MOVZ:  compare = (rt == 0);
-            `MOVN:  compare = (rt != 0);
+            // `BGEZAL: compare = (rs[31] == 0);
+            // `BLTZAL: compare = (rs[31] == 1);
+            // `MOVZ:  compare = (rt == 0);
+            // `MOVN:  compare = (rt != 0);
             default: compare = 0;
             endcase
         end
@@ -364,15 +364,14 @@ module ID_TOP (
     wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
     IC ic (.instr(instr), .format(format), .func(func));
 
-    assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? (cmp ? 31 : 0) : // conditionally link according to MARS, but directly link according to MIPS-V2.
-                            (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
+    assign regWriteAddr =   
                             (instr == `JAL)                  ? 31 :       // JAL
-                            ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
+                            ((func == `FUNC_CALC_R) || (instr == `JALR)) ? addrRd :  // rd
                             ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ) || (instr == `MFC0))  ? addrRt :  // rt
                             0;
                             
-    assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 
-                            ((instr == `JAL) || (instr == `JALR) || (instr == `BGEZAL) || (instr == `BLTZAL))     ?   PC_ID + 8   :   // Jump Link
+    assign regWriteData =   
+                            ((instr == `JAL) || (instr == `JALR))     ?   PC_ID + 8   :   // Jump Link
                             ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
                             0; // Default
     /* ------ Part 3: Pipeline Registers ------ */

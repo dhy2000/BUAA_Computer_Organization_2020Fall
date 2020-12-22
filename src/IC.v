@@ -20,29 +20,13 @@ module IC (
     output wire [`WIDTH_FUNC-1:0] func 
 );
     // format
-    wire r, i, j;
-    assign r = (
-        (instr == `NOP ) ||
-        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) ||(instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) ||(instr == `SLTU) || (instr == `SLL ) || (instr == `SLLV) || (instr == `SRL ) || (instr == `SRLV) ||(instr == `SRA ) || (instr == `SRAV) ||
-        (instr == `CLO) || (instr == `CLZ)
-    );
-    assign i = (
-        (instr == `ADDI ) || (instr == `ADDIU) || (instr == `ANDI ) || (instr == `ORI  ) || (instr == `XORI ) || (instr == `LUI  ) || (instr == `SLTI ) || (instr == `SLTIU) || (instr == `LW   ) || (instr == `LH   ) || (instr == `LHU  ) || (instr == `LB   ) || (instr == `LBU  ) || (instr == `SW   ) || (instr == `SH   ) || (instr == `SB   ) || (instr == `BEQ  ) || (instr == `BNE  ) || (instr == `BLEZ ) || (instr == `BGTZ ) || (instr == `BGEZ ) || (instr == `BLTZ ) ||
-        (instr == `BGEZAL) || (instr == `BLTZAL)
-    );
-    assign j = (
-        (instr == `J ) || (instr == `JAL)
-    );
-    assign format = (r) ? (`FORMAT_R) : 
-                    (i) ? (`FORMAT_I) : 
-                    (j) ? (`FORMAT_J) : 
-                    (`FORMAT_R) ;
+    assign format = 0;
     // func
     wire calc_r, calc_i, mem_r, mem_w, br, jmp, md, cp0;
     assign calc_r = (
         (instr == `NOP ) || 
-        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV) ||
-        (instr == `CLO) || (instr == `CLZ)
+        (instr == `ADD ) || (instr == `SUB ) || (instr == `ADDU) || (instr == `SUBU) || (instr == `AND ) || (instr == `OR  ) || (instr == `XOR ) || (instr == `NOR ) || (instr == `SLT ) || (instr == `SLTU) || (instr == `SLL ) || (instr == `SRL ) || (instr == `SRA ) || (instr == `SLLV) || (instr == `SRLV) || (instr == `SRAV)
+        // (instr == `CLO) || (instr == `CLZ)
     );
     assign calc_i = (
         (instr == `ADDI ) || (instr == `ADDIU) || (instr == `ANDI ) || (instr == `ORI  ) || (instr == `XORI ) || (instr == `LUI  ) || (instr == `SLTI ) || (instr == `SLTIU) 
@@ -54,17 +38,17 @@ module IC (
         (instr == `SW) || (instr == `SH) || (instr == `SB) 
     );
     assign br = (
-        (instr == `BEQ ) || (instr == `BNE ) || (instr == `BGEZ) || (instr == `BGTZ) || (instr == `BLEZ) || (instr == `BLTZ) ||
-        (instr == `BGEZAL) || (instr == `BLTZAL)
+        (instr == `BEQ ) || (instr == `BNE ) || (instr == `BGEZ) || (instr == `BGTZ) || (instr == `BLEZ) || (instr == `BLTZ)
+        // (instr == `BGEZAL) || (instr == `BLTZAL)
     );
     assign jmp = (
         (instr == `J   ) || (instr == `JAL ) || (instr == `JALR) || (instr == `JR  ) 
     );
-    assign md = (
-        (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU) ||
-        (instr == `MFHI) || (instr == `MFLO ) || (instr == `MTHI)|| (instr == `MTLO) ||
-        (instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)
-    );
+    // assign md = (
+    //     (instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU) ||
+    //     (instr == `MFHI) || (instr == `MFLO ) || (instr == `MTHI)|| (instr == `MTLO) ||
+    //     (instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)
+    // );
     assign cp0 = (
         (instr == `MFC0 || instr == `MTC0 || instr == `ERET)
     );
@@ -75,7 +59,7 @@ module IC (
                     (mem_w) ? (`FUNC_MEM_WRITE) : 
                     (br) ? (`FUNC_BRANCH) : 
                     (jmp) ? (`FUNC_JUMP) : 
-                    (md) ? (`FUNC_MULTDIV) : 
+                    // (md) ? (`FUNC_MULTDIV) : 
                     (cp0) ? (`FUNC_CP0) : 
                     (`FUNC_OTHER) ;
     // 
