@@ -55,8 +55,8 @@ module mips (
     wire [31:2] Timer1_Addr;
     wire [31:0] Timer1_WData;
     wire Timer1_WE;
-    wire [31:0] Timer1_RData;
-    wire Timer1_Int;
+    wire [31:0] Timer1_RData = 0;
+    wire Timer1_Int = 0;
     
     // LED
     wire [31:0] LED_WData;
@@ -146,11 +146,11 @@ module mips (
         .Dout(Timer0_RData), .IRQ(Timer0_Int)
     );
 
-    Timer timer1 (
+    /*Timer timer1 (
         .clk(clk), .rst_n(rst_n), .clk_cpu(clk_cpu),
         .Addr(Timer1_Addr), .WE(Timer1_WE), .Din(Timer1_WData), 
         .Dout(Timer1_RData), .IRQ(Timer1_Int)
-    );
+    );*/
 
     LED Led (
         .clk_cpu(clk_cpu), .rst_n(rst_n), .WE(LED_WE), .Din(LED_WData), .Dout(LED_RData), 
