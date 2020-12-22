@@ -69,7 +69,7 @@ module DataMem (
         resetMem;
     end
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk_m or negedge rst_n) begin
         if (!rst_n) begin
             resetMem;
         end
