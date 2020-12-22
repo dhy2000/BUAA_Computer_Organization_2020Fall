@@ -63,6 +63,21 @@ module DigitalTube(
         end
     end
 
+    function [7:0] selDigit;
+        input [3:0] sel;
+        input [31:0] word;
+        integer i;
+        begin
+            selDigit = 0;
+            for (i = 0; i <= 3; i = i + 1) begin
+                if (sel[i] == 1'b0) begin
+                    selDigit = word[i * 8 +: 8];
+                end
+            end
+        end
+    endfunction
+
+    assign digit = selDigit(sel, content);
 
 endmodule
 
