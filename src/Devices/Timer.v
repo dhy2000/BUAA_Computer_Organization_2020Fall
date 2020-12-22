@@ -37,7 +37,8 @@ module Timer(
 		if (!rst_n) begin
 			_clk_cpu_l <= 0;
 		end
-		_clk_cpu_l <= clk_cpu;
+		else 
+			_clk_cpu_l <= clk_cpu;
 	end
 
 	integer i;
