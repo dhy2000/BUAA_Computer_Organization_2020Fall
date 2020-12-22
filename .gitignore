@@ -4,6 +4,8 @@ util/
 **.zip
 code.txt
 code_handler.txt
+*.exe
+*.hex
 
 test/
 out/
