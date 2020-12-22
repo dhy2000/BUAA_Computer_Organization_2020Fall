@@ -167,14 +167,24 @@ module PREDM (
         ((func == `FUNC_MEM_READ) && !(
             (Addr >= `DATA_STARTADDR && Addr < `DATA_ENDADDR) || 
             (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) || 
-            (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR))) ? (`EXC_ADEL) : // Not-Valid Address Space
+            (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ||
+            (Addr == `LED_ADDR) || 
+            (Addr == `DIGITALTUBE_ADDR) || 
+            (Addr == `BUTTONSWITCH_ADDR) || 
+            (Addr >= `BUZZER_STARTADDR && Addr < `BUZZER_ENDADDR)
+            )) ? (`EXC_ADEL) : // Not-Valid Address Space
         ((instr == `SW) && (Addr[1:0] != 0)) ? (`EXC_ADES) : // store not-aligned word
         ((instr == `SH) && (Addr[0] != 0)) ? (`EXC_ADES) : // store not-aligned halfword
         ((instr == `SH || instr == `SB) && !(Addr >= `DATA_STARTADDR && Addr < `DATA_ENDADDR)) ? (`EXC_ADES) : 
         ((func == `FUNC_MEM_WRITE) && !(
             (Addr >= `DATA_STARTADDR && Addr < `DATA_ENDADDR) || 
             (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) || 
-            (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR))) ? (`EXC_ADES) :
+            (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) || 
+            (Addr == `LED_ADDR) || 
+            (Addr == `DIGITALTUBE_ADDR) || 
+            (Addr == `BUTTONSWITCH_ADDR) || 
+            (Addr >= `BUZZER_STARTADDR && Addr < `BUZZER_ENDADDR)
+            )) ? (`EXC_ADES) :
         ((func == `FUNC_MEM_WRITE) && (Addr == 32'h0000_7F08 || Addr == 32'h0000_7F18)) ? (`EXC_ADES) :
         0
     );
