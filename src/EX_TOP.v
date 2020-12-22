@@ -382,7 +382,20 @@ module EX_TOP (
 
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk or negedge rst_n) begin
-        if ((!rst_n) | clr) begin
+        if ((~rst_n)) begin
+            instr_MEM                   <=  0;
+            PC_MEM                      <=  0;
+            Exc_MEM                     <=  0;
+            BD_MEM                      <=  0;
+            aluOut_MEM                  <=  0;
+            dataRt_MEM                  <=  0;
+            regWriteAddr_MEM            <=  0;
+            regWriteData_MEM            <=  0;
+            Tnew_MEM                    <=  0;
+            addrRt_MEM                  <=  0;
+            addrRd_MEM                  <=  0;
+        end
+        else if (clr) begin
             instr_MEM                   <=  0;
             PC_MEM                      <=  0;
             Exc_MEM                     <=  0;

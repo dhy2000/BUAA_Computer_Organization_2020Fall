@@ -319,7 +319,16 @@ module MEM_TOP (
 
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk or negedge rst_n) begin
-        if ((!rst_n) | clr) begin
+        if ((~rst_n)) begin
+            instr_WB                <=  0;
+            PC_WB                   <=  0;
+            memWord_WB              <=  0;
+            offset_WB               <=  0;
+            regWriteAddr_WB         <=  0;
+            regWriteData_WB         <=  0;
+            Tnew_WB                 <=  0;
+        end
+        else if (clr) begin
             instr_WB                <=  0;
             PC_WB                   <=  0;
             memWord_WB              <=  0;

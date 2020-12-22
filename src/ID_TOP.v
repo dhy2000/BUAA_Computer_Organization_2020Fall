@@ -377,7 +377,23 @@ module ID_TOP (
                             0; // Default
     /* ------ Part 3: Pipeline Registers ------ */
     always @ (posedge clk or negedge rst_n) begin
-        if ((!rst_n) | clr) begin
+        if ((~rst_n)) begin
+            instr_EX            <= 0;
+            PC_EX               <= 0;
+            Exc_EX              <= 0;
+            BD_EX               <= 0;
+            dataRs_EX           <= 0;
+            dataRt_EX           <= 0;
+            imm16_EX            <= 0;
+            shamt_EX            <= 0;
+            addrRs_EX           <= 0;
+            addrRt_EX           <= 0;
+            addrRd_EX           <= 0;
+            regWriteAddr_EX     <= 0;
+            regWriteData_EX     <= 0;
+            Tnew_EX             <= 0;
+        end
+        else if (clr) begin
             instr_EX            <= 0;
             PC_EX               <= 0;
             Exc_EX              <= 0;

@@ -153,12 +153,18 @@ module IF_TOP (
 
     /* ------ Part 3: Pipeline Registers ------ */
     always @(posedge clk or negedge rst_n) begin
-        if ((!rst_n) | clr) begin
+        if ((~rst_n)) begin
             code_ID         <=  0;
             PC_ID           <=  0;
             Exc_ID          <=  0;
             BD_ID           <=  0;
         end
+        else if (clr) begin 
+            code_ID         <=  0;
+            PC_ID           <=  0;
+            Exc_ID          <=  0;
+            BD_ID           <=  0;
+        end 
         else if (!stall) begin
             code_ID         <=  code;
             PC_ID           <=  PC;
