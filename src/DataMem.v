@@ -8,7 +8,7 @@
 `include "memconfig.v"
 
 module DataMem (
-    input wire clk, 
+    input wire clk_m, 
     input wire rst_n, 
     input wire [31:0] PC, 
     input wire [31:2] Addr,  // word-aligned, start at 0

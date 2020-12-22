@@ -80,10 +80,12 @@ module mips (
 
     // splitted clocks
     wire clk_cpu;
-
+    wire clk_mem;
     
     /* 2. Instantiate Modules */
-    Clock #(.PERIOD(10)) Clk_C1 (.clk(clk), .rst_n(rst_n), .clk_m(clk_cpu));
+    Clock #(.PERIOD(32'd5_000)) Clk_C1 (.clk(clk), .rst_n(rst_n), .clk_m(clk_cpu));
+    Clock #(.PERIOD(32'd2_500)) Clk_C2 (.clk(clk), .rst_n(rst_n), .clk_m(clk_mem));
+
 
     CPU cpu (
         .clk(clk_cpu), 
@@ -112,11 +114,12 @@ module mips (
     );
 
     DataMem dm (
-        .clk(clk), .rst_n(rst_n), 
+        .clk_m(clk_mem), .rst_n(rst_n), 
         .PC(DM_PC), .Addr(DM_Addr[31:2]), .WData(DM_WData), .WE(DM_WE), .RData(DM_RData)
     );
 
     InstrMem im (
+        .clk_m(clk_mem), 
         .PC(IMPC), .code(IM_Code)
     );
 

@@ -2,6 +2,7 @@
 `include "memconfig.v"
 
 module InstrMem (
+    input wire clk_m, 
     input wire [31:0] PC,
     output wire [31:0] code
 );
