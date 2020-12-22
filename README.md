@@ -7,7 +7,7 @@
 1. 将 IM 从 CPU 中分离到桥上 (OKAY)
 2. 将复位信号改成与板载相同的系统复位 `rst_n` (低电平有效) (OKAY)
 3. 添加目前已经支持的外设(连到南桥上) (OKAY)
-4. 编写一个简单的小工具用来从 `code.txt` 和 `code_handler.txt` 合并成一个 `instr.hex` 文件
+4. 编写一个简单的小工具用来从 `code.txt` 和 `code_handler.txt` 合并成一个 `instr.hex` 文件 (OKAY)
 5. 将 IM 和 DM 替换成 ROM 和 BlockRAM 
 6. 综合 MIPS 微系统，修复编译错误和不可综合。
 7. 编写简单的软件来验证微系统(注意自己写的软件尽量不要有异常, 要自觉遵守什么地址能读/写)
