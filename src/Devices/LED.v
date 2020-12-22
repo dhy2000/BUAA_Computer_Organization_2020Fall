@@ -1,7 +1,7 @@
 `default_nettype none
 
 module LED (
-    input wire clk, 
+    input wire clk_cpu, 
     input wire rst_n, 
     input wire WE, 
     input wire [31:0] Din, 
@@ -12,7 +12,7 @@ module LED (
 
     assign Dout = {28'd0, led};
 
-    always @ (posedge clk or negedge rst_n) begin
+    always @ (posedge clk_cpu or negedge rst_n) begin
         if (!rst_n) begin
             led <= 4'b1111;
         end

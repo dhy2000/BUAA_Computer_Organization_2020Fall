@@ -11,13 +11,17 @@
 
 module Timer(
     input wire clk,
-    input wire rst_n,
+    input wire rst_n, 
+	input wire clk_cpu, 
     input wire [31:2] Addr,
     input wire WE,
     input wire [31:0] Din,
     output wire [31:0] Dout,
     output wire IRQ
     );
+
+	// buffer the clock of cpu (slow)
+	reg _clk_cpu_l;
 
 	reg [1:0] state;
 	reg [31:0] mem [2:0];
@@ -29,6 +33,13 @@ module Timer(
 	
 	wire [31:0] load = Addr[3:2] == 0 ? {28'h0, Din[3:0]} : Din;
 	
+	always @ (posedge clk or negedge rst_n) begin
+		if (!rst_n) begin
+			_clk_cpu_l <= 0;
+		end
+		_clk_cpu_l <= clk_cpu;
+	end
+
 	integer i;
 	always @(posedge clk or negedge rst_n) begin
 		if(!rst_n) begin
@@ -36,7 +47,7 @@ module Timer(
 			for(i = 0; i < 3; i = i+1) mem[i] <= 0;
 			_IRQ <= 0;
 		end
-		else if(WE) begin
+		else if(WE && (~_clk_cpu_l) && clk_cpu) begin
 			// $display("%d@: *%h <= %h", $time, {Addr, 2'b00}, load);
 			mem[Addr[3:2]] <= load;
 		end

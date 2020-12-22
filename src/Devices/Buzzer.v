@@ -28,6 +28,17 @@ module Buzzer(
     
     wire en = `CTRL[0];
     wire [31:0] freq_C = (`FREQ != 0) ? (CLK_FREQ / `FREQ) : 0;
+
+    // buffer the clock of cpu
+    reg _clk_cpu_l;
+    always @ (posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            _clk_cpu_l <= 0;
+        end
+        else begin
+            _clk_cpu_l <= clk_cpu;
+        end
+    end
     
     always @ (posedge clk or negedge rst_n) begin
         if (!rst_n) begin 
@@ -40,7 +51,7 @@ module Buzzer(
             state <= _IDLE;
         end
         else begin
-            if (clk_cpu && WE) begin
+            if (WE && (~_clk_cpu_l) && (clk_cpu)) begin
                 mem[Addr[3:2]] <= din;
             end 
             else begin

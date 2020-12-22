@@ -1,7 +1,7 @@
 `default_nettype none
 
 module ButtonSwitch (
-    input wire clk, 
+    input wire clk_cpu, 
     input wire rst_n, 
     output wire [31:0] Dout, 
     output reg IRQ, // only 1 cycle high
@@ -18,7 +18,7 @@ module ButtonSwitch (
     wire curr_state = (key_next == key_state) ? _IDLE : _FILTER;
     reg [31:0] counter;
 
-    always @ (posedge clk or negedge rst_n) begin
+    always @ (posedge clk_cpu or negedge rst_n) begin
         if (!rst_n) begin
             key_state <= key_input;
             key_next <= key_input;

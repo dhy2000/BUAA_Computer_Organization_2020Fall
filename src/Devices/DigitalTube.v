@@ -3,6 +3,7 @@
 module DigitalTube(
     input wire clk, 
     input wire rst_n, 
+    input wire clk_cpu, 
     input wire WE, 
     input wire [31:0] Din, 
     output wire [31:0] Dout, 
@@ -16,11 +17,22 @@ module DigitalTube(
     reg [31:0] content;
     assign Dout = content;
 
+    // buffer the last clock of cpu
+    reg _clk_cpu_l;
+    always @ (posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            _clk_cpu_l <= 0;
+        end
+        else begin
+            _clk_cpu_l <= clk_cpu;
+        end
+    end
+
     always @ (posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             content <= 32'hffff_ffff;
         end
-        else if (WE) begin
+        else if (WE && (~_clk_cpu_l) && (clk_cpu)) begin
             content <= Din;
         end
     end
