@@ -103,7 +103,7 @@ module SouthBridge (
     input wire [31:0] DigitalTube_RData, 
     // Button Switch
     input wire [31:0] ButtonSwitch_RData, 
-    input wire [31:0] ButtonSwitch_Int, 
+    input wire ButtonSwitch_Int, 
     // Buzzer
     output wire [31:2] Buzzer_Addr, 
     output wire [31:0] Buzzer_WData, 
