@@ -4,13 +4,22 @@ module tb_mips;
     reg clk = 0;
     reg rst_n = 0;
 
-    wire [31:0] addr;
+    wire [3:0] led;
+    wire [3:0] digitalTube_sel;
+    wire [7:0] digitalTube_digit;
+
+    reg [3:0] button_input = 4'b1111;
+
+    wire buzz;
 
     mips uut (
         .clk(clk),
         .rst_n(rst_n),
-        .interrupt(1'b0), 
-        .addr(addr)
+        .led(led),
+        .digitalTube_sel(digitalTube_sel),
+        .digitalTube_digit(digitalTube_digit),
+        .button_input(button_input),
+        .buzz(buzz)
     );
 
     initial begin
