@@ -133,29 +133,29 @@ module mips (
     );
 
     Timer timer0 (
-        .clk(clk), .rst_n(rst_n), 
+        .clk(clk), .rst_n(rst_n), .clk_cpu(clk),
         .Addr(Timer0_Addr), .WE(Timer0_WE), .Din(Timer0_WData), 
         .Dout(Timer0_RData), .IRQ(Timer0_Int)
     );
 
     Timer timer1 (
-        .clk(clk), .rst_n(rst_n), 
+        .clk(clk), .rst_n(rst_n), .clk_cpu(clk),
         .Addr(Timer1_Addr), .WE(Timer1_WE), .Din(Timer1_WData), 
         .Dout(Timer1_RData), .IRQ(Timer1_Int)
     );
 
     LED Led (
-        .clk(clk), .rst_n(rst_n), .WE(LED_WE), .Din(LED_WData), .Dout(LED_RData), 
+        .clk_cpu(clk), .rst_n(rst_n), .WE(LED_WE), .Din(LED_WData), .Dout(LED_RData), 
         .led(led)
     );
 
     DigitalTube digitaltube (
-        .clk(clk), .rst_n(rst_n), .WE(DigitalTube_WE), .Din(DigitalTube_WData), .Dout(DigitalTube_RData), 
+        .clk(clk), .rst_n(rst_n), .clk_cpu(clk), .WE(DigitalTube_WE), .Din(DigitalTube_WData), .Dout(DigitalTube_RData), 
         .sel(digitalTube_sel), .digit(digitalTube_digit)
     );
 
     ButtonSwitch buttonswitch (
-        .clk(clk), .rst_n(rst_n), .Dout(ButtonSwitch_RData), .IRQ(ButtonSwitch_Int), 
+        .clk_cpu(clk), .rst_n(rst_n), .Dout(ButtonSwitch_RData), .IRQ(ButtonSwitch_Int), 
         .key_input(button_input), .key_state()
     );
 
