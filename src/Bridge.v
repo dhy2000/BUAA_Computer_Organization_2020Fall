@@ -108,7 +108,7 @@ module SouthBridge (
     output wire [31:2] Buzzer_Addr, 
     output wire [31:0] Buzzer_WData, 
     output wire Buzzer_WE, 
-    output wire [31:0] Buzzer_RData
+    input wire [31:0] Buzzer_RData
 );
     assign Timer0_Addr = Addr[31:2];
     assign Timer0_WData = WData;
