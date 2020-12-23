@@ -97,7 +97,6 @@ parameter   idSR    = 12,
             else if (instr == `MTC0 && CP0id == idSR) 
                 {IM, EXL, IE} <= {WData[15:10], WData[1], WData[0]};
             // Cause
-            IP <= HWInt;
             if (instr == `ERET) begin
                 ExcCode <= 0;
                 BD <= 0;
@@ -105,6 +104,7 @@ parameter   idSR    = 12,
             else if (Interrupt || Exception) begin
                 ExcCode <= (Interrupt) ? 0 : Exc;
                 BD <= isDelayBranch;
+                IP <= (HWInt[7:2] & IM[7:2]);
             end
             // EPC
             if (Interrupt || Exception) begin
