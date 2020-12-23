@@ -51,6 +51,9 @@ module Timer(
 		else if(WE && (~_clk_cpu_l) && clk_cpu) begin
 			// $display("%d@: *%h <= %h", $time, {Addr, 2'b00}, load);
 			mem[Addr[3:2]] <= load;
+			if (Addr[3:2] == 0 && load[3] == 0) begin
+			  	_IRQ <= 0;
+			end
 		end
 		else begin
 			case(state)
