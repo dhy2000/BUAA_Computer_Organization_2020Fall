@@ -163,8 +163,8 @@ module mips (
     );
 
     ButtonSwitch buttonswitch (
-        .clk_cpu(clk_cpu), .rst_n(rst_n), .Dout(ButtonSwitch_RData), .IRQ(ButtonSwitch_Int), 
-        .key_input(button_input), .key_state()
+        .clk(clk), .clk_cpu(clk_cpu), .rst_n(rst_n), .Dout(ButtonSwitch_RData), .IRQ(ButtonSwitch_Int), 
+        .key_input(button_input)
     );
 
     Buzzer buzzer (
