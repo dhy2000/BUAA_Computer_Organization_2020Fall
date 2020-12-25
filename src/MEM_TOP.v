@@ -110,7 +110,7 @@ parameter   idSR    = 12,
             end
             // EPC
             if (Interrupt || Exception) begin
-                epc <= ((isDelayBranch ? (PC - 4) : PC) << 2) >> 2;
+                epc <= ((isDelayBranch ? (PC - 4) : PC) & 32'hFFFF_FFFC);
             end
             else if (instr == `MTC0 && CP0id == idEPC) begin
                 epc <= {WData[31:2], 2'b00};
