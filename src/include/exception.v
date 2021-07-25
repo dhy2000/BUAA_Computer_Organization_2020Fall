@@ -12,7 +12,6 @@
 `define E_ENTRY     1
 `define E_ERET      2
 
-
 /* ---- Exception Codes ---- */
 `define TYPE_EXC        [6:2]
 
@@ -20,5 +19,9 @@
 `define EXC_ADES        5
 `define EXC_RI          10
 `define EXC_OV          12
+
+/* ---- Other Signals ---- */
+`define TYPE_EPC        [31:2]  // excpetion pc
+`define TYPE_INT        [7:2]   // interrupt
 
 `endif
