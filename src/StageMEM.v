@@ -70,8 +70,8 @@ parameter   idSR    = 12,
     ) : 0;
 
     // Check Branching Delay Slot
-    // wire `TYPE_IFUNC func_WB;
-    // IC ic_wb (.instr(instr_WB), .format(), .func(func_WB));
+    // wire `TYPE_IFUNC ifunc_WB;
+    // IC ic_wb (.instr(instr_WB), .format(), .ifunc(ifunc_WB));
     wire isDelayBranch = BDFlag;
 
     assign isBD = (Interrupt || Exception) ? BDFlag : 0;
@@ -124,7 +124,7 @@ endmodule
 
 module PREDM (
     input wire [`WIDTH_INSTR-1:0] instr, 
-    input wire `TYPE_IFUNC func,
+    input wire `TYPE_IFUNC ifunc,
     input wire [31:0] Addr, 
     input wire [31:0] WData, 
     input wire [31:0] PC, 
@@ -145,7 +145,7 @@ module PREDM (
     assign offset = Addr[1:0];
     
     assign DM_WE = (!enable) ? 0 : 
-        (func == `I_MEM_W) ? (
+        (ifunc == `I_MEM_W) ? (
         (instr == `SW) ? (4'b1111) : 
         (instr == `SH) ? (4'b0011 << ({1'b0, offset[1]} << 1)) : 
         (instr == `SB) ? (4'b0001 << (offset)) : 
@@ -162,18 +162,18 @@ module PREDM (
         ((instr == `LW) && (Addr[1:0] != 0)) ? (`EXC_ADEL) : // load not-aligned word
         ((instr == `LH || instr == `LHU) && (Addr[0] != 0)) ? (`EXC_ADEL) : // load not-aligned halfword
         ((instr == `LH || instr == `LHU || instr == `LB || instr == `LBU) && !(Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END)) ? (`EXC_ADEL) : // load non-whole word on timer register
-        ((func == `I_MEM_R) && !(
+        ((ifunc == `I_MEM_R) && !(
             (Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END) || 
             (Addr >= `TIMER0_ADDR_START && Addr < `TIMER0_ADDR_END) || 
             (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END))) ? (`EXC_ADEL) : // Not-Valid Address Space
         ((instr == `SW) && (Addr[1:0] != 0)) ? (`EXC_ADES) : // store not-aligned word
         ((instr == `SH) && (Addr[0] != 0)) ? (`EXC_ADES) : // store not-aligned halfword
         ((instr == `SH || instr == `SB) && !(Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END)) ? (`EXC_ADES) : 
-        ((func == `I_MEM_W) && !(
+        ((ifunc == `I_MEM_W) && !(
             (Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END) || 
             (Addr >= `TIMER0_ADDR_START && Addr < `TIMER0_ADDR_END) || 
             (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END))) ? (`EXC_ADES) :
-        ((func == `I_MEM_W) && (Addr == 32'h0000_7F08 || Addr == 32'h0000_7F18)) ? (`EXC_ADES) :
+        ((ifunc == `I_MEM_W) && (Addr == 32'h0000_7F08 || Addr == 32'h0000_7F18)) ? (`EXC_ADES) :
         0
     );
 
@@ -191,7 +191,7 @@ module StageMEM (
     input wire                      clr, 
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_MEM           , 
-    input wire `TYPE_IFUNC          func_MEM            ,
+    input wire `TYPE_IFUNC          ifunc_MEM            ,
     input wire [31:0]               PC_MEM              , 
     input wire [6:2]                Exc_MEM             ,
     input wire                      BD_MEM              ,
@@ -211,7 +211,7 @@ module StageMEM (
     /* Data Outputs to Next Pipeline */
     // instruction
     output reg [`WIDTH_INSTR-1:0]   instr_WB            = 0, 
-    output reg `TYPE_IFUNC          func_WB             = 0,
+    output reg `TYPE_IFUNC          ifunc_WB             = 0,
     output reg [31:0]               PC_WB               = 0, 
     // DM
     output reg [31:0]               memWord_WB          = 0,
@@ -272,7 +272,7 @@ module StageMEM (
     /* ------ Part 2: Instantiate Modules ------ */
 
     PREDM predm (
-        .instr(instr_MEM), .func(func_MEM), .enable(~dis_DM), 
+        .instr(instr_MEM), .ifunc(ifunc_MEM), .enable(~dis_DM), 
         .Addr(exOut_MEM), .WData(dataRt_use), .PC(PC_MEM), 
         .DM_PC(DM_PC), .DM_Addr(DM_Addr[31:2]), .DM_WE(DM_WE), .DM_WData(DM_WData), 
         .offset(offset), .exc(excDM)
@@ -300,13 +300,13 @@ module StageMEM (
     // instantiate ic module
     wire [`WIDTH_INSTR-1:0] instr;
     assign instr = instr_MEM;
-    wire `TYPE_IFUNC func;
-    assign func = func_MEM;
+    wire `TYPE_IFUNC ifunc;
+    assign ifunc = ifunc_MEM;
 
     assign regWriteAddr = regWriteAddr_MEM;
     assign regWriteData = (
-        ((func == `I_CP0) && (instr == `MFC0)) ? (CP0Data) : 
-        ((func == `I_MEM_R)) ? (memWord) :
+        ((ifunc == `I_CP0) && (instr == `MFC0)) ? (CP0Data) : 
+        ((ifunc == `I_MEM_R)) ? (memWord) :
         (regWriteData_MEM) // not mem-load instruction, use previous
     );
 
@@ -314,7 +314,7 @@ module StageMEM (
     always @(posedge clk) begin
         if (reset | clr) begin
             instr_WB                <=  0;
-            func_WB                 <=  0;
+            ifunc_WB                 <=  0;
             PC_WB                   <=  0;
             memWord_WB              <=  0;
             offset_WB               <=  0;
@@ -324,7 +324,7 @@ module StageMEM (
         end
         else if (!stall) begin
             instr_WB                <=  instr_MEM;
-            func_WB                 <=  func_MEM;
+            ifunc_WB                 <=  ifunc_MEM;
             PC_WB                   <=  PC_MEM;
             memWord_WB              <=  memWord;
             offset_WB               <=  offset;

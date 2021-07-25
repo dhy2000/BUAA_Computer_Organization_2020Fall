@@ -272,7 +272,7 @@ module StageID (
     /* Data Outputs to Next Pipeline */
     // Instruction
     output reg [`WIDTH_INSTR-1:0]   instr_EX            = 0, 
-    output reg `TYPE_IFUNC          func_EX            = 0,
+    output reg `TYPE_IFUNC          ifunc_EX            = 0,
     output reg [31:0]               PC_EX               = 0, 
     output reg [6:2]                Exc_EX              = 0,
     output reg                      BD_EX               = 0,
@@ -321,7 +321,7 @@ module StageID (
     // decode
     wire [`WIDTH_INSTR-1:0] instr;
     wire `TYPE_FORMAT format; 
-    wire `TYPE_IFUNC func;
+    wire `TYPE_IFUNC ifunc;
     // fields
     wire [4:0] addrRs, addrRt, addrRd;
     wire [15:0] imm16; 
@@ -367,7 +367,7 @@ module StageID (
         .cmp(cmp)
     );
 
-    IC ic (.instr(instr), .format(format), .func(func));
+    IC ic (.instr(instr), .format(format), .ifunc(ifunc));
 
     assign luiExtImm = {imm16, 16'b0};
 
@@ -378,8 +378,8 @@ module StageID (
     assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? (cmp ? 31 : 0) : // conditionally link according to MARS, but directly link according to MIPS-V2.
                             (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
                             (instr == `JAL)                  ? 31 :       // JAL
-                            ((func == `I_ALU_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
-                            ((func == `I_ALU_I) || (func == `I_MEM_R) || (instr == `MFC0))  ? addrRt :  // rt
+                            ((ifunc == `I_ALU_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
+                            ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R) || (instr == `MFC0))  ? addrRt :  // rt
                             0;
                             
     assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 
@@ -390,7 +390,7 @@ module StageID (
     always @ (posedge clk) begin
         if (reset | clr) begin
             instr_EX            <= 0;
-            func_EX             <= 0;
+            ifunc_EX             <= 0;
             PC_EX               <= 0;
             Exc_EX              <= 0;
             BD_EX               <= 0;
@@ -407,7 +407,7 @@ module StageID (
         end
         else if (!stall) begin
             instr_EX            <=  instr;
-            func_EX             <=  func;
+            ifunc_EX             <=  ifunc;
             PC_EX               <=  PC_ID;
             Exc_EX              <=  Exc;
             BD_EX               <=  BD_ID;

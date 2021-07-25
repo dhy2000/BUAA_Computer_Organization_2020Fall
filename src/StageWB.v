@@ -10,7 +10,7 @@ module EXTDM (
     input wire [31:0] memWord, 
     input wire [1:0] offset, 
     input wire [`WIDTH_INSTR-1:0] instr, 
-    input wire `TYPE_IFUNC func,
+    input wire `TYPE_IFUNC ifunc,
     output wire [31:0] extWord
 );
     parameter   UNIT_Word   = 0,
@@ -73,7 +73,7 @@ endmodule
 module StageWB (
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_WB            , 
-    input wire `TYPE_IFUNC          func_WB             ,
+    input wire `TYPE_IFUNC          ifunc_WB             ,
     input wire [31:0]               PC_WB               , 
     input wire [31:0]               memWord_WB          ,
     input wire [1:0]                offset_WB           ,
@@ -103,7 +103,7 @@ module StageWB (
     EXTDM extdm (
         .memWord(memWord_WB), 
         .offset(offset_WB), 
-        .instr(instr_WB), .func(func_WB),
+        .instr(instr_WB), .ifunc(ifunc_WB),
         .extWord(extMemWord)
     );
 
@@ -112,13 +112,13 @@ module StageWB (
     // instantiate ic module
     wire [`WIDTH_INSTR-1:0] instr;
     assign instr = instr_WB;
-    wire `TYPE_IFUNC func;
-    assign func = func_WB;
+    wire `TYPE_IFUNC ifunc;
+    assign ifunc = ifunc_WB;
 
 
     assign regWriteAddr = (dis_GRF) ? 0 : regWriteAddr_WB;
     assign regWriteData = (
-        ((func == `I_MEM_R)) ? (extMemWord) : 
+        ((ifunc == `I_MEM_R)) ? (extMemWord) : 
         (regWriteData_WB)
     );
 

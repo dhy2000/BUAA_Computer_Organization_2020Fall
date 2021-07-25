@@ -12,7 +12,7 @@ module ALU (
     /* Input */
     // Control
     input wire [`WIDTH_INSTR-1:0] instr,
-    input wire `TYPE_IFUNC func, 
+    input wire `TYPE_IFUNC ifunc, 
     // Data
     input wire [31:0] dataRs, 
     input wire [31:0] dataRt, 
@@ -51,13 +51,13 @@ module ALU (
     wire [WIDTH_Alu-1:0] aluOp;
     
     assign extOp = (
-        (func == `I_MEM_R || func == `I_MEM_W) ? (Sign_Ext) :
+        (ifunc == `I_MEM_R || ifunc == `I_MEM_W) ? (Sign_Ext) :
         ((instr == `ANDI) || (instr == `ORI) || (instr == `XORI) || (instr == `LUI)) ? (Zero_Ext) : 
         (Sign_Ext) // default
     );
 
     assign aluOp = (
-        (func == `I_MEM_R || func == `I_MEM_W) ? (Alu_Add) : 
+        (ifunc == `I_MEM_R || ifunc == `I_MEM_W) ? (Alu_Add) : 
         (instr == `ADD || instr == `ADDU || instr == `ADDIU || instr == `ADDI) ? (Alu_Add) : 
         (instr == `SUB || instr == `SUBU) ? (Alu_Sub) : 
         (instr == `AND || instr == `ANDI) ? (Alu_And) : 
@@ -81,8 +81,8 @@ module ALU (
 
     wire [31:0] srca, srcb;
     assign srca = ((instr == `SLL || instr == `SRL || instr == `SRA)) ? {27'b0, shamt} : dataRs;
-    assign srcb = ((func == `I_ALU_I) || (func == `I_MEM_R) || (func == `I_MEM_W)) ? extImm : 
-                    ((func == `I_ALU_R)) ? dataRt : 
+    assign srcb = ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R) || (ifunc == `I_MEM_W)) ? extImm : 
+                    ((ifunc == `I_ALU_R)) ? dataRt : 
                     0; // default
 
     function [31:0] countLeading;
@@ -136,8 +136,8 @@ module ALU (
     wire [32:0] tmpSum = tmpA + tmpB, tmpDif = tmpA - tmpB;
     wire ovfSum = (tmpSum[32] != tmpSum[31]), ovfDif = (tmpDif[32] != tmpDif[31]);
 
-    assign exc = ((func == `I_MEM_R) && ovfSum) ? (`EXC_ADEL) : 
-                ((func == `I_MEM_W) && ovfSum) ? (`EXC_ADES) : 
+    assign exc = ((ifunc == `I_MEM_R) && ovfSum) ? (`EXC_ADEL) : 
+                ((ifunc == `I_MEM_W) && ovfSum) ? (`EXC_ADES) : 
                 ((instr == `ADD || instr == `ADDI) && ovfSum) ? (`EXC_OV) : 
                 ((instr == `SUB) && ovfDif) ? (`EXC_OV) : 0;
 
@@ -267,7 +267,7 @@ module StageEX (
     input wire                      clr, 
     /* Data Inputs from Previous Pipeline */
     input wire [`WIDTH_INSTR-1:0]   instr_EX            , 
-    input wire `TYPE_IFUNC          func_EX             ,
+    input wire `TYPE_IFUNC          ifunc_EX             ,
     input wire [31:0]               PC_EX               , 
     input wire [6:2]                Exc_EX              ,
     input wire                      BD_EX               ,
@@ -291,7 +291,7 @@ module StageEX (
     /* Data Outputs to Next Pipeline */
     // Instruction
     output reg [`WIDTH_INSTR-1:0]   instr_MEM           = 0, 
-    output reg `TYPE_IFUNC          func_MEM            = 0,
+    output reg `TYPE_IFUNC          ifunc_MEM            = 0,
     output reg [31:0]               PC_MEM              = 0, 
     output reg [6:2]                Exc_MEM             = 0,
     output reg                      BD_MEM              = 0,
@@ -353,7 +353,7 @@ module StageEX (
     /* ------ Part 2: Instantiate Modules ------ */
 
     ALU alu (
-        .instr(instr_EX), .func(func_EX),
+        .instr(instr_EX), .ifunc(ifunc_EX),
         .dataRs(dataRs_alu), .dataRt(dataRt_alu),
         .imm16(imm16_EX), .shamt(shamt_EX),
         .out(aluOut), .exc(excAlu)
@@ -373,13 +373,13 @@ module StageEX (
     // instantiate ic module
     wire [`WIDTH_INSTR-1:0] instr;
     assign instr = instr_EX;
-    wire `TYPE_IFUNC func;
-    assign func = func_EX;
+    wire `TYPE_IFUNC ifunc;
+    assign ifunc = ifunc_EX;
 
     assign regWriteAddr = regWriteAddr_EX;
     assign regWriteData = (
         ((instr == `MFLO) || (instr == `MFHI)) ? (mdOut) : 
-        ((func == `I_ALU_R) || (func == `I_ALU_I)) ? (aluOut) :
+        ((ifunc == `I_ALU_R) || (ifunc == `I_ALU_I)) ? (aluOut) :
         (regWriteData_EX) // not alu instruction, use previous
     );
     
@@ -389,7 +389,7 @@ module StageEX (
     always @(posedge clk) begin
         if (reset | clr) begin
             instr_MEM                   <=  0;
-            func_MEM                    <=  0;
+            ifunc_MEM                    <=  0;
             PC_MEM                      <=  0;
             Exc_MEM                     <=  0;
             BD_MEM                      <=  0;
@@ -403,7 +403,7 @@ module StageEX (
         end
         else if (!stall) begin
             instr_MEM                   <=  instr_EX;
-            func_MEM                    <=  func_EX;
+            ifunc_MEM                    <=  ifunc_EX;
             PC_MEM                      <=  PC_EX;
             Exc_MEM                     <=  Exc;
             BD_MEM                      <=  BD_EX;

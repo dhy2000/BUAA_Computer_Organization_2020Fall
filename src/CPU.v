@@ -102,7 +102,7 @@ module CPU (
         .regaddr_EX(RegWriteAddr_EX), .regdata_EX(RegWriteData_EX), // Forward
         .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
         .Tnew_ID(Tnew_ID), 
-        .instr_EX(Instr_EX), .func_EX(Func_EX), .PC_EX(PC_EX), .Exc_EX(Exc_EX), .BD_EX(BD_EX), 
+        .instr_EX(Instr_EX), .ifunc_EX(Func_EX), .PC_EX(PC_EX), .Exc_EX(Exc_EX), .BD_EX(BD_EX), 
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
         .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX), .addrRd_EX(AddrRd_EX), 
@@ -117,7 +117,7 @@ module CPU (
 
     StageEX ex (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(clr_MEM),
-        .instr_EX(Instr_EX), .func_EX(Func_EX), .PC_EX(PC_EX), .Exc_EX(Exc_EX), .BD_EX(BD_EX), 
+        .instr_EX(Instr_EX), .ifunc_EX(Func_EX), .PC_EX(PC_EX), .Exc_EX(Exc_EX), .BD_EX(BD_EX), 
         .dataRs_EX(DataRs_EX), .dataRt_EX(DataRt_EX),
         .imm16_EX(Imm16_EX), .shamt_EX(Shamt_EX),
         .addrRs_EX(AddrRs_EX), .addrRt_EX(AddrRt_EX), .addrRd_EX(AddrRd_EX),
@@ -126,7 +126,7 @@ module CPU (
         .regaddr_MEM(RegWriteAddr_MEM), .regdata_MEM(RegWriteData_MEM), // Forward
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB), // Forward
         .dis_MULTDIV(Dis_MULTDIV), 
-        .instr_MEM(Instr_MEM), .func_MEM(Func_MEM), .PC_MEM(PC_MEM), .Exc_MEM(Exc_MEM), .BD_MEM(BD_MEM), 
+        .instr_MEM(Instr_MEM), .ifunc_MEM(Func_MEM), .PC_MEM(PC_MEM), .Exc_MEM(Exc_MEM), .BD_MEM(BD_MEM), 
         .exOut_MEM(ExOut_MEM), 
         .addrRt_MEM(AddrRt_MEM), .addrRd_MEM(AddrRd_MEM), .dataRt_MEM(DataRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
@@ -136,14 +136,14 @@ module CPU (
 
     StageMEM mem (
         .clk(clk), .reset(reset), .stall(1'b0), .clr(clr_WB),
-        .instr_MEM(Instr_MEM), .func_MEM(Func_MEM), .PC_MEM(PC_MEM), .Exc_MEM(Exc_MEM), .BD_MEM(BD_MEM), 
+        .instr_MEM(Instr_MEM), .ifunc_MEM(Func_MEM), .PC_MEM(PC_MEM), .Exc_MEM(Exc_MEM), .BD_MEM(BD_MEM), 
         .exOut_MEM(ExOut_MEM), 
         .addrRt_MEM(AddrRt_MEM), .addrRd_MEM(AddrRd_MEM), .dataRt_MEM(DataRt_MEM),
         .regWriteAddr_MEM(RegWriteAddr_MEM), .regWriteData_MEM(RegWriteData_MEM),
         .regaddr_WB(RegWriteAddr_WB), .regdata_WB(RegWriteData_WB),
         .Tnew_MEM(Tnew_MEM), 
         .dis_DM(Dis_DM), .BD_Macro(MacroBD), 
-        .instr_WB(Instr_WB), .func_WB(Func_WB), .PC_WB(PC_WB),
+        .instr_WB(Instr_WB), .ifunc_WB(Func_WB), .PC_WB(PC_WB),
         .memWord_WB(MemWord_WB), .offset_WB(Offset_WB),
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .Tnew_WB(Tnew_WB), 
@@ -153,7 +153,7 @@ module CPU (
     );
 
     StageWB wb (
-        .instr_WB(Instr_WB), .func_WB(Func_WB), .PC_WB(PC_WB),
+        .instr_WB(Instr_WB), .ifunc_WB(Func_WB), .PC_WB(PC_WB),
         .memWord_WB(MemWord_WB), .offset_WB(Offset_WB), 
         .regWriteAddr_WB(RegWriteAddr_WB), .regWriteData_WB(RegWriteData_WB),
         .dis_GRF(Dis_GRF), 

@@ -67,17 +67,17 @@ module NPC (
             NPC_JmpReg  = 3;
     // control
     // instantiate ic module
-    wire `TYPE_FORMAT format; wire `TYPE_IFUNC func;
-    IC ic (.instr(instr), .format(format), .func(func));
+    wire `TYPE_FORMAT format; wire `TYPE_IFUNC ifunc;
+    IC ic (.instr(instr), .format(format), .ifunc(ifunc));
     wire [WIDTH_NPC-1:0] npcOp;
     assign npcOp = (
         (instr == `JALR || instr == `JR) ? (NPC_JmpReg) : 
         (instr == `J    || instr == `JAL) ? (NPC_JmpImm) : 
-        ((func == `I_BRANCH) && cmp) ? (NPC_Branch) : 
+        ((ifunc == `I_BRANCH) && cmp) ? (NPC_Branch) : 
         (NPC_Order)
     );
 
-    assign isJmp = (func == `I_BRANCH || func == `I_JUMP);
+    assign isJmp = (ifunc == `I_BRANCH || ifunc == `I_JUMP);
 
     wire [31:0] extImm, extJmp;
     assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
