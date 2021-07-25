@@ -16,8 +16,8 @@ module CP0 (
     // input wire [31:0] PC_WB,    // Maybe not needed?
     input wire [31:0] WData, 
     input wire [4:0] CP0id,     // addrRd
-    input wire [`WIDTH_INSTR-1:0] instr, 
-    // input wire [`WIDTH_INSTR-1:0] instr_WB, // to check delay slot
+    input wire `TYPE_INSTR instr, 
+    // input wire `TYPE_INSTR instr_WB, // to check delay slot
     input wire BDFlag, 
     // Interrupt and Exception Control
     input wire [7:2] HWInt, 
@@ -123,7 +123,7 @@ parameter   idSR    = 12,
 endmodule
 
 module PREDM (
-    input wire [`WIDTH_INSTR-1:0] instr, 
+    input wire `TYPE_INSTR instr, 
     input wire `TYPE_IFUNC ifunc,
     input wire [31:0] Addr, 
     input wire [31:0] WData, 
@@ -190,7 +190,7 @@ module StageMEM (
     input wire                      stall, 
     input wire                      clr, 
     /* Data Inputs from Previous Pipeline */
-    input wire [`WIDTH_INSTR-1:0]   instr_MEM           , 
+    input wire `TYPE_INSTR   instr_MEM           , 
     input wire `TYPE_IFUNC          ifunc_MEM            ,
     input wire [31:0]               PC_MEM              , 
     input wire [6:2]                Exc_MEM             ,
@@ -210,7 +210,7 @@ module StageMEM (
     input wire                      BD_Macro,   // sync with macro pc
     /* Data Outputs to Next Pipeline */
     // instruction
-    output reg [`WIDTH_INSTR-1:0]   instr_WB            = 0, 
+    output reg `TYPE_INSTR   instr_WB            = 0, 
     output reg `TYPE_IFUNC          ifunc_WB             = 0,
     output reg [31:0]               PC_WB               = 0, 
     // DM
@@ -298,7 +298,7 @@ module StageMEM (
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
-    wire [`WIDTH_INSTR-1:0] instr;
+    wire `TYPE_INSTR instr;
     assign instr = instr_MEM;
     wire `TYPE_IFUNC ifunc;
     assign ifunc = ifunc_MEM;

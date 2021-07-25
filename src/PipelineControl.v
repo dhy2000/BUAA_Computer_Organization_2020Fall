@@ -8,7 +8,7 @@
 `include "include/exception.v"
 
 module InstrTuseTnew (
-    input wire [`WIDTH_INSTR-1:0] instr, 
+    input wire `TYPE_INSTR instr, 
     output wire `TYPE_IFUNC ifunc, 
     output wire [`WIDTH_T-1:0] Tuse_rs, 
     output wire [`WIDTH_T-1:0] Tuse_rt,
@@ -94,10 +94,10 @@ module PipelineControl (
     input wire [31:0] PC_EX, 
     input wire [31:0] PC_MEM, 
     input wire [31:0] PC_WB, 
-    input wire [`WIDTH_INSTR-1:0] instr_ID, 
-    input wire [`WIDTH_INSTR-1:0] instr_EX,
-    input wire [`WIDTH_INSTR-1:0] instr_MEM, 
-    input wire [`WIDTH_INSTR-1:0] instr_WB, 
+    input wire `TYPE_INSTR instr_ID, 
+    input wire `TYPE_INSTR instr_EX,
+    input wire `TYPE_INSTR instr_MEM, 
+    input wire `TYPE_INSTR instr_WB, 
     input wire BD_IF, 
     input wire BD_ID, 
     input wire BD_EX, 

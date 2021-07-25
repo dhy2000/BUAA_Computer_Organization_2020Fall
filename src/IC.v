@@ -6,7 +6,7 @@
  */
 module IC (
     /* Input */
-    input wire [`WIDTH_INSTR-1:0] instr,
+    input wire `TYPE_INSTR instr,
     /* Output */
     output wire `TYPE_FORMAT format,
     output wire `TYPE_IFUNC ifunc 

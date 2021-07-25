@@ -113,7 +113,7 @@ module StageF (
     output wire                     I_REn,
     input wire `WORD                I_Data,
     input wire                      I_Valid,    // reserved
-    /* Register for next stage */
+    /* To next stage */
     output reg `WORD                code_D      = 0,
     output reg `WORD                PC_D        = 0,
     output reg                      BD_D        = 0,

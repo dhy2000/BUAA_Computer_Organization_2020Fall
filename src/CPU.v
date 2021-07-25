@@ -32,7 +32,7 @@ module CPU (
     wire [6:2] Exc_ID;
     wire BD_ID, BD_IF;
     // ID
-    wire [`WIDTH_INSTR-1:0] Instr_EX, Instr_NPC, Instr_ID;
+    wire `TYPE_INSTR Instr_EX, Instr_NPC, Instr_ID;
     wire `TYPE_IFUNC Func_EX;
     wire Cmp_NPC; 
     wire [31:0] PC_EX, DataRs_EX, DataRt_EX, RegWriteData_EX, JmpReg_NPC;
@@ -47,7 +47,7 @@ module CPU (
     // GRF
     wire [31:0] RD1_GRF, RD2_GRF;
     // EX
-    wire [`WIDTH_INSTR-1:0] Instr_MEM;
+    wire `TYPE_INSTR Instr_MEM;
     wire `TYPE_IFUNC Func_MEM;
     wire [31:0] PC_MEM, ExOut_MEM;
     wire [31:0] DataRt_MEM;
@@ -59,7 +59,7 @@ module CPU (
     wire [6:2] Exc_MEM;
     wire BD_MEM;
     // MEM
-    wire [`WIDTH_INSTR-1:0] Instr_WB;
+    wire `TYPE_INSTR Instr_WB;
     wire `TYPE_IFUNC Func_WB;
     wire [31:0] PC_WB, MemWord_WB;
     wire [1:0] Offset_WB;

@@ -11,7 +11,7 @@
 module ALU (
     /* Input */
     // Control
-    input wire [`WIDTH_INSTR-1:0] instr,
+    input wire `TYPE_INSTR instr,
     input wire `TYPE_IFUNC ifunc, 
     // Data
     input wire [31:0] dataRs, 
@@ -152,7 +152,7 @@ module MULTDIV (
     input wire clk, 
     input wire reset, 
     // Control
-    input wire [`WIDTH_INSTR-1:0] instr,
+    input wire `TYPE_INSTR instr,
     input wire enable, 
     // Data
     input wire [31:0] dataRs, 
@@ -266,7 +266,7 @@ module StageEX (
     input wire                      stall, 
     input wire                      clr, 
     /* Data Inputs from Previous Pipeline */
-    input wire [`WIDTH_INSTR-1:0]   instr_EX            , 
+    input wire `TYPE_INSTR   instr_EX            , 
     input wire `TYPE_IFUNC          ifunc_EX             ,
     input wire [31:0]               PC_EX               , 
     input wire [6:2]                Exc_EX              ,
@@ -290,7 +290,7 @@ module StageEX (
     input wire                      dis_MULTDIV,
     /* Data Outputs to Next Pipeline */
     // Instruction
-    output reg [`WIDTH_INSTR-1:0]   instr_MEM           = 0, 
+    output reg `TYPE_INSTR   instr_MEM           = 0, 
     output reg `TYPE_IFUNC          ifunc_MEM            = 0,
     output reg [31:0]               PC_MEM              = 0, 
     output reg [6:2]                Exc_MEM             = 0,
@@ -371,7 +371,7 @@ module StageEX (
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
-    wire [`WIDTH_INSTR-1:0] instr;
+    wire `TYPE_INSTR instr;
     assign instr = instr_EX;
     wire `TYPE_IFUNC ifunc;
     assign ifunc = ifunc_EX;

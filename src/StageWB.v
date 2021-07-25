@@ -9,7 +9,7 @@
 module EXTDM (
     input wire [31:0] memWord, 
     input wire [1:0] offset, 
-    input wire [`WIDTH_INSTR-1:0] instr, 
+    input wire `TYPE_INSTR instr, 
     input wire `TYPE_IFUNC ifunc,
     output wire [31:0] extWord
 );
@@ -72,7 +72,7 @@ endmodule
 
 module StageWB (
     /* Data Inputs from Previous Pipeline */
-    input wire [`WIDTH_INSTR-1:0]   instr_WB            , 
+    input wire `TYPE_INSTR   instr_WB            , 
     input wire `TYPE_IFUNC          ifunc_WB             ,
     input wire [31:0]               PC_WB               , 
     input wire [31:0]               memWord_WB          ,
@@ -110,7 +110,7 @@ module StageWB (
 
     /* ------ Part 2.5 Part of Controls ------ */
     // instantiate ic module
-    wire [`WIDTH_INSTR-1:0] instr;
+    wire `TYPE_INSTR instr;
     assign instr = instr_WB;
     wire `TYPE_IFUNC ifunc;
     assign ifunc = ifunc_WB;
