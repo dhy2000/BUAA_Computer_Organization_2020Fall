@@ -146,6 +146,12 @@ module StageF (
         .excCode(exc_F)
     );
 
+    /* ------ Other Signals ------ */
+    assign I_Addr = PC_F;
+    assign I_REn = 1'b1;    // always true
+
+    assign busy = (~I_Valid);
+
     /* ------ Pipeline Registers ------ */
     always @(posedge clk) begin
         if (reset) begin
@@ -162,10 +168,10 @@ module StageF (
                 exc_D       <=  0;
             end
             else begin
-                code_D      <=  0;  //
-                PC_D        <=  0;
-                BD_D        <=  0;
-                exc_D       <=  0;
+                code_D      <=  I_Data;
+                PC_D        <=  PC_F;
+                BD_D        <=  BD_F;
+                exc_D       <=  exc_F;
             end
         end
     end
