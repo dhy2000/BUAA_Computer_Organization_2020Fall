@@ -1,13 +1,8 @@
-/* 
- * File Name: DataMem.v
- * Module Name: DataMem
- * Description: Data Memory
- */
 `default_nettype none
 
 `include "include/memconfig.v"
 
-module DataMem (
+module DM (
     input wire clk, 
     input wire reset, 
     input wire [31:0] PC, 
