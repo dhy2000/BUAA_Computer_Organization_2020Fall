@@ -131,7 +131,6 @@ module ALU (
 
     assign out = alu(srca, srcb, aluOp);
 
-`ifdef SUPPORT_EXC
     /* Exception */
     wire [32:0] tmpA = {srca[31], srca}, tmpB = {srcb[31], srcb};
     wire [32:0] tmpSum = tmpA + tmpB, tmpDif = tmpA - tmpB;
@@ -141,8 +140,7 @@ module ALU (
                 ((func == `I_MEM_W) && ovfSum) ? (`EXC_ADES) : 
                 ((instr == `ADD || instr == `ADDI) && ovfSum) ? (`EXC_OV) : 
                 ((instr == `SUB) && ovfDif) ? (`EXC_OV) : 0;
-`else
-    assign exc = 0;
+
 `endif
 
 

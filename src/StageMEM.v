@@ -157,7 +157,6 @@ module PREDM (
                     (instr == `SB) ? (WData << ({3'b0, offset} << 3)) : 
                     (WData);
 
-`ifdef SUPPORT_EXC
     // Exceptions
     assign exc = (
         ((instr == `LW) && (Addr[1:0] != 0)) ? (`EXC_ADEL) : // load not-aligned word
@@ -177,8 +176,7 @@ module PREDM (
         ((func == `I_MEM_W) && (Addr == 32'h0000_7F08 || Addr == 32'h0000_7F18)) ? (`EXC_ADES) :
         0
     );
-`else
-    assign exc = 0;
+
 `endif
 
 endmodule
