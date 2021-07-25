@@ -1,67 +1,44 @@
-/*
- *  File Name: GRF.v
- *  Module: GRF
- *  Inputs: (RAddr1, RAddr2), (clk, reset, writeEn, PC, WAddr, WData)
- *  Outputs: (RData1, RData2)
- *  Description: General Register File
- */
-
 `default_nettype none
+`include "include/memory.v"
 
+/*
+ *  Overview: General Register File, with 2 read ports and 1 write port
+ */
 module GRF (
     input wire clk,
     input wire reset,
-    input wire [4:0] RAddr1, 
-    input wire [4:0] RAddr2,
-    // input wire writeEn,
-    input wire [4:0] WAddr,
-    input wire [31:0] WData,
-    input wire [31:0] PC,
-    output wire [31:0] RData1,
-    output wire [31:0] RData2
+    // Read Port 1
+    input wire `TYPE_REG RAddr1,
+    output wire `WORD RData1,
+    // Read Port 2
+    input wire `TYPE_REG RAddr2,
+    output wire `WORD RData2,
+    // Write Port
+    input wire `WORD WPC,
+    input wire WEn,
+    input wire `TYPE_REG WAddr,
+    input wire `WORD WData
 );
-    // Memory Declaration
-    reg [31:0] grf [0: 31];
-    // Inner Transmit Forward
+    
+    reg `WORD grf [0: 31];
+
+    // Read
     assign RData1 = ((WAddr != 0) && (RAddr1 == WAddr)) ? WData : grf[RAddr1];
     assign RData2 = ((WAddr != 0) && (RAddr2 == WAddr)) ? WData : grf[RAddr2];
 
-    task resetReg;
-        integer i;
-        begin
+    // Write
+    integer i;
+    always @(posedge clk) begin
+        if (reset) begin
             for (i = 0; i <= 31; i = i + 1) begin
                 grf[i] <= 0;
             end
         end
-    endtask
-
-    task writeToReg;
-        input [4:0] addr;
-        input [31:0] data;
-        input [31:0] pc;
-        begin
-            if (addr != 0) begin
-                $display("%d@%h: $%d <= %h", $time, pc, addr, data);
-                grf[addr] <= data;
-            end
-            else begin
-                grf[addr] <= 0;
-            end
-        end
-    endtask
-
-    initial begin
-        resetReg;
-    end
-
-    always @(posedge clk) begin
-        if (reset) begin
-            resetReg;
-        end
         else begin
-            // if (writeEn) begin
-                writeToReg(WAddr, WData, PC);
-            // end
+            if (WEn & (WAddr != 0)) begin
+                grf[WAddr] <= WData;
+                $display("%d@%h: $%d <= %h", $time, WPC, WAddr, WData);
+            end
         end
     end
 
