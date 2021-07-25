@@ -5,6 +5,11 @@
 `ifndef INC_MEMORY
 `define INC_MEMORY
 
+/* ------ Mem Unit ------ */
+`define WIDTH_WORD          32
+`define WORD                [`WIDTH_WORD - 1 : 0]
+`define BYTE                [7:0]
+
 /* ------ Registers ------ */
 `define WIDTH_REG           5
 `define TYPE_REG            [`WIDTH_REG - 1 : 0]
