@@ -12,6 +12,14 @@
 `define FORMAT_R        0
 `define FORMAT_I        1
 `define FORMAT_J        2
+
+/* ------ Field of Instruction ------ */
+`define TYPE_OPCODE     [31:26]
+`define TYPE_FUNCT      [5:0]
+`define TYPE_SHAMT      [11:6]
+`define TYPE_IMM        [15:0]
+`define TYPE_JADDR      [25:0]
+
 /* ------ Function Group ------ */
 `define WIDTH_IFUNC     4   // width of the signal
 `define TYPE_IFUNC      [`WIDTH_IFUNC - 1 : 0]
