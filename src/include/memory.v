@@ -2,8 +2,12 @@
  *  Overview: Macro defines of configuration for Memories.
  */
 
-`ifndef INC_MEMORY_CONFIGURATION
-`define INC_MEMORY_CONFIGURATION
+`ifndef INC_MEMORY
+`define INC_MEMORY
+
+/* ------ Registers ------ */
+`define WIDTH_REG           5
+`define TYPE_REG            [`WIDTH_REG - 1 : 0]
 
 /* ------ Memory Address ------ */
 /* DM */

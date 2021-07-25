@@ -2,8 +2,8 @@
  *  Overview: Macro defines of supported instruction set, including the identification code and category label of instructions.
  */
 
-`ifndef INC_INSTRUCTION_SET
-`define INC_INSTRUCTION_SET
+`ifndef INC_INSTRUCTION
+`define INC_INSTRUCTION
 
 /* ------ Instruction Format ------ */
 `define WIDTH_FORMAT    2   // width of the signal
