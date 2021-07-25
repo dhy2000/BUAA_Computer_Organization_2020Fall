@@ -17,10 +17,10 @@ module DataMem (
     output wire [31:0] RData
 );
 
-    reg [31:0] mem [0: `DM_SIZE_WORD - 1];
+    reg [31:0] mem [0: `DM_WORDNUM - 1];
 
-    wire [`WIDTH_DM_ADDR-1:2] wordAddr;
-    assign wordAddr = Addr[`WIDTH_DM_ADDR-1:2];
+    wire [`DM_ADDR_WIDTH-1:2] wordAddr;
+    assign wordAddr = Addr[`DM_ADDR_WIDTH-1:2];
 
     wire [31:0] memword;
     assign memword = mem[wordAddr];
@@ -50,7 +50,7 @@ module DataMem (
     task resetMem;
         integer i;
         begin
-            for (i = 0; i < `DM_SIZE_WORD; i = i + 1) begin
+            for (i = 0; i < `DM_WORDNUM; i = i + 1) begin
                 mem[i] <= 0;
             end
         end

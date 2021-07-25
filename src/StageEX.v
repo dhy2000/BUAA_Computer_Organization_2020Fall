@@ -51,13 +51,13 @@ module ALU (
     wire [WIDTH_Alu-1:0] aluOp;
     
     assign extOp = (
-        (func == `FUNC_MEM_READ || func == `FUNC_MEM_WRITE) ? (Sign_Ext) :
+        (func == `I_MEM_R || func == `I_MEM_W) ? (Sign_Ext) :
         ((instr == `ANDI) || (instr == `ORI) || (instr == `XORI) || (instr == `LUI)) ? (Zero_Ext) : 
         (Sign_Ext) // default
     );
 
     assign aluOp = (
-        (func == `FUNC_MEM_READ || func == `FUNC_MEM_WRITE) ? (Alu_Add) : 
+        (func == `I_MEM_R || func == `I_MEM_W) ? (Alu_Add) : 
         (instr == `ADD || instr == `ADDU || instr == `ADDIU || instr == `ADDI) ? (Alu_Add) : 
         (instr == `SUB || instr == `SUBU) ? (Alu_Sub) : 
         (instr == `AND || instr == `ANDI) ? (Alu_And) : 
@@ -81,8 +81,8 @@ module ALU (
 
     wire [31:0] srca, srcb;
     assign srca = ((instr == `SLL || instr == `SRL || instr == `SRA)) ? {27'b0, shamt} : dataRs;
-    assign srcb = ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ) || (func == `FUNC_MEM_WRITE)) ? extImm : 
-                    ((func == `FUNC_CALC_R)) ? dataRt : 
+    assign srcb = ((func == `I_ALU_I) || (func == `I_MEM_R) || (func == `I_MEM_W)) ? extImm : 
+                    ((func == `I_ALU_R)) ? dataRt : 
                     0; // default
 
     function [31:0] countLeading;
@@ -137,8 +137,8 @@ module ALU (
     wire [32:0] tmpSum = tmpA + tmpB, tmpDif = tmpA - tmpB;
     wire ovfSum = (tmpSum[32] != tmpSum[31]), ovfDif = (tmpDif[32] != tmpDif[31]);
 
-    assign exc = ((func == `FUNC_MEM_READ) && ovfSum) ? (`EXC_ADEL) : 
-                ((func == `FUNC_MEM_WRITE) && ovfSum) ? (`EXC_ADES) : 
+    assign exc = ((func == `I_MEM_R) && ovfSum) ? (`EXC_ADEL) : 
+                ((func == `I_MEM_W) && ovfSum) ? (`EXC_ADES) : 
                 ((instr == `ADD || instr == `ADDI) && ovfSum) ? (`EXC_OV) : 
                 ((instr == `SUB) && ovfDif) ? (`EXC_OV) : 0;
 `else
@@ -381,7 +381,7 @@ module StageEX (
     assign regWriteAddr = regWriteAddr_EX;
     assign regWriteData = (
         ((instr == `MFLO) || (instr == `MFHI)) ? (mdOut) : 
-        ((func == `FUNC_CALC_R) || (func == `FUNC_CALC_I)) ? (aluOut) :
+        ((func == `I_ALU_R) || (func == `I_ALU_I)) ? (aluOut) :
         (regWriteData_EX) // not alu instruction, use previous
     );
     

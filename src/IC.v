@@ -13,8 +13,8 @@ module IC (
     /* Input */
     input wire [`WIDTH_INSTR-1:0] instr,
     /* Output */
-    output wire [`WIDTH_FORMAT-1:0] format,
-    output wire [`WIDTH_FUNC-1:0] func 
+    output wire `TYPE_FORMAT format,
+    output wire `TYPE_IFUNC func 
 );
     // format
     wire r, i, j;
@@ -66,15 +66,15 @@ module IC (
         (instr == `MFC0 || instr == `MTC0 || instr == `ERET)
     );
 
-    assign func =   (calc_r) ? (`FUNC_CALC_R) : 
-                    (calc_i) ? (`FUNC_CALC_I) : 
-                    (mem_r) ? (`FUNC_MEM_READ) : 
-                    (mem_w) ? (`FUNC_MEM_WRITE) : 
-                    (br) ? (`FUNC_BRANCH) : 
-                    (jmp) ? (`FUNC_JUMP) : 
-                    (md) ? (`FUNC_MULTDIV) : 
-                    (cp0) ? (`FUNC_CP0) : 
-                    (`FUNC_OTHER) ;
+    assign func =   (calc_r) ? (`I_ALU_R) : 
+                    (calc_i) ? (`I_ALU_I) : 
+                    (mem_r) ? (`I_MEM_R) : 
+                    (mem_w) ? (`I_MEM_W) : 
+                    (br) ? (`I_BRANCH) : 
+                    (jmp) ? (`I_JUMP) : 
+                    (md) ? (`I_MD) : 
+                    (cp0) ? (`I_CP0) : 
+                    (`I_OTHER) ;
     // 
 
 endmodule

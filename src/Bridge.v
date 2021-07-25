@@ -50,20 +50,20 @@ module NorthBridge (
     assign DM_Addr = Addr2;
     assign DM_WData = WData2;
     
-    assign DM_WE = (Addr2 >= `DATA_STARTADDR && Addr2 < `DATA_ENDADDR) ? (WE2) : 4'b0;
+    assign DM_WE = (Addr2 >= `DM_ADDR_START && Addr2 < `DM_ADDR_END) ? (WE2) : 4'b0;
 
     // South Bridge
     assign SBr_PC = PC2;
     assign SBr_Addr = Addr2;
     assign SBr_WData = WData2;
     assign SBr_WE = (
-        (Addr2 >= `TIMER0_STARTADDR && Addr2 < `TIMER0_ENDADDR) ||
-        (Addr2 >= `TIMER1_STARTADDR && Addr2 < `TIMER1_ENDADDR)
+        (Addr2 >= `TIMER0_ADDR_START && Addr2 < `TIMER0_ADDR_END) ||
+        (Addr2 >= `TIMER1_ADDR_START && Addr2 < `TIMER1_ADDR_END)
     ) ? (&WE2) : 0;
 
-    assign RData2 = (Addr2 >= `DATA_STARTADDR && Addr2 < `DATA_ENDADDR) ? (DM_RData) : 
-                    (Addr2 >= `TIMER0_STARTADDR && Addr2 < `TIMER0_ENDADDR) ? (SBr_RData) : 
-                    (Addr2 >= `TIMER1_STARTADDR && Addr2 < `TIMER1_ENDADDR) ? (SBr_RData) : 
+    assign RData2 = (Addr2 >= `DM_ADDR_START && Addr2 < `DM_ADDR_END) ? (DM_RData) : 
+                    (Addr2 >= `TIMER0_ADDR_START && Addr2 < `TIMER0_ADDR_END) ? (SBr_RData) : 
+                    (Addr2 >= `TIMER1_ADDR_START && Addr2 < `TIMER1_ADDR_END) ? (SBr_RData) : 
                     0 ;
     assign HWInt = SBr_HWInt;
 
@@ -99,14 +99,14 @@ module SouthBridge (
 );
     assign Timer0_Addr = Addr[31:2];
     assign Timer0_WData = WData;
-    assign Timer0_WE = (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ? (WE) : 0;
+    assign Timer0_WE = (Addr >= `TIMER0_ADDR_START && Addr < `TIMER0_ADDR_END) ? (WE) : 0;
 
     assign Timer1_Addr = Addr[31:2];
     assign Timer1_WData = WData;
-    assign Timer1_WE = (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ? (WE) : 0;
+    assign Timer1_WE = (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END) ? (WE) : 0;
 
-    assign RData = (Addr >= `TIMER0_STARTADDR && Addr < `TIMER0_ENDADDR) ? (Timer0_RData) : 
-                    (Addr >= `TIMER1_STARTADDR && Addr < `TIMER1_ENDADDR) ? (Timer1_RData) : 
+    assign RData = (Addr >= `TIMER0_ADDR_START && Addr < `TIMER0_ADDR_END) ? (Timer0_RData) : 
+                    (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END) ? (Timer1_RData) : 
                     0;
 
     assign HWInt = {3'b0, Ext_Int, Timer1_Int, Timer0_Int};

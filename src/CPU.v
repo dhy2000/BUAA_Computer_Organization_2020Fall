@@ -68,7 +68,7 @@ module CPU (
     wire [`WIDTH_T-1:0] Tnew_WB;
     wire [31:0] DM_PC, DM_Addr, DM_WData;
     wire [3:0] DM_WE;
-    wire [`WIDTH_KCTRL-1:0] CP0_KCtrl;
+    wire [`WIDTH_ECTRL-1:0] CP0_KCtrl;
     wire [31:2] CP0_EPC;
     wire CP0_BD;
     // WB
@@ -78,7 +78,7 @@ module CPU (
     wire [31:0] PC_GRF;
     // Pipeline Control Unit
     wire [`WIDTH_T-1:0] Tnew_ID;
-    wire [`WIDTH_KCTRL-1:0] KCtrl_NPC;
+    wire [`WIDTH_ECTRL-1:0] KCtrl_NPC;
     wire stall_PC, stall_ID, clr_ID, clr_EX;
     wire clr_MEM, clr_WB;
     wire Dis_MULTDIV, Dis_DM, Dis_GRF;

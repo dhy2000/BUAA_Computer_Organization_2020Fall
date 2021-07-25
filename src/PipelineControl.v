@@ -9,55 +9,55 @@
 
 module InstrTuseTnew (
     input wire [`WIDTH_INSTR-1:0] instr, 
-    output wire [`WIDTH_FUNC-1:0] func, 
+    output wire `TYPE_IFUNC func, 
     output wire [`WIDTH_T-1:0] Tuse_rs, 
     output wire [`WIDTH_T-1:0] Tuse_rt,
     output wire [`WIDTH_T-1:0] Tnew_ID     // Tnew @ ID
 );
-    wire [`WIDTH_FORMAT-1:0] format; // wire [`WIDTH_FUNC-1:0] func;
+    wire `TYPE_FORMAT format; // wire `TYPE_IFUNC func;
     IC ic (.instr(instr), .format(format), .func(func));
 
     assign Tuse_rs = (
         (instr == `MOVN || instr == `MOVZ) ? 0 : 
         // Calc_R
-        (func == `FUNC_CALC_R) ? (
+        (func == `I_ALU_R) ? (
             ((instr == `SLL) || (instr == `SRL) || (instr == `SRA)) ? (`TUSE_INF) : 1
         ) : 
-        (func == `FUNC_CALC_I) ? (
+        (func == `I_ALU_I) ? (
             ((instr == `LUI)) ? (`TUSE_INF) : 1
         ) : 
-        (func == `FUNC_MEM_READ) ? 1 : 
-        (func == `FUNC_MEM_WRITE) ? 1 : 
-        (func == `FUNC_BRANCH) ? 0 : 
-        (func == `FUNC_JUMP) ? (
+        (func == `I_MEM_R) ? 1 : 
+        (func == `I_MEM_W) ? 1 : 
+        (func == `I_BRANCH) ? 0 : 
+        (func == `I_JUMP) ? (
             ((instr == `JR) || (instr == `JALR)) ? 0 : (`TUSE_INF)
         ) : 
-        (func == `FUNC_MULTDIV) ? (
+        (func == `I_MD) ? (
             ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
             ((instr == `MTHI) || (instr == `MTLO)) ? 1 : 
             (`TUSE_INF)
         ) : 
-        (func == `FUNC_CP0) ? (`TUSE_INF) : 
+        (func == `I_CP0) ? (`TUSE_INF) : 
         (`TUSE_INF)
     );
     assign Tuse_rt = (
         (instr == `MOVN || instr == `MOVZ) ? 0 : 
-        (func == `FUNC_CALC_R) ? (
+        (func == `I_ALU_R) ? (
             ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 
             1
         ) : 
-        (func == `FUNC_CALC_I) ? (`TUSE_INF) : 
-        (func == `FUNC_MEM_READ) ? (`TUSE_INF) : 
-        (func == `FUNC_MEM_WRITE) ? 2 : 
-        (func == `FUNC_BRANCH) ? (
+        (func == `I_ALU_I) ? (`TUSE_INF) : 
+        (func == `I_MEM_R) ? (`TUSE_INF) : 
+        (func == `I_MEM_W) ? 2 : 
+        (func == `I_BRANCH) ? (
             ((instr == `BEQ) || (instr == `BNE)) ? 0 : (`TUSE_INF)
         ) : 
-        (func == `FUNC_JUMP) ? (`TUSE_INF) : 
-        (func == `FUNC_MULTDIV) ? (
+        (func == `I_JUMP) ? (`TUSE_INF) : 
+        (func == `I_MD) ? (
             ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
             (`TUSE_INF)
         ) : 
-        (func == `FUNC_CP0) ? (
+        (func == `I_CP0) ? (
             (instr == `MTC0) ? 2 : (`TUSE_INF)
         ) : 
         (`TUSE_INF)
@@ -65,22 +65,22 @@ module InstrTuseTnew (
 
     assign Tnew_ID = (
         (instr == `MOVZ || instr == `MOVN) ? 1 : 
-        (func == `FUNC_CALC_R) ? 2 : 
-        (func == `FUNC_CALC_I) ? (
+        (func == `I_ALU_R) ? 2 : 
+        (func == `I_ALU_I) ? (
             (instr == `LUI) ? 1 : 2
         ) : 
-        (func == `FUNC_MEM_READ) ? (
+        (func == `I_MEM_R) ? (
             (instr == `LW) ? 3 : 5
         ) : 
-        (func == `FUNC_MEM_WRITE) ? 0 : 
-        (func == `FUNC_BRANCH) ? 0 : 
-        (func == `FUNC_JUMP) ? (
+        (func == `I_MEM_W) ? 0 : 
+        (func == `I_BRANCH) ? 0 : 
+        (func == `I_JUMP) ? (
             ((instr == `JAL) || (instr == `JALR)) ? 1 : 0
         ) : 
-        (func == `FUNC_MULTDIV) ? (
+        (func == `I_MD) ? (
             ((instr == `MFLO) || (instr == `MFHI)) ? 2 : 0
         ) : 
-        (func == `FUNC_CP0) ? (
+        (func == `I_CP0) ? (
             (instr == `MFC0) ? 3 : 0
         ) : 
         0   // NOP
@@ -115,7 +115,7 @@ module PipelineControl (
     input wire [`WIDTH_T-1:0] Tnew_MEM,
     input wire MDBusy,     // multdiv unit
     /* Control by CP0 */
-    input wire [`WIDTH_KCTRL-1:0] KCtrl_CP0, 
+    input wire [`WIDTH_ECTRL-1:0] KCtrl_CP0, 
     input wire BD_CP0, 
     // Output Tnew to pipeline
     output wire [`WIDTH_T-1:0] Tnew_ID, 
@@ -134,10 +134,10 @@ module PipelineControl (
     output wire dis_DM, 
     output wire dis_GRF, 
     // NPC Ctrl
-    output wire [`WIDTH_KCTRL-1:0] KCtrl_NPC
+    output wire [`WIDTH_ECTRL-1:0] KCtrl_NPC
 );
     /* Part 1. Pipeline Stall */
-    wire [`WIDTH_FUNC-1:0] func_ID;
+    wire `TYPE_IFUNC func_ID;
     wire [`WIDTH_T-1:0] Tuse_rs, Tuse_rt;
     InstrTuseTnew tusetnew (
         .instr(instr_ID),
@@ -158,7 +158,7 @@ module PipelineControl (
     );
 
     wire stall_md;
-    assign stall_md = (MDBusy) && (func_ID == `FUNC_MULTDIV);
+    assign stall_md = (MDBusy) && (func_ID == `I_MD);
 
     wire stall_stallPC, stall_clrEX, stall_stallID;
 
@@ -166,7 +166,7 @@ module PipelineControl (
 
     /* Part 2. Interrupt and Exception by CP0 */
     wire cp0_clrEX;
-    wire flushAll = (KCtrl_CP0 == `KCTRL_KTEXT || KCtrl_CP0 == `KCTRL_ERET);
+    wire flushAll = (KCtrl_CP0 == `E_ENTRY || KCtrl_CP0 == `E_ERET);
     assign KCtrl_NPC = KCtrl_CP0;
     assign {dis_MULTDIV, dis_DM} = (flushAll)? 2'b11 : 2'b00;
     // assign dis_GRF = (flushAll && BD_CP0) ? 1'b1 : 1'b0;
@@ -176,7 +176,7 @@ module PipelineControl (
 
     /* Part 3. Macro PC */
     // instantiate an IC
-    wire [`WIDTH_FUNC-1:0] func_WB;
+    wire `TYPE_IFUNC func_WB;
     IC ic (.instr(instr_WB), .format(), .func(func_WB));
 
     assign MacroPC = (PC_MEM || Exc_MEM) ? (PC_MEM) : 

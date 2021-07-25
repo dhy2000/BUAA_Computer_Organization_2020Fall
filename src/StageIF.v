@@ -21,19 +21,19 @@ module PC (
     // exception flag
     output wire [6:2] exc
 );
-    reg [31:0] pc = `TEXT_STARTADDR;
+    reg [31:0] pc = `IM_ADDR_START;
     assign PC = pc;
 
     // Exception
-    assign exc = ((!(PC >= `TEXT_STARTADDR && PC < `TEXT_ENDADDR)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
+    assign exc = ((!(PC >= `IM_ADDR_START && PC < `IM_ADDR_END)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
     
     initial begin
-        pc <= `TEXT_STARTADDR;
+        pc <= `IM_ADDR_START;
     end
     
     always @(posedge clk ) begin
         if (reset) begin
-            pc <= `TEXT_STARTADDR;
+            pc <= `IM_ADDR_START;
         end
         else begin
             if (En) begin
@@ -55,7 +55,7 @@ module NPC (
     input wire [25:0] jmpAddr,
     input wire [31:0] jmpReg,
     /* Control by CP0 */
-    input wire [`WIDTH_KCTRL-1:0] KCtrl, 
+    input wire [`WIDTH_ECTRL-1:0] KCtrl, 
     input wire [31:2] EPC, 
     output wire [31:0] NPC,
     output wire isJmp
@@ -67,27 +67,27 @@ module NPC (
             NPC_JmpReg  = 3;
     // control
     // instantiate ic module
-    wire [`WIDTH_FORMAT-1:0] format; wire [`WIDTH_FUNC-1:0] func;
+    wire `TYPE_FORMAT format; wire `TYPE_IFUNC func;
     IC ic (.instr(instr), .format(format), .func(func));
     wire [WIDTH_NPC-1:0] npcOp;
     assign npcOp = (
         (instr == `JALR || instr == `JR) ? (NPC_JmpReg) : 
         (instr == `J    || instr == `JAL) ? (NPC_JmpImm) : 
-        ((func == `FUNC_BRANCH) && cmp) ? (NPC_Branch) : 
+        ((func == `I_BRANCH) && cmp) ? (NPC_Branch) : 
         (NPC_Order)
     );
 
-    assign isJmp = (func == `FUNC_BRANCH || func == `FUNC_JUMP);
+    assign isJmp = (func == `I_BRANCH || func == `I_JUMP);
 
     wire [31:0] extImm, extJmp;
     assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
     assign extJmp = {PC[31:28], jmpAddr, 2'b0};
 
     wire terminated;
-    assign terminated = (PC == `KTEXT_STARTADDR - 4);
+    assign terminated = (PC == `KTEXT_START - 4);
 
-    assign NPC = (KCtrl == `KCTRL_KTEXT) ? (`KTEXT_STARTADDR) : 
-                (KCtrl == `KCTRL_ERET) ? ({EPC[31:2], 2'b0}) : 
+    assign NPC = (KCtrl == `E_ENTRY) ? (`KTEXT_START) : 
+                (KCtrl == `E_ERET) ? ({EPC[31:2], 2'b0}) : 
                 (terminated) ? (PC) : 
                 (npcOp == NPC_Order) ? (PC + 4) : 
                 (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
@@ -102,22 +102,22 @@ module IM (
     output wire [31:0] code
 );
     // Memory
-    reg [31:0] mem [0: `IM_SIZE_WORD - 1];
+    reg [31:0] mem [0: `IM_WORDNUM - 1];
     wire [31:0] baseAddr;
-    assign baseAddr = PC - `TEXT_STARTADDR;
-    wire [`WIDTH_IM_ADDR-1:2] wordIndex;
-    assign wordIndex = baseAddr[`WIDTH_IM_ADDR-1:2];
+    assign baseAddr = PC - `IM_ADDR_START;
+    wire [`IM_ADDR_WIDTH-1:2] wordIndex;
+    assign wordIndex = baseAddr[`IM_ADDR_WIDTH-1:2];
 
     wire [31:0] memword;
-    assign memword = (PC >= `TEXT_STARTADDR && PC < (`TEXT_STARTADDR + `IM_SIZE)) ? mem[wordIndex] : 0;
+    assign memword = (PC >= `IM_ADDR_START && PC < (`IM_ADDR_START + `IM_SIZE)) ? mem[wordIndex] : 0;
 
     assign code = (^memword === 1'bx) ? 0 : memword;
 
     initial begin
         $readmemh(`CODE_FILE, mem);
         // $readmemh(`HANDLER_FILE, mem, 
-        //     ((`KTEXT_STARTADDR - `TEXT_STARTADDR) >> 2), 
-        //     ((`KTEXT_ENDADDR - `TEXT_STARTADDR) >> 2)
+        //     ((`KTEXT_START - `IM_ADDR_START) >> 2), 
+        //     ((`KTEXT_END - `IM_ADDR_START) >> 2)
         // );
     end
 
@@ -140,7 +140,7 @@ module StageIF (
     input wire [25:0]               jmpAddr,
     input wire [31:0]               jmpReg,
     /* Input from CP0 */
-    input wire [`WIDTH_KCTRL-1:0]   KCtrl, 
+    input wire [`WIDTH_ECTRL-1:0]   KCtrl, 
     input wire [31:2]               EPC, 
     /* Data Outputs for Next Pipeline */
     output reg [31:0]               code_ID     = 0, 

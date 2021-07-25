@@ -320,8 +320,8 @@ module StageID (
     /* ------ Part 1: Wires Declaration ------ */
     // decode
     wire [`WIDTH_INSTR-1:0] instr;
-    wire [`WIDTH_FORMAT-1:0] format; 
-    wire [`WIDTH_FUNC-1:0] func;
+    wire `TYPE_FORMAT format; 
+    wire `TYPE_IFUNC func;
     // fields
     wire [4:0] addrRs, addrRt, addrRd;
     wire [15:0] imm16; 
@@ -378,8 +378,8 @@ module StageID (
     assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? (cmp ? 31 : 0) : // conditionally link according to MARS, but directly link according to MIPS-V2.
                             (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
                             (instr == `JAL)                  ? 31 :       // JAL
-                            ((func == `FUNC_CALC_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
-                            ((func == `FUNC_CALC_I) || (func == `FUNC_MEM_READ) || (instr == `MFC0))  ? addrRt :  // rt
+                            ((func == `I_ALU_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
+                            ((func == `I_ALU_I) || (func == `I_MEM_R) || (instr == `MFC0))  ? addrRt :  // rt
                             0;
                             
     assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 

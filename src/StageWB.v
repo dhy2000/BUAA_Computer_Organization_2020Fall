@@ -112,13 +112,13 @@ module StageWB (
     // instantiate ic module
     wire [`WIDTH_INSTR-1:0] instr;
     assign instr = instr_WB;
-    wire [`WIDTH_FUNC-1:0] func;
+    wire `TYPE_IFUNC func;
     assign func = func_WB;
 
 
     assign regWriteAddr = (dis_GRF) ? 0 : regWriteAddr_WB;
     assign regWriteData = (
-        ((func == `FUNC_MEM_READ)) ? (extMemWord) : 
+        ((func == `I_MEM_R)) ? (extMemWord) : 
         (regWriteData_WB)
     );
 

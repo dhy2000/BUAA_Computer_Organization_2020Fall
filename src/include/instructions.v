@@ -5,35 +5,36 @@
 `ifndef INC_INSTRUCTION_SET
 `define INC_INSTRUCTION_SET
 
-/* ------ Classify by Instruction Format ------ */
+/* ------ Instruction Format ------ */
 `define WIDTH_FORMAT    2   // width of the signal
-`define TYPE_FORMAT     [`WIDTH_FORMAT-1:0]
+`define TYPE_FORMAT     [`WIDTH_FORMAT - 1 : 0]
+
 `define FORMAT_R        0
 `define FORMAT_I        1
 `define FORMAT_J        2
-/* ------ Classify by Function Type ------ */
-`define WIDTH_FUNC      4   // width of the signal
-`define TYPE_IFUNC      [`WIDTH_FUNC-1:0]
-`define FUNC_CALC_R     0   // refined classification should be inside ALU
-`define FUNC_CALC_I     1   // refined classification should be insied ALU
-`define FUNC_MEM_READ   2   
-`define FUNC_MEM_WRITE  3   
-`define FUNC_BRANCH     4   
-`define FUNC_JUMP       5   
-`define FUNC_MULTDIV    6
-`define FUNC_CP0        7
-// `define FUNC_PRIOR      8
-// `define FUNC_TRAP       9
-`define FUNC_OTHER      15  // reserved
+/* ------ Function Group ------ */
+`define WIDTH_IFUNC     4   // width of the signal
+`define TYPE_IFUNC      [`WIDTH_IFUNC - 1 : 0]
+
+`define I_NOP           0
+`define I_ALU_R         1
+`define I_ALU_I         2
+`define I_MEM_R         3   
+`define I_MEM_W         4   
+`define I_BRANCH        5   
+`define I_JUMP          6   
+`define I_MD            7
+`define I_CP0           8
+`define I_OTHER         15  // reserved
 
 /* ------ Tuse / Tnew for stalls in pipeline ------ */
 `define WIDTH_T         3
-`define TYPE_T          [`WIDTH_T-1:0]
+`define TYPE_T          [`WIDTH_T - 1 : 0]
 `define TUSE_INF        5
 
 /* ------ Label of Instruction Symbol ------ */
 `define WIDTH_INSTR     7
-`define TYPE_INSTR      [`WIDTH_INSTR-1:0]
+`define TYPE_INSTR      [`WIDTH_INSTR - 1 : 0]
 `define NOP     0
 // Calculation R-format
 `define ADD     1   // rd <= rs, rt
