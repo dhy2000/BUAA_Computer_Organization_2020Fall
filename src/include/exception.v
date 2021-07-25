@@ -14,6 +14,8 @@
 
 
 /* ---- Exception Codes ---- */
+`define TYPE_EXC        [6:2]
+
 `define EXC_ADEL        4
 `define EXC_ADES        5
 `define EXC_RI          10
