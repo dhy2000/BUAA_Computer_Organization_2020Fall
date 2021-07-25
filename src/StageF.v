@@ -4,7 +4,7 @@
 
 `default_nettype none
 `include "include/instructions.v"
-`include "include/memconfig.v"
+`include "include/memory.v"
 `include "include/exception.v"
 
 /*
@@ -95,83 +95,78 @@ module PC (
 
 endmodule
 
-module StageIF (
-    /* Global Inputs */
-    // Time Sequence
-    input wire                      clk, 
-    input wire                      reset, 
-    // Pipeline Registers
-    input wire                      stall, 
-    input wire                      clr, 
-    input wire                      stallPC, 
-    /* Data Inputs from Branch or Jump */
-    input wire [`WIDTH_INSTR-1:0]   instr,
-    input wire                      cmp,
-    input wire [15:0]               imm16,
-    input wire [25:0]               jmpAddr,
-    input wire [31:0]               jmpReg,
+module StageF (
+    input wire                      clk,
+    input wire                      reset,
+    /* Input from D (control PC jump) */
+    input wire `TYPE_INSTR          instr_D,
+    input wire `TYPE_IFUNC          ifunc_D,
+    input wire                      cmp_D,
+    input wire `TYPE_IMM            imm16_D,
+    input wire `TYPE_JADDR          jmpAddr_D,
+    input wire `WORD                jmpReg_D,
     /* Input from CP0 */
-    input wire [`WIDTH_ECTRL-1:0]   KCtrl, 
-    input wire [31:2]               EPC, 
-    /* Data Outputs for Next Pipeline */
-    output reg [31:0]               code_ID     = 0, 
-    output reg [31:0]               PC_ID       = 0,
-    output reg [6:2]                Exc_ID      = 0,
-    output reg                      BD_ID       = 0, 
-    /* Other Outputs */
-    output wire [31:0]              PC_IF, 
-    output wire                     BD_IF
+    input wire `TYPE_ECTRL          ECtrl,
+    input wire `TYPE_EPC            EPC,
+    /* Interface with IM */
+    output wire `WORD               I_Addr,
+    output wire                     I_REn,
+    input wire `WORD                I_Data,
+    input wire                      I_Valid,    // reserved
+    /* Register for next stage */
+    output reg `WORD                code_D      = 0,
+    output reg `WORD                PC_D        = 0,
+    output reg                      BD_D        = 0,
+    output reg `TYPE_EXC            exc_D       = 0,
+    /* Interface with Pipeline Controller */
+    input wire                      stall,
+    input wire                      clear,
+    input wire                      enPC,
+    output wire                     busy,    // reserved
+    /* Status of current stage */
+    output wire `WORD               PC_F,
+    output wire                     BD_F,
+    output wire `TYPE_EXC           exc_F
 );
-    /*
-        Modules included: 
-            PC, NPC, IM
-        (Pseudo) Modules:
-            
-    */
-    /* ------ Part 1: Wires Declaration ------ */
-    wire [31:0] NPC, PC, code;
-    wire isJmp;
-    wire [6:2] excPC;
-    wire BD; // is Branching Delay
 
-    /* ------ Part 2: Instantiate Modules ------ */
-
-    NPC npc (
-        .PC(PC), .instr(instr),
-        .imm16(imm16), .cmp(cmp),
-        .jmpAddr(jmpAddr), .jmpReg(jmpReg),
-        .KCtrl(KCtrl), .EPC(EPC), 
-        .NPC(NPC), .isJmp(isJmp)
-    );
-    
-    PC pc (
+    /* ------ Instantiate Modules ------ */
+    PC program_counter (
         .clk(clk), .reset(reset),
-        .En(~stallPC), // 
-        .NPC(NPC), .PC(PC), 
-        .exc(excPC)
+        .en(enPC),
+        .instr(instr_D),
+        .ifunc(ifunc_D),
+        .cmp(cmp_D),
+        .imm16(imm16_D),
+        .jmpAddr(jmpAddr_D),
+        .jmpReg(jmpReg_D),
+        .excCtrl(ECtrl),
+        .EPC(EPC),
+        .PC(PC_F),
+        .BD(BD_F),
+        .excCode(exc_F)
     );
 
-    IM im (
-        .PC(PC), .code(code)
-    );
-
-    assign PC_IF = PC;
-    assign BD = isJmp;
-    assign BD_IF = BD;
-
-    /* ------ Part 3: Pipeline Registers ------ */
+    /* ------ Pipeline Registers ------ */
     always @(posedge clk) begin
-        if (reset | clr) begin
-            code_ID         <=  0;
-            PC_ID           <=  0;
-            Exc_ID          <=  0;
-            BD_ID           <=  0;
+        if (reset) begin
+            code_D      <=  0;
+            PC_D        <=  0;
+            BD_D        <=  0;
+            exc_D       <=  0;
         end
-        else if (!stall) begin
-            code_ID         <=  code;
-            PC_ID           <=  PC;
-            Exc_ID          <=  excPC;
-            BD_ID           <=  BD;
+        else begin
+            if (clear & (~stall)) begin
+                code_D      <=  0;
+                PC_D        <=  0;
+                BD_D        <=  0;
+                exc_D       <=  0;
+            end
+            else begin
+                code_D      <=  0;  //
+                PC_D        <=  0;
+                BD_D        <=  0;
+                exc_D       <=  0;
+            end
         end
     end
 
