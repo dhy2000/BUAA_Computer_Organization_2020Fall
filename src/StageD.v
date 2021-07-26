@@ -489,7 +489,7 @@ module StageD (
 
     /* ------ Combinatinal Logic ------ */
 
-    // Data Bypassing Select
+    // bypass select
     assign dataRs_use = (
         (regWEn_E & (regWAddr_E == addrRs_D) & (regWAddr_E != 0)) ? (regWData_E) :
         (regWEn_M & (regWAddr_M == addrRs_D) & (regWAddr_M != 0)) ? (regWData_M) :
