@@ -115,7 +115,7 @@ module PipelineControl (
     input wire [`WIDTH_T-1:0] Tnew_MEM,
     input wire MDBusy,     // multdiv unit
     /* Control by CP0 */
-    input wire [`WIDTH_ECTRL-1:0] KCtrl_CP0, 
+    input wire [`WIDTH_EPCOP-1:0] KCtrl_CP0, 
     input wire BD_CP0, 
     // Output Tnew to pipeline
     output wire [`WIDTH_T-1:0] Tnew_ID, 
@@ -134,7 +134,7 @@ module PipelineControl (
     output wire dis_DM, 
     output wire dis_GRF, 
     // NPC Ctrl
-    output wire [`WIDTH_ECTRL-1:0] KCtrl_NPC
+    output wire [`WIDTH_EPCOP-1:0] KCtrl_NPC
 );
     /* Part 1. Pipeline Stall */
     wire `TYPE_IFUNC ifunc_ID;
@@ -166,7 +166,7 @@ module PipelineControl (
 
     /* Part 2. Interrupt and Exception by CP0 */
     wire cp0_clrEX;
-    wire flushAll = (KCtrl_CP0 == `E_ENTRY || KCtrl_CP0 == `E_ERET);
+    wire flushAll = (KCtrl_CP0 == `EPC_ENTRY || KCtrl_CP0 == `EPC_ERET);
     assign KCtrl_NPC = KCtrl_CP0;
     assign {dis_MULTDIV, dis_DM} = (flushAll)? 2'b11 : 2'b00;
     // assign dis_GRF = (flushAll && BD_CP0) ? 1'b1 : 1'b0;

@@ -6,11 +6,11 @@
 `define INC_EXCEPTION
 
 /* ---- Exception Control Signal ---- */
-`define WIDTH_ECTRL     2
-`define TYPE_ECTRL      [`WIDTH_ECTRL-1:0]
-`define E_NONE      0
-`define E_ENTRY     1
-`define E_ERET      2
+`define WIDTH_EPCOP     2
+`define TYPE_EPCOP      [`WIDTH_EPCOP-1:0]
+`define EPC_NONE        0
+`define EPC_ENTRY       1
+`define EPC_ERET        2
 
 /* ---- Exception Codes ---- */
 `define TYPE_EXC        [6:2]

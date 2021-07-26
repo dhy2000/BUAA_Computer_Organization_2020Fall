@@ -22,7 +22,7 @@ module CP0 (
     // Interrupt and Exception Control
     input wire [7:2] HWInt, 
     input wire [6:2] Exc,
-    output wire [`WIDTH_ECTRL-1:0] KCtrl,       // control signal send to Pipeline Controller
+    output wire [`WIDTH_EPCOP-1:0] KCtrl,       // control signal send to Pipeline Controller
     output wire isBD,                           // whether the exception instr is in the delay slot
     output wire [31:2] EPC,
     output wire [31:0] RData
@@ -56,8 +56,8 @@ parameter   idSR    = 12,
     assign Exception = (Exc != 0);
 
     // Total Kernal Entry
-    assign KCtrl = (Interrupt || Exception) ? (`E_ENTRY) : 
-                    (instr == `ERET) ? (`E_ERET) : (`E_NONE);
+    assign KCtrl = (Interrupt || Exception) ? (`EPC_ENTRY) : 
+                    (instr == `ERET) ? (`EPC_ERET) : (`EPC_NONE);
 
     // support MFC0, MTC0, ERET
     // MFC0 - Read
@@ -230,7 +230,7 @@ module StageMEM (
     /* -------- IOs for CP0 -------- */
     input wire [31:0]               CP0_PC, 
     input wire [7:2]                CP0_HWInt,
-    output wire [`WIDTH_ECTRL-1:0]  CP0_KCtrl, 
+    output wire [`WIDTH_EPCOP-1:0]  CP0_KCtrl, 
     output wire [31:2]              CP0_EPC,
     output wire                     CP0_BD
 );
