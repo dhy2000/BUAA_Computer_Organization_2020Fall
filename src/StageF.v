@@ -109,10 +109,10 @@ module StageF (
     input wire `TYPE_ECTRL          ECtrl,
     input wire `TYPE_EPC            EPC,
     /* Interface with IM */
-    output wire `WORD               I_Addr,
-    output wire                     I_REn,
-    input wire `WORD                I_RData,
-    input wire                      I_Ready,
+    output wire `WORD               IAddr,
+    output wire                     IREn,
+    input wire `WORD                IRData,
+    input wire                      IReady,
     /* To next stage */
     output reg `WORD                code_D      = 0,
     output reg `WORD                PC_D        = 0,
@@ -147,10 +147,10 @@ module StageF (
     );
 
     /* ------ Other Signals ------ */
-    assign I_Addr = PC_F;
-    assign I_REn = 1'b1;    // always true
+    assign IAddr = PC_F;
+    assign IREn = 1'b1;    // always true
 
-    assign busy = (~I_Ready);
+    assign busyI = (~IReady);
 
     /* ------ Pipeline Registers ------ */
     always @(posedge clk) begin
@@ -168,7 +168,7 @@ module StageF (
                 exc_D       <=  0;
             end
             else if (~stall) begin
-                code_D      <=  I_RData;
+                code_D      <=  IRData;
                 PC_D        <=  PC_F;
                 BD_D        <=  BD_F;
                 exc_D       <=  exc_F;
