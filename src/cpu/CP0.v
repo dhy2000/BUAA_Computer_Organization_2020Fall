@@ -33,21 +33,6 @@ module CP0 (
     // EPC
     output reg `TYPE_EPC EPC = 0,
     output wire `TYPE_EXLOP EXLOp
-
-
-    // input wire `WORD PC,
-    // input wire BD,
-    // input wire [31:0] WData, 
-    // input wire [4:0] CP0id,     // addrRd
-    // input wire `TYPE_INSTR instr, 
-    // input wire BDFlag, 
-    // // Interrupt and Exception Control
-    // input wire [7:2] HWINT, 
-    // input wire [6:2] Exc,
-    // output wire [`WIDTH_EXLOP-1:0] KCtrl,       // control signal send to Pipeline Controller
-    // output wire isBD,                           // whether the exception instr is in the delay slot
-    // output wire [31:2] EPC,
-    // output wire [31:0] RData
 );
     localparam  idSR    = 12, 
                 idCause = 13,
