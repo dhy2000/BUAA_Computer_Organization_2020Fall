@@ -110,7 +110,6 @@ module StageF (
     input wire `TYPE_EPC            EPC,
     /* Interface with IM */
     output wire `WORD               IAddr,
-    output wire                     IREn,
     input wire `WORD                IRData,
     input wire                      IReady,
     /* To next stage */
@@ -146,9 +145,8 @@ module StageF (
         .exc(EXC_F)
     );
 
-    /* ------ Other Signals ------ */
+    /* ------ Combinatinal Logic ------ */
     assign IAddr = PC_F;
-    assign IREn = 1'b1;    // always true
 
     assign busyI = (~IReady);
 
