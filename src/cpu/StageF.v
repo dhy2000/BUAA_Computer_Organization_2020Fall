@@ -24,7 +24,7 @@ module PC (
     input wire [25:0] jmpAddr,
     input wire [31:0] jmpReg,
     // Exception
-    input wire `TYPE_EPCOP excCtrl,
+    input wire `TYPE_EXLOP excCtrl,
     input wire [31:2] EPC,
     // output
     output reg [31:0] PC = `PC_BOOT,
@@ -106,7 +106,7 @@ module StageF (
     input wire `TYPE_JADDR          jmpAddr_D,
     input wire `WORD                jmpReg_D,
     /* Input from CP0 */
-    input wire `TYPE_EPCOP          ECtrl,
+    input wire `TYPE_EXLOP          ECtrl,
     input wire `TYPE_EPC            EPC,
     /* Interface with IM */
     output wire `WORD               IAddr,

@@ -6,8 +6,8 @@
 `define INC_EXCEPTION
 
 /* ---- Exception Control Signal ---- */
-`define WIDTH_EPCOP     2
-`define TYPE_EPCOP      [`WIDTH_EPCOP-1:0]
+`define WIDTH_EXLOP     2
+`define TYPE_EXLOP      [`WIDTH_EXLOP-1:0]
 `define EPC_NONE        0
 `define EPC_ENTRY       1
 `define EPC_ERET        2

@@ -115,7 +115,7 @@ module PipelineControl (
     input wire [`WIDTH_T-1:0] Tnew_MEM,
     input wire MDBusy,     // multdiv unit
     /* Control by CP0 */
-    input wire [`WIDTH_EPCOP-1:0] KCtrl_CP0, 
+    input wire [`WIDTH_EXLOP-1:0] KCtrl_CP0, 
     input wire BD_CP0, 
     // Output Tnew to pipeline
     output wire [`WIDTH_T-1:0] Tnew_ID, 
@@ -134,7 +134,7 @@ module PipelineControl (
     output wire dis_DM, 
     output wire dis_GRF, 
     // NPC Ctrl
-    output wire [`WIDTH_EPCOP-1:0] KCtrl_NPC
+    output wire [`WIDTH_EXLOP-1:0] KCtrl_NPC
 );
     /* Part 1. Pipeline Stall */
     wire `TYPE_IFUNC ifunc_ID;
