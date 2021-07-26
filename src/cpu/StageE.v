@@ -3,9 +3,9 @@
  */
 
 `default_nettype none
-`include "include/instructions.v"
-`include "include/exception.v"
-`include "include/memory.v"
+`include "../include/instructions.v"
+`include "../include/exception.v"
+`include "../include/memory.v"
 
 /*
  *  Overview: ALU
@@ -270,6 +270,7 @@ module StageE (
     input wire `TYPE_EXC            exc_E           ,
     input wire `TYPE_REG            addrRs_E        ,
     input wire `TYPE_REG            addrRt_E        ,
+    input wire `TYPE_REG            addrRd_E        ,
     input wire                      useRs_E         ,
     input wire                      useRt_E         ,
     input wire `WORD                dataRs_E        ,
@@ -292,6 +293,7 @@ module StageE (
     output reg                      useRt_M         = 0,
     output reg `TYPE_REG            addrRt_M        = 0,
     output reg `WORD                dataRt_M        = 0,
+    output reg `TYPE_REG            addrRd_M        = 0,
     // Data
     output reg `WORD                aluOut_M        = 0,
     // Reg Write
@@ -387,6 +389,7 @@ module StageE (
             useRt_M         <=  0;
             addrRt_M        <=  0;
             dataRt_M        <=  0;
+            addrRd_M        <=  0;
             aluOut_M        <=  0;
             regWEn_M        <=  0;
             regWAddr_M      <=  0;
@@ -404,6 +407,7 @@ module StageE (
                 useRt_M         <=  0;
                 addrRt_M        <=  0;
                 dataRt_M        <=  0;
+                addrRd_M        <=  0;
                 aluOut_M        <=  0;
                 regWEn_M        <=  0;
                 regWAddr_M      <=  0;
@@ -420,6 +424,7 @@ module StageE (
                 useRt_M         <=  useRt_E;
                 addrRt_M        <=  addrRt_E;
                 dataRt_M        <=  dataRt_use;
+                addrRd_M        <=  addrRd_E;
                 aluOut_M        <=  aluOut;
                 regWEn_M        <=  regWEn;
                 regWAddr_M      <=  regWAddr;

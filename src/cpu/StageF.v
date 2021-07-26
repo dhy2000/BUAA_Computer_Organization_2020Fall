@@ -3,9 +3,9 @@
  */
 
 `default_nettype none
-`include "include/instructions.v"
-`include "include/memory.v"
-`include "include/exception.v"
+`include "../include/instructions.v"
+`include "../include/memory.v"
+`include "../include/exception.v"
 
 /*
  *  Overview: Program Counter

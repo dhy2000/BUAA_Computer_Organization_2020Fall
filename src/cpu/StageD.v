@@ -3,9 +3,9 @@
  */
 
 `default_nettype none
-`include "include/instructions.v"
-`include "include/exception.v"
-`include "include/memory.v"
+`include "../include/instructions.v"
+`include "../include/exception.v"
+`include "../include/memory.v"
 
 /*
  *  Overview: Instruction decoder
@@ -401,6 +401,7 @@ module StageD (
     // Reg Use
     output reg `TYPE_REG            addrRs_E        = 0,
     output reg `TYPE_REG            addrRt_E        = 0,
+    output reg `TYPE_REG            addrRd_E        = 0,
     output reg                      useRs_E         = 0,
     output reg                      useRt_E         = 0,
     output reg `WORD                dataRs_E        = 0,
@@ -570,6 +571,7 @@ module StageD (
             exc_E           <=  0;
             addrRs_E        <=  0;
             addrRt_E        <=  0;
+            addrRd_E        <=  0;
             useRs_E         <=  0;
             useRt_E         <=  0;
             dataRs_E        <=  0;
@@ -591,6 +593,7 @@ module StageD (
                 exc_E           <=  0;
                 addrRs_E        <=  0;
                 addrRt_E        <=  0;
+                addrRd_E        <=  0;
                 useRs_E         <=  0;
                 useRt_E         <=  0;
                 dataRs_E        <=  0;
@@ -611,6 +614,7 @@ module StageD (
                 exc_E           <=  exc;
                 addrRs_E        <=  addrRs_D;
                 addrRt_E        <=  addrRt_D;
+                addrRd_E        <=  addrRd_D;
                 useRs_E         <=  useRs_D;
                 useRt_E         <=  useRt_D;
                 dataRs_E        <=  dataRs_D;
