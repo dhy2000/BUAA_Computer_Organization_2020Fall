@@ -15,6 +15,7 @@
  *      - Instruction Symbol
  *      - RI Exception
  *      - Instruction Function Group
+ *      - Tuse and Tnew
  */
 module Decoder (
     input wire `WORD            code,
@@ -29,7 +30,11 @@ module Decoder (
     output wire `TYPE_INSTR     instr,
     output wire `TYPE_IFUNC     ifunc,
     // Exception Flag - RI(Reserved Instruction)
-    output wire excRI
+    output wire excRI,
+    // Tuse and Tnew
+    output wire `TYPE_T         tuseRs,
+    output wire `TYPE_T         tuseRt,
+    output wire `TYPE_T         tnew
 );
     /* Part 1: Split the machine code */
     wire [5:0] opcode, funct; // [31:26] and [5:0]
@@ -269,6 +274,76 @@ module Decoder (
                     (md) ? (`I_MD) : 
                     (cp0) ? (`I_CP0) : 
                     (`I_OTHER) ;
+    
+    /* Part 5: Tuse and Tnew */
+    assign tuseRs = (
+        (instr == `MOVN || instr == `MOVZ) ? 0 : 
+        // Calc_R
+        (ifunc == `I_ALU_R) ? (
+            ((instr == `SLL) || (instr == `SRL) || (instr == `SRA)) ? (`TUSE_INF) : 1
+        ) : 
+        (ifunc == `I_ALU_I) ? (
+            ((instr == `LUI)) ? (`TUSE_INF) : 1
+        ) : 
+        (ifunc == `I_MEM_R) ? 1 : 
+        (ifunc == `I_MEM_W) ? 1 : 
+        (ifunc == `I_BRANCH) ? 0 : 
+        (ifunc == `I_JUMP) ? (
+            ((instr == `JR) || (instr == `JALR)) ? 0 : (`TUSE_INF)
+        ) : 
+        (ifunc == `I_MD) ? (
+            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+            ((instr == `MTHI) || (instr == `MTLO)) ? 1 : 
+            (`TUSE_INF)
+        ) : 
+        (ifunc == `I_CP0) ? (`TUSE_INF) : 
+        (`TUSE_INF)
+    );
+    assign tuseRt = (
+        (instr == `MOVN || instr == `MOVZ) ? 0 : 
+        (ifunc == `I_ALU_R) ? (
+            ((instr == `CLO) || (instr == `CLZ)) ? (`TUSE_INF) : 
+            1
+        ) : 
+        (ifunc == `I_ALU_I) ? (`TUSE_INF) : 
+        (ifunc == `I_MEM_R) ? (`TUSE_INF) : 
+        (ifunc == `I_MEM_W) ? 2 : 
+        (ifunc == `I_BRANCH) ? (
+            ((instr == `BEQ) || (instr == `BNE)) ? 0 : (`TUSE_INF)
+        ) : 
+        (ifunc == `I_JUMP) ? (`TUSE_INF) : 
+        (ifunc == `I_MD) ? (
+            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+            (`TUSE_INF)
+        ) : 
+        (ifunc == `I_CP0) ? (
+            (instr == `MTC0) ? 2 : (`TUSE_INF)
+        ) : 
+        (`TUSE_INF)
+    );
+
+    assign tnew = (
+        (instr == `MOVZ || instr == `MOVN) ? 1 : 
+        (ifunc == `I_ALU_R) ? 2 : 
+        (ifunc == `I_ALU_I) ? (
+            (instr == `LUI) ? 1 : 2
+        ) : 
+        (ifunc == `I_MEM_R) ? (
+            (instr == `LW) ? 3 : 5
+        ) : 
+        (ifunc == `I_MEM_W) ? 0 : 
+        (ifunc == `I_BRANCH) ? 0 : 
+        (ifunc == `I_JUMP) ? (
+            ((instr == `JAL) || (instr == `JALR)) ? 1 : 0
+        ) : 
+        (ifunc == `I_MD) ? (
+            ((instr == `MFLO) || (instr == `MFHI)) ? 2 : 0
+        ) : 
+        (ifunc == `I_CP0) ? (
+            (instr == `MFC0) ? 3 : 0
+        ) : 
+        0   // NOP
+    );
 
 endmodule
 
@@ -357,6 +432,9 @@ module StageD (
     output wire `TYPE_SHAMT         shamt_D,
     output wire `TYPE_JADDR         jmpAddr_D,
     output wire `WORD               jmpReg_D,
+    output wire `TYPE_T             TuseRs_D,
+    output wire `TYPE_T             TuseRt_D,
+    output wire `TYPE_T             Tnew_D,
     /* Interface with Pipeline Controller */
     input wire                      stall,
     input wire                      clear,
@@ -366,9 +444,20 @@ module StageD (
 );
 
     /* ------ Wires Declaration ------ */
+    // exception
     wire excRI;
-    wire `TYPE_EXC excNext;
+    wire `TYPE_EXC exc; // exception for next
+    // bypass
     wire `WORD dataRs_use, dataRt_use;
+    // t count
+    wire `TYPE_T Tnew;
+    // reg write
+    wire regWEn;
+    wire `TYPE_REG regWAddr;
+    wire `WORD regWData;
+    wire regWValid;
+    // imm ext
+    wire `WORD extShamt, extImm;
 
     /* ------ Instantiate Modules ------ */
 
@@ -382,7 +471,10 @@ module StageD (
         .jmpaddr(jmpAddr_D),
         .instr(instr_D),
         .ifunc(ifunc_D),
-        .excRI(excRI)
+        .excRI(excRI),
+        .tuseRs(TuseRs_D),
+        .tuseRt(TuseRt_D),
+        .tnew(Tnew_D)
     );
 
     Compare branch_compare (
@@ -392,7 +484,7 @@ module StageD (
         .cmp(cmp_D)
     );
 
-    /* ------ Controls ------ */
+    /* ------ Combinatinal Logic ------ */
 
     // Data Bypassing Select
     assign dataRs_use = (
@@ -406,16 +498,53 @@ module StageD (
         (dataRt_D)
     );
 
+    assign Tnew = (Tnew_D >= 1) ? (Tnew_D - 1) : 0;
+    
+    assign exc = (exc_D) ? (exc_D) : (excRI ? (`EXC_RI) : 0);
 
+    // Immediate Extend
+    assign extShamt = {27'b0, shamt_D};
+    
+    wire `WORD signExt, zeroExt, luiExt;
+    assign signExt = { {16{imm_D[15]}}, imm_D };
+    assign zeroExt = { 16'b0, imm_D };
+    assign luiExt = { imm_D, 16'b0 };
 
-    /* ------ Other Logics ------ */
-
-
-
+    assign extImm = ((ifunc_D == `I_MEM_R) || (ifunc_D == `I_MEM_W)) ? (signExt) : 
+                    ((ifunc_D == `I_ALU_I)) ? (
+                        (instr_D == `LUI) ? (luiExt) : 
+                        ((instr_D == `ANDI) || (instr_D == `ORI) || (instr_D == `XORI)) ? (zeroExt) :
+                        (signExt)
+                    ) : 
+                    (signExt);
 
     /* ------ Pipeline Registers ------ */
 
-
+    always @ (posedge clk) begin
+        if (reset) begin
+            instr_E         <=  0;
+            ifunc_E         <=  0;
+            PC_E            <=  0;
+            BD_E            <=  0;
+            exc_E           <=  0;
+            addrRs_E        <=  0;
+            addrRt_E        <=  0;
+            useRs_E         <=  0;
+            useRt_E         <=  0;
+            dataRs_E        <=  0;
+            dataRt_E        <=  0;
+            extImm_E        <=  0;
+            extShamt_E      <=  0;
+            regWEn_E        <=  0;
+            regWAddr_E      <=  0;
+            regWData_E      <=  0;
+            regWValid_E     <=  0;
+            Tnew_E          <=  0;
+        end
+        else begin
+            
+        end
+    end
 
 
 
