@@ -166,7 +166,7 @@ module PipelineControl (
 
     /* Part 2. Interrupt and Exception by CP0 */
     wire cp0_clrEX;
-    wire flushAll = (KCtrl_CP0 == `EPC_ENTRY || KCtrl_CP0 == `EPC_ERET);
+    wire flushAll = (KCtrl_CP0 == `EXL_ENTRY || KCtrl_CP0 == `EXL_ERET);
     assign KCtrl_NPC = KCtrl_CP0;
     assign {dis_MULTDIV, dis_DM} = (flushAll)? 2'b11 : 2'b00;
     // assign dis_GRF = (flushAll && BD_CP0) ? 1'b1 : 1'b0;

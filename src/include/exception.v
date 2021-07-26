@@ -8,9 +8,9 @@
 /* ---- Exception Control Signal ---- */
 `define WIDTH_EXLOP     2
 `define TYPE_EXLOP      [`WIDTH_EXLOP-1:0]
-`define EPC_NONE        0
-`define EPC_ENTRY       1
-`define EPC_ERET        2
+`define EXL_NONE        0
+`define EXL_ENTRY       1
+`define EXL_ERET        2
 
 /* ---- Exception Codes ---- */
 `define TYPE_EXC        [6:2]

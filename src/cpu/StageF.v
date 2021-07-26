@@ -55,8 +55,8 @@ module PC (
     // NPC Control
     wire [3 : 0] npcOp;
     assign npcOp = (
-        (exlOp == `EPC_ENTRY) ? (NPC_ExcEnt) : 
-        (exlOp == `EPC_ERET) ? (NPC_ExcRet) :
+        (exlOp == `EXL_ENTRY) ? (NPC_ExcEnt) : 
+        (exlOp == `EXL_ERET) ? (NPC_ExcRet) :
         (terminated) ? (NPC_Keep) :
         (instr == `JALR || instr == `JR) ? (NPC_JmpReg) : 
         (instr == `J    || instr == `JAL) ? (NPC_JmpImm) : 
@@ -106,7 +106,7 @@ module StageF (
     input wire `TYPE_JADDR          jmpAddr_D,
     input wire `WORD                jmpReg_D,
     /* Input from CP0 */
-    input wire `TYPE_EXLOP          ECtrl,
+    input wire `TYPE_EXLOP          EXLOp,
     input wire `TYPE_EPC            EPC,
     /* Interface with IM */
     output wire `WORD               IAddr,
@@ -139,7 +139,7 @@ module StageF (
         .imm16(imm16_D),
         .jmpAddr(jmpAddr_D),
         .jmpReg(jmpReg_D),
-        .exlOp(ECtrl),
+        .exlOp(EXLOp),
         .EPC(EPC),
         .PC(PC_F),
         .BD(BD_F),

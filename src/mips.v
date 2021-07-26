@@ -25,7 +25,7 @@ module mips (
     wire [31:0] DM_PC, DM_Addr, DM_WData;
     wire [3:0] DM_WE;
     wire [6:2] BrExc;
-    wire [7:2] HWInt;
+    wire [7:2] HWINT;
 
     wire [31:0] SBr_PC, SBr_Addr, SBr_WData;
     wire SBr_WE;
@@ -33,7 +33,7 @@ module mips (
     wire [31:0] DM_RData;
     // SouthBridge
     wire [31:0] SBr_RData;
-    wire [7:2] SBr_HWInt;
+    wire [7:2] SBr_HWINT;
     wire [31:2] Timer0_Addr;
     wire [31:0] Timer0_WData;
     wire Timer0_WE;
@@ -59,7 +59,7 @@ module mips (
         .BrWData(BrWData), 
         .BrWE(BrWE), 
         .BrRData(BrRData),
-        .HWInt(HWInt)
+        .HWINT(HWINT)
     );
 
     NorthBridge nbridge (
@@ -68,14 +68,14 @@ module mips (
         // CPU Port 2
         .PC2(BrPC), .Addr2(BrAddr), .WData2(BrWData), .WE2(BrWE), .RData2(BrRData),
         // CPU Interruption
-        .HWInt(HWInt), 
+        .HWINT(HWINT), 
         // IM
         // .IM_Addr(), .IM_WData(), .IM_WE(), .IM_RData(32'b0), 
         // DM
         .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(DM_RData),
         // South Bridge
         .SBr_PC(SBr_PC), .SBr_Addr(SBr_Addr), .SBr_WData(SBr_WData), .SBr_WE(SBr_WE), .SBr_RData(SBr_RData), 
-        .SBr_HWInt(SBr_HWInt)
+        .SBr_HWINT(SBr_HWINT)
     );
 
     DataMem dm (
@@ -85,7 +85,7 @@ module mips (
 
     SouthBridge sbridge (
         // CPU Port
-        .Addr(SBr_Addr), .WData(SBr_WData), .WE(SBr_WE), .RData(SBr_RData), .HWInt(SBr_HWInt), 
+        .Addr(SBr_Addr), .WData(SBr_WData), .WE(SBr_WE), .RData(SBr_RData), .HWINT(SBr_HWINT), 
         // Timer 0
         .Timer0_Addr(Timer0_Addr), .Timer0_WData(Timer0_WData), .Timer0_WE(Timer0_WE), .Timer0_RData(Timer0_RData), .Timer0_Int(Timer0_Int),
         // Timer 1

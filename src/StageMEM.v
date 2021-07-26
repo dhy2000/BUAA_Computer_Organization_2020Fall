@@ -20,7 +20,7 @@ module CP0 (
     // input wire `TYPE_INSTR instr_WB, // to check delay slot
     input wire BDFlag, 
     // Interrupt and Exception Control
-    input wire [7:2] HWInt, 
+    input wire [7:2] HWINT, 
     input wire [6:2] Exc,
     output wire [`WIDTH_EXLOP-1:0] KCtrl,       // control signal send to Pipeline Controller
     output wire isBD,                           // whether the exception instr is in the delay slot
@@ -49,15 +49,15 @@ parameter   idSR    = 12,
     
     // Interrupt Handler
     wire Interrupt;
-    assign Interrupt = (IM[7:2] & HWInt[7:2]) && IE && (!EXL);
+    assign Interrupt = (IM[7:2] & HWINT[7:2]) && IE && (!EXL);
     // Exception Handler
     // assert: exception will NOT happen in kernel text
     wire Exception;
     assign Exception = (Exc != 0);
 
     // Total Kernal Entry
-    assign KCtrl = (Interrupt || Exception) ? (`EPC_ENTRY) : 
-                    (instr == `ERET) ? (`EPC_ERET) : (`EPC_NONE);
+    assign KCtrl = (Interrupt || Exception) ? (`EXL_ENTRY) : 
+                    (instr == `ERET) ? (`EXL_ERET) : (`EXL_NONE);
 
     // support MFC0, MTC0, ERET
     // MFC0 - Read
@@ -97,7 +97,7 @@ parameter   idSR    = 12,
             else if (instr == `MTC0 && CP0id == idSR) 
                 {IM, EXL, IE} <= {WData[15:10], WData[1], WData[0]};
             // Cause
-            IP <= HWInt;
+            IP <= HWINT;
             if (instr == `ERET) begin
                 ExcCode <= 0;
                 BD <= 0;
@@ -229,7 +229,7 @@ module StageMEM (
     input wire [31:0]               DM_RData, 
     /* -------- IOs for CP0 -------- */
     input wire [31:0]               CP0_PC, 
-    input wire [7:2]                CP0_HWInt,
+    input wire [7:2]                CP0_HWINT,
     output wire [`WIDTH_EXLOP-1:0]  CP0_KCtrl, 
     output wire [31:2]              CP0_EPC,
     output wire                     CP0_BD
@@ -288,7 +288,7 @@ module StageMEM (
         .clk(clk), .reset(reset), .PC(CP0_PC),
         .WData(dataRt_use), .CP0id(addrRd_MEM), 
         .instr(instr_MEM), .BDFlag(BD_Macro), 
-        .HWInt(CP0_HWInt), .Exc(Exc), .isBD(CP0_BD), 
+        .HWINT(CP0_HWINT), .Exc(Exc), .isBD(CP0_BD), 
         .KCtrl(KCtrl), .EPC(EPC), .RData(CP0Data)
     );
 

@@ -24,7 +24,7 @@ module NorthBridge (
     input wire [3:0] WE2, 
     output wire [31:0] RData2,
     // Interruption
-    output wire [7:2] HWInt, 
+    output wire [7:2] HWINT, 
     // Outer Side
     // // IM
     // output wire [31:0] IM_Addr, 
@@ -43,7 +43,7 @@ module NorthBridge (
     output wire [31:0] SBr_WData, 
     output wire SBr_WE, 
     input wire [31:0] SBr_RData,
-    input wire [7:2] SBr_HWInt
+    input wire [7:2] SBr_HWINT
 );
     // DM
     assign DM_PC = PC2;
@@ -65,7 +65,7 @@ module NorthBridge (
                     (Addr2 >= `TIMER0_ADDR_START && Addr2 < `TIMER0_ADDR_END) ? (SBr_RData) : 
                     (Addr2 >= `TIMER1_ADDR_START && Addr2 < `TIMER1_ADDR_END) ? (SBr_RData) : 
                     0 ;
-    assign HWInt = SBr_HWInt;
+    assign HWINT = SBr_HWINT;
 
 endmodule
 
@@ -80,7 +80,7 @@ module SouthBridge (
     input wire [31:0] WData, 
     input wire WE,  
     output wire [31:0] RData, 
-    output wire [7:2] HWInt, 
+    output wire [7:2] HWINT, 
     // Device Side
     // Timer 0
     output wire [31:2] Timer0_Addr, 
@@ -109,5 +109,5 @@ module SouthBridge (
                     (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END) ? (Timer1_RData) : 
                     0;
 
-    assign HWInt = {3'b0, Ext_Int, Timer1_Int, Timer0_Int};
+    assign HWINT = {3'b0, Ext_Int, Timer1_Int, Timer0_Int};
 endmodule
