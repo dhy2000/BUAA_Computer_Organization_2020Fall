@@ -24,12 +24,12 @@ module PC (
     input wire [25:0] jmpAddr,
     input wire [31:0] jmpReg,
     // Exception
-    input wire `TYPE_EXLOP excCtrl,
+    input wire `TYPE_EXLOP exlOp,
     input wire [31:2] EPC,
     // output
     output reg [31:0] PC = `PC_BOOT,
     output wire BD,
-    output wire `TYPE_EXC excCode
+    output wire `TYPE_EXC exc
 );
     localparam
         NPC_Order   = 0,
@@ -55,8 +55,8 @@ module PC (
     // NPC Control
     wire [3 : 0] npcOp;
     assign npcOp = (
-        (excCtrl == `EPC_ENTRY) ? (NPC_ExcEnt) : 
-        (excCtrl == `EPC_ERET) ? (NPC_ExcRet) :
+        (exlOp == `EPC_ENTRY) ? (NPC_ExcEnt) : 
+        (exlOp == `EPC_ERET) ? (NPC_ExcRet) :
         (terminated) ? (NPC_Keep) :
         (instr == `JALR || instr == `JR) ? (NPC_JmpReg) : 
         (instr == `J    || instr == `JAL) ? (NPC_JmpImm) : 
@@ -91,7 +91,7 @@ module PC (
     end
     
     // Exception: Out of IM range or Not Aligned by Word
-    assign excCode = ((!(PC >= `IM_ADDR_START && PC < `IM_ADDR_END)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
+    assign exc = ((!(PC >= `IM_ADDR_START && PC < `IM_ADDR_END)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
 
 endmodule
 
@@ -117,7 +117,7 @@ module StageF (
     output reg `WORD                code_D      = 0,
     output reg `WORD                PC_D        = 0,
     output reg                      BD_D        = 0,
-    output reg `TYPE_EXC            exc_D       = 0,
+    output reg `TYPE_EXC            EXC_D       = 0,
     /* Interface with Pipeline Controller */
     input wire                      stall,
     input wire                      clear,
@@ -126,7 +126,7 @@ module StageF (
     /* Status of current stage */
     output wire `WORD               PC_F,
     output wire                     BD_F,
-    output wire `TYPE_EXC           exc_F
+    output wire `TYPE_EXC           EXC_F
 );
 
     /* ------ Instantiate Modules ------ */
@@ -139,11 +139,11 @@ module StageF (
         .imm16(imm16_D),
         .jmpAddr(jmpAddr_D),
         .jmpReg(jmpReg_D),
-        .excCtrl(ECtrl),
+        .exlOp(ECtrl),
         .EPC(EPC),
         .PC(PC_F),
         .BD(BD_F),
-        .excCode(exc_F)
+        .exc(EXC_F)
     );
 
     /* ------ Other Signals ------ */
@@ -158,20 +158,20 @@ module StageF (
             code_D      <=  0;
             PC_D        <=  0;
             BD_D        <=  0;
-            exc_D       <=  0;
+            EXC_D       <=  0;
         end
         else begin
             if (clear & (~stall)) begin
                 code_D      <=  0;
                 PC_D        <=  0;
                 BD_D        <=  0;
-                exc_D       <=  0;
+                EXC_D       <=  0;
             end
             else if (~stall) begin
                 code_D      <=  IRData;
                 PC_D        <=  PC_F;
                 BD_D        <=  BD_F;
-                exc_D       <=  exc_F;
+                EXC_D       <=  EXC_F;
             end
         end
     end

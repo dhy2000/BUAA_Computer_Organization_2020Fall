@@ -267,7 +267,7 @@ module StageE (
     input wire `TYPE_IFUNC          ifunc_E         ,
     input wire `WORD                PC_E            ,
     input wire                      BD_E            ,
-    input wire `TYPE_EXC            exc_E           ,
+    input wire `TYPE_EXC            EXC_E           ,
     input wire `TYPE_REG            addrRs_E        ,
     input wire `TYPE_REG            addrRt_E        ,
     input wire `TYPE_REG            addrRd_E        ,
@@ -288,7 +288,7 @@ module StageE (
     output reg `TYPE_IFUNC          ifunc_M         = 0,
     output reg `WORD                PC_M            = 0,
     output reg                      BD_M            = 0,
-    output reg `TYPE_EXC            exc_M           = 0,
+    output reg `TYPE_EXC            EXC_M           = 0,
     // Reg use
     output reg                      useRt_M         = 0,
     output reg `TYPE_REG            addrRt_M        = 0,
@@ -355,7 +355,7 @@ module StageE (
     assign instr = instr_E;
     assign ifunc = ifunc_E;
     assign Tnew = (Tnew_E >= 1) ? (Tnew_E - 1) : 0;
-    assign exc = (exc_E) ? (exc_E) : (excAlu);
+    assign exc = (EXC_E) ? (EXC_E) : (excAlu);
     // bypass select
     assign dataRs_use = (regWEn_M & (regWAddr_M != 0) & (regWAddr_M == addrRs_E)) ? (regWData_M) :
                         (regWEn_W & (regWAddr_W != 0) & (regWAddr_W == addrRs_E)) ? (regWData_W) :
@@ -385,7 +385,7 @@ module StageE (
             ifunc_M         <=  0;
             PC_M            <=  0;
             BD_M            <=  0;
-            exc_M           <=  0;
+            EXC_M           <=  0;
             useRt_M         <=  0;
             addrRt_M        <=  0;
             dataRt_M        <=  0;
@@ -403,7 +403,7 @@ module StageE (
                 ifunc_M         <=  0;
                 PC_M            <=  0;
                 BD_M            <=  0;
-                exc_M           <=  0;
+                EXC_M           <=  0;
                 useRt_M         <=  0;
                 addrRt_M        <=  0;
                 dataRt_M        <=  0;
@@ -420,7 +420,7 @@ module StageE (
                 ifunc_M         <=  ifunc;
                 PC_M            <=  PC_E;
                 BD_M            <=  BD_E;
-                exc_M           <=  exc;
+                EXC_M           <=  exc;
                 useRt_M         <=  useRt_E;
                 addrRt_M        <=  addrRt_E;
                 dataRt_M        <=  dataRt_use;

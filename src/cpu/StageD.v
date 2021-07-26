@@ -390,14 +390,14 @@ module StageD (
     input wire `WORD                code_D,
     input wire `WORD                PC_D,
     input wire                      BD_D,
-    input wire `TYPE_EXC            exc_D,
+    input wire `TYPE_EXC            EXC_D,
     /* To next stage */
     // Instruction
     output reg `TYPE_INSTR          instr_E         = 0,
     output reg `TYPE_IFUNC          ifunc_E         = 0,
     output reg `WORD                PC_E            = 0,
     output reg                      BD_E            = 0,
-    output reg `TYPE_EXC            exc_E           = 0,
+    output reg `TYPE_EXC            EXC_E           = 0,
     // Reg Use
     output reg `TYPE_REG            addrRs_E        = 0,
     output reg `TYPE_REG            addrRt_E        = 0,
@@ -509,7 +509,7 @@ module StageD (
 
     assign Tnew = (Tnew_D >= 1) ? (Tnew_D - 1) : 0;
     
-    assign exc = (exc_D) ? (exc_D) : (excDecoder);
+    assign exc = (EXC_D) ? (EXC_D) : (excDecoder);
 
     // Immediate Extend
     assign extShamt = {27'b0, shamt_D};
@@ -568,7 +568,7 @@ module StageD (
             ifunc_E         <=  0;
             PC_E            <=  0;
             BD_E            <=  0;
-            exc_E           <=  0;
+            EXC_E           <=  0;
             addrRs_E        <=  0;
             addrRt_E        <=  0;
             addrRd_E        <=  0;
@@ -590,7 +590,7 @@ module StageD (
                 ifunc_E         <=  0;
                 PC_E            <=  0;
                 BD_E            <=  0;
-                exc_E           <=  0;
+                EXC_E           <=  0;
                 addrRs_E        <=  0;
                 addrRt_E        <=  0;
                 addrRd_E        <=  0;
@@ -611,7 +611,7 @@ module StageD (
                 ifunc_E         <=  ifunc_E;
                 PC_E            <=  PC_D;
                 BD_E            <=  BD_D;
-                exc_E           <=  exc;
+                EXC_E           <=  exc;
                 addrRs_E        <=  addrRs_D;
                 addrRt_E        <=  addrRt_D;
                 addrRd_E        <=  addrRd_D;
