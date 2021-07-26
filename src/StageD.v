@@ -13,7 +13,7 @@
  *  Output: 
  *      - Operand fields
  *      - Instruction Symbol
- *      - RI Exception
+ *      - Exception: RI(Reserved Instruction)
  *      - Instruction Function Group
  *      - Tuse and Tnew
  */
@@ -29,8 +29,8 @@ module Decoder (
     // Symbol and Function
     output wire `TYPE_INSTR     instr,
     output wire `TYPE_IFUNC     ifunc,
-    // Exception Flag - RI(Reserved Instruction)
-    output wire excRI,
+    // Exception Flag
+    output wire `TYPE_EXC       exc,
     // Tuse and Tnew
     output wire `TYPE_T         tuseRs,
     output wire `TYPE_T         tuseRt,
@@ -227,7 +227,7 @@ module Decoder (
                     (ij);
 
     /* Part 3: Check RI Exception */
-    assign excRI = (code != 32'h0000_0000 && instr == `NOP);
+    assign exc = (code != 32'h0000_0000 && instr == `NOP) ? `EXC_RI : 0;
     
     /* Part 4: Categorize instructions by function group */
     wire alu_r, alu_i, mem_r, mem_w, br, jmp, md, cp0;
@@ -453,7 +453,7 @@ module StageD (
     wire `TYPE_IFUNC ifunc;
     wire cmp;
     // exception
-    wire excRI;
+    wire excDecoder;
     wire `TYPE_EXC exc; // exception for next
     // bypass
     wire `WORD dataRs_use, dataRt_use;
@@ -474,7 +474,7 @@ module StageD (
         .jmpaddr(jmpAddr_D),
         .instr(instr_D),
         .ifunc(ifunc_D),
-        .excRI(excRI),
+        .exc(excDecoder),
         .tuseRs(TuseRs_D),
         .tuseRt(TuseRt_D),
         .tnew(Tnew_D)
@@ -508,7 +508,7 @@ module StageD (
 
     assign Tnew = (Tnew_D >= 1) ? (Tnew_D - 1) : 0;
     
-    assign exc = (exc_D) ? (exc_D) : (excRI ? (`EXC_RI) : 0);
+    assign exc = (exc_D) ? (exc_D) : (excDecoder);
 
     // Immediate Extend
     assign extShamt = {27'b0, shamt_D};
