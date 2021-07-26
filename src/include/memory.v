@@ -43,10 +43,20 @@
 
 
 /* ------ Device Address ------ */
-`define TIMER0_ADDR_START    32'h0000_7F00
-`define TIMER0_ADDR_END      32'h0000_7F0B
+// Timer0
+`define TIMER0_ADDR_START   32'h0000_7F00
+`define TIMER0_ADDR_END     32'h0000_7F0B
 
-`define TIMER1_ADDR_START    32'h0000_7F10
-`define TIMER1_ADDR_END      32'h0000_7F1B
+`define TIMER0_CTRL         32'h0000_7F00   // R/W, Word
+`define TIMER0_PRESET       32'h0000_7F04   // R/W, Word
+`define TIMER0_COUNT        32'h0000_7F08   // R,   Word
+
+// Timer1
+`define TIMER1_ADDR_START   32'h0000_7F10
+`define TIMER1_ADDR_END     32'h0000_7F1B
+
+`define TIMER1_CTRL         32'h0000_7F10   // R/W, Word
+`define TIMER1_PRESET       32'h0000_7F14   // R/W, Word
+`define TIMER1_COUNT        32'h0000_7F18   // R/W, Word
 
 `endif
