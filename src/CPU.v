@@ -90,7 +90,7 @@ module CPU (
     StageIF ifu (
         .clk(clk), .reset(reset), .stall(stall_ID), .clr(clr_ID), .stallPC(stall_PC),
         .instr(Instr_NPC), .cmp(Cmp_NPC),
-        .imm16(Imm16_NPC), .jmpAddr(JmpAddr_NPC), .jmpReg(JmpReg_NPC),
+        .imm16(Imm16_NPC), .jAddr(JmpAddr_NPC), .jReg(JmpReg_NPC),
         .KCtrl(KCtrl_NPC), .EPC(CP0_EPC), 
         .code_ID(Code_ID), .PC_ID(PC_ID), .PC_IF(PC_IF), 
         .Exc_ID(Exc_ID), .BD_ID(BD_ID), .BD_IF(BD_IF)
@@ -109,7 +109,7 @@ module CPU (
         .regWriteAddr_EX(RegWriteAddr_EX), .regWriteData_EX(RegWriteData_EX),
         .Tnew_EX(Tnew_EX), 
         .instr_NPC(Instr_NPC), .cmp_NPC(Cmp_NPC),
-        .imm16_NPC(Imm16_NPC), .jmpAddr_NPC(JmpAddr_NPC), .jmpReg_NPC(JmpReg_NPC),
+        .imm16_NPC(Imm16_NPC), .jAddr_NPC(JmpAddr_NPC), .jReg_NPC(JmpReg_NPC),
         .instr_ID(Instr_ID), .addrRs_ID(AddrRs_ID), .addrRt_ID(AddrRt_ID), 
         .RA1_GRF(RA1_GRF), .RA2_GRF(RA2_GRF),
         .RD1_GRF(RD1_GRF), .RD2_GRF(RD2_GRF)
