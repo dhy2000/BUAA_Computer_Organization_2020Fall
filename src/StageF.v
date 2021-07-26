@@ -122,7 +122,7 @@ module StageF (
     input wire                      stall,
     input wire                      clear,
     input wire                      enPC,
-    output wire                     busy,
+    output wire                     busyI,
     /* Status of current stage */
     output wire `WORD               PC_F,
     output wire                     BD_F,

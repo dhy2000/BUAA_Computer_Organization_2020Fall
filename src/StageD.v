@@ -414,7 +414,7 @@ module StageD (
     output reg `WORD                regWData_E      = 0,
     output reg                      regWValid_E     = 0,
     output reg `TYPE_T              Tnew_E          = 0,
-    /* Data Bypass (from M) */
+    /* Bypass (from M) */
     input wire                      regWEn_M,
     input wire `TYPE_REG            regWAddr_M,
     input wire `WORD                regWData_M,
