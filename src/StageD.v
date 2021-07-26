@@ -435,6 +435,10 @@ module StageD (
     output wire `TYPE_T             TuseRs_D,
     output wire `TYPE_T             TuseRt_D,
     output wire `TYPE_T             Tnew_D,
+    output wire                     regWEn_D,
+    output wire `TYPE_REG           regWAddr_D,
+    output wire `WORD               regWData_D,
+    output wire                     regWValid_D,
     /* Interface with Pipeline Controller */
     input wire                      stall,
     input wire                      clear,
@@ -444,6 +448,10 @@ module StageD (
 );
 
     /* ------ Wires Declaration ------ */
+    // instruction
+    wire `TYPE_INSTR instr;
+    wire `TYPE_IFUNC ifunc;
+    wire cmp;
     // exception
     wire excRI;
     wire `TYPE_EXC exc; // exception for next
@@ -451,11 +459,6 @@ module StageD (
     wire `WORD dataRs_use, dataRt_use;
     // t count
     wire `TYPE_T Tnew;
-    // reg write
-    wire regWEn;
-    wire `TYPE_REG regWAddr;
-    wire `WORD regWData;
-    wire regWValid;
     // imm ext
     wire `WORD extShamt, extImm;
 
@@ -498,6 +501,11 @@ module StageD (
         (dataRt_D)
     );
 
+    // instruction
+    assign instr = instr_D;
+    assign ifunc = ifunc_D;
+    assign cmp = cmp_D;
+
     assign Tnew = (Tnew_D >= 1) ? (Tnew_D - 1) : 0;
     
     assign exc = (exc_D) ? (exc_D) : (excRI ? (`EXC_RI) : 0);
@@ -510,13 +518,46 @@ module StageD (
     assign zeroExt = { 16'b0, imm_D };
     assign luiExt = { imm_D, 16'b0 };
 
-    assign extImm = ((ifunc_D == `I_MEM_R) || (ifunc_D == `I_MEM_W)) ? (signExt) : 
-                    ((ifunc_D == `I_ALU_I)) ? (
-                        (instr_D == `LUI) ? (luiExt) : 
-                        ((instr_D == `ANDI) || (instr_D == `ORI) || (instr_D == `XORI)) ? (zeroExt) :
+    assign extImm = ((ifunc == `I_MEM_R) || (ifunc == `I_MEM_W)) ? (signExt) : 
+                    ((ifunc == `I_ALU_I)) ? (
+                        (instr == `LUI) ? (luiExt) : 
+                        ((instr == `ANDI) || (instr == `ORI) || (instr == `XORI)) ? (zeroExt) :
                         (signExt)
                     ) : 
                     (signExt);
+    
+    // reg write
+    assign regWEn_D =   ((instr == `BGEZAL) || (instr == `BLTZAL))  ? (cmp) :
+                        ((instr == `MOVZ) || (instr == `MOVN))      ? (cmp) : 
+                        ((instr == `JAL))                             ? (1'b1) :       // JAL
+                        ((ifunc == `I_ALU_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? (1'b1) :  // rd
+                        ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R) || (instr == `MFC0))  ? (1'b1) :  // rt
+                        0;
+
+    assign regWAddr_D = (instr == `BGEZAL || instr == `BLTZAL)  ? (cmp ? 31 : 0) : // conditionally link according to MARS, but directly link according to MIPS-V2.
+                        (instr == `MOVZ || instr == `MOVN)      ? (cmp ? addrRd_D : 0) : 
+                        (instr == `JAL)                         ? 31 :       // JAL
+                        ((ifunc == `I_ALU_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd_D :  // rd
+                        ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R) || (instr == `MFC0))  ? addrRt_D :  // rt
+                        0;
+    
+    assign regWData_D = ((instr == `MOVZ) || (instr == `MOVN)) ? (dataRs_use) : 
+                        ((instr == `JAL) || (instr == `JALR) || (instr == `BGEZAL) || (instr == `BLTZAL)) ? (PC_D + 8) : 
+                        ((instr == `LUI)) ? (luiExt) : 
+                        0;
+
+    assign regWValid_D = ((instr == `JAL) || (instr == `LUI)) ? 1'b1 : 1'b0;
+
+    // reg use
+    assign useRs_D =    ((ifunc == `I_BRANCH)) ? 1'b1 :
+                        ((ifunc == `I_JUMP) && ((instr == `JR) || (instr == `JALR))) ? 1'b1 :
+                        ((ifunc == `I_ALU_R) && ((instr == `SLL) || (instr == `SRL) || (instr == `SRA))) ? 1'b0 :
+                        1'b1;
+    
+    assign useRt_D =    ((ifunc == `I_BRANCH) && ((instr == `BEQ) || (instr == `BNE))) ? 1'b1 :
+                        ((ifunc == `I_JUMP)) ? 1'b0 :
+                        ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R)) ? 1'b0 :
+                        1'b1;
 
     /* ------ Pipeline Registers ------ */
 
@@ -542,143 +583,47 @@ module StageD (
             Tnew_E          <=  0;
         end
         else begin
-            
+            if (clear & (~stall)) begin
+                instr_E         <=  0;
+                ifunc_E         <=  0;
+                PC_E            <=  0;
+                BD_E            <=  0;
+                exc_E           <=  0;
+                addrRs_E        <=  0;
+                addrRt_E        <=  0;
+                useRs_E         <=  0;
+                useRt_E         <=  0;
+                dataRs_E        <=  0;
+                dataRt_E        <=  0;
+                extImm_E        <=  0;
+                extShamt_E      <=  0;
+                regWEn_E        <=  0;
+                regWAddr_E      <=  0;
+                regWData_E      <=  0;
+                regWValid_E     <=  0;
+                Tnew_E          <=  0;
+            end
+            else if (~stall) begin
+                instr_E         <=  instr_D;
+                ifunc_E         <=  ifunc_E;
+                PC_E            <=  PC_D;
+                BD_E            <=  BD_D;
+                exc_E           <=  exc;
+                addrRs_E        <=  addrRs_D;
+                addrRt_E        <=  addrRt_D;
+                useRs_E         <=  useRs_D;
+                useRt_E         <=  useRt_D;
+                dataRs_E        <=  dataRs_D;
+                dataRt_E        <=  dataRt_D;
+                extImm_E        <=  extImm;
+                extShamt_E      <=  extShamt;
+                regWEn_E        <=  regWEn_D;
+                regWAddr_E      <=  regWAddr_D;
+                regWData_E      <=  regWData_D;
+                regWValid_E     <=  regWValid_D;
+                Tnew_E          <=  Tnew_D;
+            end
         end
     end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /* ------ Part 1: Wires Declaration ------ */
-    // decode
-    wire `TYPE_INSTR instr;
-    wire `TYPE_FORMAT format; 
-    wire `TYPE_IFUNC ifunc;
-    // fields
-    wire [4:0] addrRs, addrRt, addrRd;
-    wire [15:0] imm16; 
-    wire [4:0] shamt;
-    wire [25:0] jmpAddr;
-    // other
-    wire excRI;
-    wire cmp;
-    wire [31:0] luiExtImm;
-    // Hazard may use
-    wire [4:0] regWriteAddr;
-    wire [31:0] regWriteData;
-    // Tnew
-    wire [`WIDTH_T-1:0] Tnew;
-    // Exception
-    wire [6:2] Exc;
-
-    /* ------ Part 1.5: Select Forward Source ------ */
-    // GRF already supports inner forward.
-    wire [31:0] dataRs_use, dataRt_use;
-    assign dataRs_use = (
-        (regaddr_EX == addrRs && regaddr_EX != 0) ? (regdata_EX) : 
-        (regaddr_MEM == addrRs && regaddr_MEM != 0) ? (regdata_MEM) : 
-        (RD1_GRF)
-    ); 
-    assign dataRt_use = (
-        (regaddr_EX == addrRt && regaddr_EX != 0) ? (regdata_EX) : 
-        (regaddr_MEM == addrRt && regaddr_MEM != 0) ? (regdata_MEM) : 
-        (RD2_GRF)
-    ); 
-
-    assign Tnew = (Tnew_ID >= 1) ? (Tnew_ID - 1) : 0;
-    /* ------ Part 2: Instantiate Modules ------ */
-    DECD decd (
-        .code(code_ID), .instr(instr),
-        .rs(addrRs), .rt(addrRt), .rd(addrRd),
-        .imm(imm16), .shamt(shamt), .jmpaddr(jmpAddr), 
-        .excRI(excRI)
-    );
-    COMP comp (
-        .instr(instr),
-        .dataRs(dataRs_use), .dataRt(dataRt_use),
-        .cmp(cmp)
-    );
-
-    IC ic (.instr(instr), .format(format), .ifunc(ifunc));
-
-    assign luiExtImm = {imm16, 16'b0};
-
-    assign Exc = (Exc_ID) ? Exc_ID : (excRI ? (`EXC_RI) : 0);
-
-    /* ------ Part 2.5 Part of Controls ------ */
-
-    assign regWriteAddr =   (instr == `BGEZAL || instr == `BLTZAL) ? (cmp ? 31 : 0) : // conditionally link according to MARS, but directly link according to MIPS-V2.
-                            (instr == `MOVZ || instr == `MOVN) ? (cmp ? addrRd : 0) : 
-                            (instr == `JAL)                  ? 31 :       // JAL
-                            ((ifunc == `I_ALU_R) || (instr == `JALR) || (instr == `MFHI) || (instr == `MFLO)) ? addrRd :  // rd
-                            ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R) || (instr == `MFC0))  ? addrRt :  // rt
-                            0;
-                            
-    assign regWriteData =   (instr == `MOVZ || instr == `MOVN) ? (cmp ? dataRs_use : 0) : 
-                            ((instr == `JAL) || (instr == `JALR) || (instr == `BGEZAL) || (instr == `BLTZAL))     ?   PC_ID + 8   :   // Jump Link
-                            ((instr == `LUI))                       ?   luiExtImm   :   // LUI(I-instr which don't need data from grf to alu)
-                            0; // Default
-    /* ------ Part 3: Pipeline Registers ------ */
-    always @ (posedge clk) begin
-        if (reset | clr) begin
-            instr_EX            <= 0;
-            ifunc_EX             <= 0;
-            PC_EX               <= 0;
-            Exc_EX              <= 0;
-            BD_EX               <= 0;
-            dataRs_EX           <= 0;
-            dataRt_EX           <= 0;
-            imm16_EX            <= 0;
-            shamt_EX            <= 0;
-            addrRs_EX           <= 0;
-            addrRt_EX           <= 0;
-            addrRd_EX           <= 0;
-            regWriteAddr_EX     <= 0;
-            regWriteData_EX     <= 0;
-            Tnew_EX             <= 0;
-        end
-        else if (!stall) begin
-            instr_EX            <=  instr;
-            ifunc_EX             <=  ifunc;
-            PC_EX               <=  PC_ID;
-            Exc_EX              <=  Exc;
-            BD_EX               <=  BD_ID;
-            dataRs_EX           <=  dataRs_use;
-            dataRt_EX           <=  dataRt_use;
-            imm16_EX            <=  imm16;
-            shamt_EX            <=  shamt;
-            addrRs_EX           <=  addrRs;
-            addrRt_EX           <=  addrRt;
-            addrRd_EX           <=  addrRd;
-            regWriteAddr_EX     <=  regWriteAddr;
-            regWriteData_EX     <=  regWriteData;
-            Tnew_EX             <=  Tnew;
-        end
-    end
-    /* ------ Part 3.5: Assign Wire Outputs ------ */
-    assign instr_NPC = instr;
-    assign cmp_NPC = cmp;
-    assign imm16_NPC = imm16;
-    assign jmpAddr_NPC = jmpAddr;
-    assign jmpReg_NPC = dataRs_use;
-    assign RA1_GRF = addrRs;
-    assign RA2_GRF = addrRt;
-    assign instr_ID = instr;
-    assign addrRs_ID = addrRs;
-    assign addrRt_ID = addrRt;
     
 endmodule

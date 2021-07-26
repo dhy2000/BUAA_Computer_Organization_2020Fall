@@ -167,7 +167,7 @@ module StageF (
                 BD_D        <=  0;
                 exc_D       <=  0;
             end
-            else begin
+            else if (~stall) begin
                 code_D      <=  I_RData;
                 PC_D        <=  PC_F;
                 BD_D        <=  BD_F;
