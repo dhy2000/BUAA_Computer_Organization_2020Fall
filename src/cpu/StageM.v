@@ -54,18 +54,18 @@ module PREDM (
     assign exc = (
         ((instr == `LW) && (Addr[1:0] != 0)) ? (`EXC_ADEL) : // load not-aligned word
         ((instr == `LH || instr == `LHU) && (Addr[0] != 0)) ? (`EXC_ADEL) : // load not-aligned halfword
-        ((instr == `LH || instr == `LHU || instr == `LB || instr == `LBU) && !(Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END)) ? (`EXC_ADEL) : // load non-whole word on timer register
+        ((instr == `LH || instr == `LHU || instr == `LB || instr == `LBU) && !(Addr >= `DM_ADDR_START && Addr <= `DM_ADDR_END)) ? (`EXC_ADEL) : // load non-whole word on timer register
         ((ifunc == `I_MEM_R) && !(
-            (Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END) || 
-            (Addr >= `TIMER0_ADDR_START && Addr < `TIMER0_ADDR_END) || 
-            (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END))) ? (`EXC_ADEL) : // Not-Valid Address Space
+            (Addr >= `DM_ADDR_START && Addr <= `DM_ADDR_END) || 
+            (Addr >= `TIMER0_ADDR_START && Addr <= `TIMER0_ADDR_END) || 
+            (Addr >= `TIMER1_ADDR_START && Addr <= `TIMER1_ADDR_END))) ? (`EXC_ADEL) : // Not-Valid Address Space
         ((instr == `SW) && (Addr[1:0] != 0)) ? (`EXC_ADES) : // store not-aligned word
         ((instr == `SH) && (Addr[0] != 0)) ? (`EXC_ADES) : // store not-aligned halfword
-        ((instr == `SH || instr == `SB) && !(Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END)) ? (`EXC_ADES) : 
+        ((instr == `SH || instr == `SB) && !(Addr >= `DM_ADDR_START && Addr <= `DM_ADDR_END)) ? (`EXC_ADES) : 
         ((ifunc == `I_MEM_W) && !(
-            (Addr >= `DM_ADDR_START && Addr < `DM_ADDR_END) || 
-            (Addr >= `TIMER0_ADDR_START && Addr < `TIMER0_ADDR_END) || 
-            (Addr >= `TIMER1_ADDR_START && Addr < `TIMER1_ADDR_END))) ? (`EXC_ADES) :
+            (Addr >= `DM_ADDR_START && Addr <= `DM_ADDR_END) || 
+            (Addr >= `TIMER0_ADDR_START && Addr <= `TIMER0_ADDR_END) || 
+            (Addr >= `TIMER1_ADDR_START && Addr <= `TIMER1_ADDR_END))) ? (`EXC_ADES) :
         ((ifunc == `I_MEM_W) && (Addr == `TIMER0_COUNT || Addr == `TIMER1_COUNT)) ? (`EXC_ADES) :
         0
     );

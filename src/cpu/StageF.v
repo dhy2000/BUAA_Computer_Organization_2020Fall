@@ -91,7 +91,7 @@ module PC (
     end
     
     // Exception: Out of IM range or Not Aligned by Word
-    assign exc = ((!(PC >= `IM_ADDR_START && PC < `IM_ADDR_END)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
+    assign exc = ((!(PC >= `IM_ADDR_START && PC <= `IM_ADDR_END)) || (PC[1:0] != 0)) ? (`EXC_ADEL) : 0;
 
 endmodule
 

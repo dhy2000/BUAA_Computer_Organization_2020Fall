@@ -21,7 +21,7 @@
 `define DM_ADDR_WIDTH       (`DM_WORDNUM_WIDTH + 2)
 `define DM_WORDNUM          (1 << `DM_WORDNUM_WIDTH)
 `define DM_SIZE             (`DM_WORDNUM << 2)
-`define DM_ADDR_END         32'h0000_3000
+`define DM_ADDR_END         32'h0000_2fff
 
 /* IM */
 `define IM_ADDR_START       32'h0000_3000
@@ -29,7 +29,7 @@
 `define IM_ADDR_WIDTH       (`IM_WORDNUM_WIDTH + 2)
 `define IM_WORDNUM          (1 << `IM_WORDNUM_WIDTH)
 `define IM_SIZE             (`IM_WORDNUM << 2)
-`define IM_ADDR_END         32'h0000_5000
+`define IM_ADDR_END         32'h0000_4fff
 
 /* ------ Segments ------*/
 `define PC_BOOT             32'h0000_3000
@@ -43,6 +43,9 @@
 
 
 /* ------ Device Address ------ */
+`define DEVICE_ADDR_START   32'h0000_7F00
+`define DEVICE_ADDR_END     32'h0000_7F1B
+
 // Timer0
 `define TIMER0_ADDR_START   32'h0000_7F00
 `define TIMER0_ADDR_END     32'h0000_7F0B
