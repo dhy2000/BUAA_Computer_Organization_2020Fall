@@ -12,7 +12,6 @@
  *  Input: Two source data.
  *  Output: ALU result and Exception (ADEL, ADES, OV)
  */
-
 module ALU (
     // Instruction
     input wire `TYPE_INSTR instr,
