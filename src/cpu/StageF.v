@@ -21,8 +21,8 @@ module PC (
     input wire `TYPE_IFUNC ifunc,
     input wire cmp,
     input wire [15:0] imm16,
-    input wire [25:0] jmpAddr,
-    input wire [31:0] jmpReg,
+    input wire [25:0] jAddr,
+    input wire [31:0] jReg,
     // Exception
     input wire `TYPE_EXLOP exlOp,
     input wire [31:2] EPC,
@@ -46,7 +46,7 @@ module PC (
     // Extend Immediate
     wire `WORD extImm, extJmp;
     assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
-    assign extJmp = {PC[31:28], jmpAddr, 2'b0};
+    assign extJmp = {PC[31:28], jAddr, 2'b0};
 
     // Termination to avoid pc out of range without ending infinite loop
     wire terminated;    // reserved
@@ -69,7 +69,7 @@ module PC (
     assign NPC = (npcOp == NPC_Order) ? (PC + 4) : 
                 (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
                 (npcOp == NPC_JmpImm) ? (extJmp) : 
-                (npcOp == NPC_JmpReg) ? (jmpReg) : 
+                (npcOp == NPC_JmpReg) ? (jReg) : 
                 (npcOp == NPC_ExcEnt) ? (`KTEXT_START) : 
                 (npcOp == NPC_ExcRet) ? ({EPC[31:2], 2'b0}) :
                 (PC);
@@ -103,8 +103,8 @@ module StageF (
     input wire `TYPE_IFUNC          ifunc_D,
     input wire                      cmp_D,
     input wire `TYPE_IMM            imm16_D,
-    input wire `TYPE_JADDR          jmpAddr_D,
-    input wire `WORD                jmpReg_D,
+    input wire `TYPE_JADDR          jAddr_D,
+    input wire `WORD                jReg_D,
     /* Input from CP0 */
     input wire `TYPE_EXLOP          EXLOp,
     input wire `TYPE_EPC            EPC,
@@ -136,8 +136,8 @@ module StageF (
         .ifunc(ifunc_D),
         .cmp(cmp_D),
         .imm16(imm16_D),
-        .jmpAddr(jmpAddr_D),
-        .jmpReg(jmpReg_D),
+        .jAddr(jAddr_D),
+        .jReg(jReg_D),
         .exlOp(EXLOp),
         .EPC(EPC),
         .PC(PC_F),
