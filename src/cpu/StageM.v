@@ -72,3 +72,150 @@ module PREDM (
 
 endmodule
 
+module StageM (
+    input wire                      clk,
+    input wire                      reset,
+    /* From previous stage */
+    input wire `TYPE_INSTR          instr_M         ,
+    input wire `TYPE_IFUNC          ifunc_M         ,
+    input wire `WORD                PC_M            ,
+    input wire                      BD_M            ,
+    input wire `TYPE_EXC            EXC_M           ,
+    input wire                      useRt_M         ,
+    input wire `TYPE_REG            addrRt_M        ,
+    input wire `WORD                dataRt_M        ,
+    input wire `TYPE_REG            addrRd_M        ,
+    input wire `WORD                aluOut_M        ,
+    input wire                      regWEn_M        ,
+    input wire `TYPE_REG            regWAddr_M      ,
+    input wire `WORD                regWData_M      ,
+    input wire                      regWValid_M     ,
+    input wire `TYPE_T              Tnew_M          ,
+    /* To next stage */
+    // Instruction
+    output reg `TYPE_INSTR          instr_W         = 0,
+    output reg `TYPE_IFUNC          ifunc_W         = 0,
+    output reg `WORD                PC_W            = 0,
+    // Reg write
+    output reg                      regWEn_W        = 0,
+    output reg `TYPE_REG            regWAddr_W      = 0,
+    output reg `WORD                regWData_W      = 0,
+    output reg                      regWValid_W     = 0,
+    output reg `TYPE_T              Tnew_W          = 0,
+    // Data
+    output reg [1:0]                offset_W        = 0,
+    output reg `WORD                memWord_W       = 0,
+    /* Interface with DM */
+    output wire `WORD               DPC,
+    output wire `WORD               DAddr,
+    output wire                     DREn,
+    output wire                     DWEn,
+    output wire [3:0]               DByteEn,
+    output wire `WORD               DWData,
+    input wire `WORD                DRData,
+    input wire                      DReady,
+    /* Interface with CP0 */
+    output wire `TYPE_REG           CP0reg,
+    output wire `WORD               CP0WData,
+    input wire `WORD                CP0RData,
+    output wire `TYPE_EXC           CP0EXC,
+    /* Interface with Pipeline Control */
+    input wire                      stall,
+    input wire                      clear,
+    input wire                      enD,
+    output wire                     busyD
+);
+
+    /* ------ Wires Declaration ------ */
+    // instruction
+    wire `TYPE_INSTR instr;
+    wire `TYPE_IFUNC ifunc;
+    // bypass
+    wire `WORD dataRt_use;
+    // pre dm
+    wire [1:0] offset;
+    wire `TYPE_EXC excMEM;
+    // reg write
+    wire regWEn;
+    wire `TYPE_REG regWAddr;
+    wire `WORD regWData;
+    wire regWValid;
+    wire `TYPE_T Tnew;
+
+
+    /* ------ Instantiate Modules ------ */
+    PREDM predm (
+        .instr(instr), .ifunc(ifunc),
+        .Addr(aluOut_M), .WData(dataRt_use), .PC(PC_M), .en(enD),
+        .DPC(DPC), .DAddr(DAddr), .DWEn(DWEn), .DREn(DREn), .DByteEn(DByteEn), .DWData(DWData),
+        .offset(offset), .exc(excMEM)
+    );
+
+    /* ------ Combinatinal Logic ------ */
+    // instruction
+    assign instr = instr_M;
+    assign ifunc = ifunc_M;
+    assign Tnew = (Tnew_M >= 1) ? (Tnew_M - 1) : 0;
+    // bypass select
+    assign dataRt_use = (
+        (regWEn_W & (regWAddr_W == addrRt_M) & (regWAddr_W != 0)) ? (regWData_W) :
+        (dataRt_M)
+    );
+    // D Interface
+    assign busyD = (DREn | DWEn) & (~DReady);
+    // CP0 Interface
+    assign CP0reg = addrRd_M;
+    assign CP0WData = dataRt_use;
+    assign CP0EXC = (EXC_M) ? (EXC_M) : excMEM;
+    // reg write
+    assign regWEn = regWEn_M;
+    assign regWAddr = regWAddr_M;
+    assign regWData =   (instr == `MFC0) ? (CP0RData) :
+                        ((ifunc == `I_MEM_R) && (instr == `LW)) ? (DRData) :
+                        regWData_M;
+    assign regWValid = (regWValid_M) || ((instr == `MFC0) || (instr == `LW));
+    
+
+    /* ------ Pipeline Registers ------ */
+    always @ (posedge clk) begin
+        if (reset) begin
+            instr_W         <=  0;
+            ifunc_W         <=  0;
+            PC_W            <=  0;
+            regWEn_W        <=  0;
+            regWAddr_W      <=  0;
+            regWData_W      <=  0;
+            regWValid_W     <=  0;
+            Tnew_W          <=  0;
+            offset_W        <=  0;
+            memWord_W       <=  0;
+        end
+        else begin
+            if (clear & (~stall)) begin
+                instr_W         <=  0;
+                ifunc_W         <=  0;
+                PC_W            <=  0;
+                regWEn_W        <=  0;
+                regWAddr_W      <=  0;
+                regWData_W      <=  0;
+                regWValid_W     <=  0;
+                Tnew_W          <=  0;
+                offset_W        <=  0;
+                memWord_W       <=  0;
+            end
+            else if (~stall) begin
+                instr_W         <=  instr;
+                ifunc_W         <=  ifunc;
+                PC_W            <=  PC_M;
+                regWEn_W        <=  regWEn;
+                regWAddr_W      <=  regWAddr;
+                regWData_W      <=  regWData;
+                regWValid_W     <=  regWValid;
+                Tnew_W          <=  Tnew;
+                offset_W        <=  offset;
+                memWord_W       <=  DRData;
+            end
+        end
+    end
+
+endmodule
