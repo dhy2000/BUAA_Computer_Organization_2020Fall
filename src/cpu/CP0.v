@@ -115,7 +115,7 @@ module CP0 (
                 EPC <= ((MBD ? (MPC - 4) : MPC) >> 2);
             end
             else if (instr == `MTC0 && regid == idEPC) begin
-                EPC <= {WData[31:2], 2'b00};
+                EPC <= WData[31:2];
             end
 
             // PrID
