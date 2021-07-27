@@ -1,111 +1,93 @@
-/* 
- * File Name: mips.v
- * Module Name: mips
- * Description: Top Module of the MIPS MicroSystem
- */
 `default_nettype none
+`include "include/instructions.v"
+`include "include/exception.v"
+`include "include/memory.v"
 
-/* ---------- Main Body ---------- */
+/*
+ *  Overview: Top module of MIPS microsystem, for P7
+ */
 module mips (
     input wire clk,
-    input wire reset, 
-    input wire interrupt, 
-    output wire [31:0] addr
+    input wire reset,
+    input wire interrupt,
+    output wire `WORD addr
 );
-    /* 1. Declare Wires */
+
+    /* ------ Wires Declaration ------ */
     // cpu
-    wire [31:0] PC;
-    wire [31:0] BrPC;
-    wire [31:0] BrAddr;
-    wire [31:0] BrWData;
-    wire [3:0] BrWE;
+    wire `WORD IAddr;
+    wire `WORD IData;
+    wire IReady;
     
-    // NorthBridge
-    wire [31:0] BrRData;
-    wire [31:0] DM_PC, DM_Addr, DM_WData;
-    wire [3:0] DM_WE;
-    wire [6:2] BrExc;
-    wire [7:2] HWINT;
+    wire `WORD DPC;
+    wire `WORD DAddr;
+    wire DREn, DWEn;
+    wire [3:0] DByteEn;
+    wire `WORD DWData, DRData;
+    wire DReady;
 
-    wire [31:0] SBr_PC, SBr_Addr, SBr_WData;
-    wire SBr_WE;
-    // DataMem
-    wire [31:0] DM_RData;
-    // SouthBridge
-    wire [31:0] SBr_RData;
-    wire [7:2] SBr_HWINT;
-    wire [31:2] Timer0_Addr;
-    wire [31:0] Timer0_WData;
-    wire Timer0_WE;
-    wire [31:2] Timer1_Addr;
-    wire [31:0] Timer1_WData;
-    wire Timer1_WE;
+    wire `TYPE_INT HWINT;
 
-    // Timer
-    wire [31:0] Timer0_RData;
-    wire Timer0_Int;
-    wire [31:0] Timer1_RData;
-    wire Timer1_Int;
+    // IM
+    wire `WORD IM_ADDR;
+    wire IM_CE, IM_WE, IM_RE;
+    wire [3:0] IM_BE;
+    wire `WORD IM_DIN, IM_DOUT;
+    wire IM_READY;
 
-    
-    /* 2. Instantiate Modules */
-    assign addr = PC;
+    // DM
+    wire `WORD DM_PC;
+    wire `WORD DM_ADDR;
+    wire DM_CE, DM_WE, DM_RE;
+    wire [3:0] DM_BE;
+    wire `WORD DM_DIN, DM_DOUT;
+    wire DM_READY;
+
+    // Timer 0 & 1
+    wire [31:2] TIMER0_ADDR, TIMER1_ADDR;
+    wire `WORD TIMER0_DIN, TIMER1_DIN;
+    wire TIMER0_WE, TIMER1_WE;
+    wire `WORD TIMER0_DOUT, TIMER1_DOUT;
+    wire TIMER0_INT, TIMER1_INT;
+
+    /* ------ Instantiate Modules ------ */
+
     CPU cpu (
-        .clk(clk), 
-        .reset(reset), 
-        .PC(PC), 
-        .BrPC(BrPC), 
-        .BrAddr(BrAddr), 
-        .BrWData(BrWData), 
-        .BrWE(BrWE), 
-        .BrRData(BrRData),
-        .HWINT(HWINT)
+        .clk(clk),
+        .reset(reset),
+        .IAddr(IAddr), .IData(IData), .IReady(IReady),
+        .DPC(DPC), 
+        .DAddr(DAddr), .DREn(DREn), .DWEn(DWEn),  .DByteEn(DByteEn), .DWData(DWData), 
+        .DRData(DRData), .DReady(DReady),
+        .HWINT(HWINT),
+        .PC(addr)
     );
 
-    NorthBridge nbridge (
-        // CPU Port 1
-        .Addr1(32'b0), .WData1(32'b0), .WE1(4'b0), .RData1(), 
-        // CPU Port 2
-        .PC2(BrPC), .Addr2(BrAddr), .WData2(BrWData), .WE2(BrWE), .RData2(BrRData),
-        // CPU Interruption
+    Bridge br (
+        .IAddr(IAddr), .IData(IData),.IReady(IReady),
+        .DPC(DPC), .DAddr(DAddr), .DREn(DREn), .DWEn(DWEn), .DByteEn(DByteEn), .DWData(DWData), .DRData(DRData), .DReady(DReady),
         .HWINT(HWINT), 
-        // IM
-        // .IM_Addr(), .IM_WData(), .IM_WE(), .IM_RData(32'b0), 
-        // DM
-        .DM_PC(DM_PC), .DM_Addr(DM_Addr), .DM_WData(DM_WData), .DM_WE(DM_WE), .DM_RData(DM_RData),
-        // South Bridge
-        .SBr_PC(SBr_PC), .SBr_Addr(SBr_Addr), .SBr_WData(SBr_WData), .SBr_WE(SBr_WE), .SBr_RData(SBr_RData), 
-        .SBr_HWINT(SBr_HWINT)
+        .IM_ADDR(IM_ADDR), .IM_CE(IM_CE), .IM_WE(IM_WE), .IM_RE(IM_RE), .IM_BE(IM_BE), .IM_DIN(IM_DIN), .IM_DOUT(IM_DOUT), .IM_READY(IM_READY),
+        .DM_PC(DM_PC),
+        .DM_ADDR(DM_ADDR), .DM_CE(DM_CE), .DM_WE(DM_WE), .DM_RE(DM_RE), .DM_BE(DM_BE), .DM_DIN(DM_DIN), .DM_DOUT(DM_DOUT), .DM_READY(DM_READY),
+        .TIMER0_ADDR(TIMER0_ADDR), .TIMER0_DIN(TIMER0_DIN), .TIMER0_WE(TIMER0_WE), .TIMER0_DOUT(TIMER0_DOUT), .TIMER0_INT(TIMER0_INT),
+        .TIMER1_ADDR(TIMER1_ADDR), .TIMER1_DIN(TIMER1_DIN), .TIMER1_WE(TIMER1_WE), .TIMER1_DOUT(TIMER1_DOUT), .TIMER1_INT(TIMER1_INT),
+        .EXTERN_INT(interrupt)
     );
 
-    DataMem dm (
-        .clk(clk), .reset(reset), 
-        .PC(DM_PC), .Addr(DM_Addr[31:2]), .WData(DM_WData), .WE(DM_WE), .RData(DM_RData)
-    );
-
-    SouthBridge sbridge (
-        // CPU Port
-        .Addr(SBr_Addr), .WData(SBr_WData), .WE(SBr_WE), .RData(SBr_RData), .HWINT(SBr_HWINT), 
-        // Timer 0
-        .Timer0_Addr(Timer0_Addr), .Timer0_WData(Timer0_WData), .Timer0_WE(Timer0_WE), .Timer0_RData(Timer0_RData), .Timer0_Int(Timer0_Int),
-        // Timer 1
-        .Timer1_Addr(Timer1_Addr), .Timer1_WData(Timer1_WData), .Timer1_WE(Timer1_WE), .Timer1_RData(Timer1_RData), .Timer1_Int(Timer1_Int),
-        // External
-        .Ext_Int(interrupt)
-    );
+    
 
     Timer timer0 (
-        .clk(clk), .reset(reset), 
-        .Addr(Timer0_Addr), .WE(Timer0_WE), .Din(Timer0_WData), 
-        .Dout(Timer0_RData), .IRQ(Timer0_Int)
+        .clk(clk), .reset(reset),
+        .Addr(TIMER0_ADDR), .WE(TIMER0_WE), .Din(TIMER0_DIN), .Dout(TIMER0_DOUT),
+        .IRQ(TIMER0_INT)
     );
 
     Timer timer1 (
-        .clk(clk), .reset(reset), 
-        .Addr(Timer1_Addr), .WE(Timer1_WE), .Din(Timer1_WData), 
-        .Dout(Timer1_RData), .IRQ(Timer1_Int)
+        .clk(clk), .reset(reset),
+        .Addr(TIMER1_ADDR), .WE(TIMER1_WE), .Din(TIMER1_DIN), .Dout(TIMER1_DOUT),
+        .IRQ(TIMER1_INT)
     );
-
 
 
 endmodule
