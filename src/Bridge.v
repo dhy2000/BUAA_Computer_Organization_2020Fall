@@ -96,9 +96,9 @@ module Bridge (
     assign TIMER1_WE = TIMER1sel & DWEn;
 
     // D-MUX
-    assign {DRData, DReady} =   (DMsel & DREn) ? ({DM_DOUT, DM_READY}) :
-                                (TIMER0sel & DREn) ? ({TIMER0_DOUT, 1'b1}) :
-                                (TIMER1sel & DREn) ? ({TIMER1_DOUT, 1'b1}) :
+    assign {DRData, DReady} =   (DMsel) ? ({DM_DOUT, DM_READY}) :
+                                (TIMER0sel) ? ({TIMER0_DOUT, 1'b1}) :
+                                (TIMER1sel) ? ({TIMER1_DOUT, 1'b1}) :
                                 0;
 
     /* Interrupt */
