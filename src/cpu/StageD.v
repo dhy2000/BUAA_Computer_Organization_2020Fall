@@ -611,7 +611,7 @@ module StageD (
             end
             else if (~stall) begin
                 instr_E         <=  instr_D;
-                ifunc_E         <=  ifunc_E;
+                ifunc_E         <=  ifunc_D;
                 PC_E            <=  PC_D;
                 BD_E            <=  BD_D;
                 EXC_E           <=  exc;
