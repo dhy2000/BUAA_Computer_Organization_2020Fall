@@ -1,77 +1,55 @@
 `default_nettype none
+`include "include/instructions.v"
+`include "include/exception.v"
+`include "include/memory.v"
 
-`include "include/memconfig.v"
-
+/*
+ *  Overview: Data Memory
+ */
 module DM (
-    input wire clk, 
-    input wire reset, 
-    input wire [31:0] PC, 
-    input wire [31:2] Addr,  // word-aligned, start at 0
-    input wire [31:0] WData, 
-    input wire [3:0] WE,    // Write Enable per Byte
-    output wire [31:0] RData
+    input wire clk,
+    input wire reset,
+    input wire `WORD pc,
+    input wire `WORD addr,
+    input wire ce,
+    input wire we,
+    input wire re,
+    input wire [3:0] be,
+    input wire `WORD din,
+    output wire `WORD dout,
+    output wire ready
 );
 
-    reg [31:0] mem [0: `DM_WORDNUM - 1];
+    // SIMULATION-ONLY model, please use BRAM IPCORE if synthesis needed.
+    reg `WORD mem [0 : `DM_WORDNUM - 1];
+    wire `WORD bitmask = {{8{be[3]}}, {8{be[2]}}, {8{be[1]}}, {8{be[0]}}};
 
-    wire [`DM_ADDR_WIDTH-1:2] wordAddr;
-    assign wordAddr = Addr[`DM_ADDR_WIDTH-1:2];
+    wire `WORD dwrite = (mem[addr] & (~bitmask)) | (din & bitmask);
 
-    wire [31:0] memword;
-    assign memword = mem[wordAddr];
-    assign RData = memword;
+    assign dout = mem[addr];
+    assign ready = 1'b1;
 
-    function [31:0] replaceWord;
-        input [31:0] memword;
-        input [31:0] writedata;
-        input [3:0] we;
-        integer i;
-        begin
-            replaceWord = 0;
-            for (i = 0; i <= 3; i = i + 1) begin
-                if (we[i]) begin
-                    replaceWord[i*8+:8] = writedata[i*8+:8];
-                end
-                else begin
-                    replaceWord[i*8+:8] = memword[i*8+:8];
-                end
-            end
+    integer i;
+    
+    initial begin
+        for (i = 0; i < `DM_WORDNUM; i = i + 1) begin
+            mem[i] <= 0;
         end
-    endfunction
+    end
 
-    wire [31:0] wordToWrite;
-    assign wordToWrite = replaceWord(memword, WData, WE);
-
-    task resetMem;
-        integer i;
-        begin
+    always @ (posedge clk) begin
+        if (reset) begin
             for (i = 0; i < `DM_WORDNUM; i = i + 1) begin
                 mem[i] <= 0;
             end
         end
-    endtask
-
-    task writeWordToMem;
-        reg [31:0] writeAddr;
-        begin
-            writeAddr = (wordAddr << 2);
-            $display("%d@%h: *%h <= %h", $time, PC, writeAddr, wordToWrite);
-            mem[wordAddr] <= wordToWrite;
-        end
-    endtask
-
-    initial begin
-        resetMem;
-    end
-
-    always @(posedge clk) begin
-        if (reset) begin
-            resetMem;
-        end
-        else begin
-            if (|WE) begin
-                writeWordToMem;
+        else if (ce) begin
+            if (we) begin
+                mem[addr] <= dwrite;
+                $display("%d@%h: *%h <= %h", $time, pc, addr, dwrite);
             end
         end
     end
+
+
 endmodule

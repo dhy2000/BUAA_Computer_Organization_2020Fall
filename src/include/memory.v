@@ -34,6 +34,7 @@
 /* ------ Segments ------*/
 `define PC_BOOT             32'h0000_3000
 
+`define TEXT_START          32'h0000_3000
 `define KTEXT_START         32'h0000_4180
 `define KTEXT_END           32'h0000_4ffc // [start, end)
 
