@@ -164,7 +164,7 @@ module MDU (
     reg `WORD A, B;
     reg `TYPE_INSTR instr_reg;
 
-    // control signals
+    // start signals, use input instr
     wire isMult =  ((instr == `MULT) || (instr == `MULTU) ||
                     (instr == `MADD) || (instr == `MADDU) ||
                     (instr == `MSUB) || (instr == `MSUBU));
@@ -172,8 +172,8 @@ module MDU (
 
     wire isStart = (en) & (isMult | isDiv);
     
-    // signed or not
-    wire sign = ((instr == `MULTU) || (instr == `DIVU) || (instr == `MADDU) || (instr == `MSUBU)) ? 1'b0 : 1'b1;
+    // signed/unsigned select, use reg-stored instr
+    wire sign = ((instr_reg == `MULTU) || (instr_reg == `DIVU) || (instr_reg == `MADDU) || (instr_reg == `MSUBU)) ? 1'b0 : 1'b1;
     
     // mult
     wire [63:0] product;
