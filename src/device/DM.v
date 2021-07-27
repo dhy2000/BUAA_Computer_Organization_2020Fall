@@ -23,10 +23,11 @@ module DM (
     // SIMULATION-ONLY model, please use BRAM IPCORE if synthesis needed.
     reg `WORD mem [0 : `DM_WORDNUM - 1];
     wire `WORD bitmask = {{8{be[3]}}, {8{be[2]}}, {8{be[1]}}, {8{be[0]}}};
+    wire [`DM_ADDR_WIDTH - 1 : 2] index = addr[`DM_ADDR_WIDTH - 1 : 2];
 
-    wire `WORD dwrite = (mem[addr] & (~bitmask)) | (din & bitmask);
+    wire `WORD dwrite = (mem[index] & (~bitmask)) | (din & bitmask);
 
-    assign dout = mem[addr];
+    assign dout = mem[index];
     assign ready = 1'b1;
 
     integer i;
@@ -45,7 +46,7 @@ module DM (
         end
         else if (ce) begin
             if (we) begin
-                mem[addr] <= dwrite;
+                mem[index] <= dwrite;
                 $display("%d@%h: *%h <= %h", $time, pc, addr, dwrite);
             end
         end

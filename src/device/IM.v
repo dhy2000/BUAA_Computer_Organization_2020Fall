@@ -21,8 +21,9 @@ module IM (
 
     // SIMULATION-ONLY model, please use BRAM IPCORE if synthesis needed.
     reg `WORD mem [0 : `IM_WORDNUM - 1];
+    wire [`IM_ADDR_WIDTH - 1 : 2] index = addr[`IM_ADDR_WIDTH - 1 : 2];
 
-    assign dout = mem[addr];
+    assign dout = mem[index];
     assign ready = 1'b1;
 
     initial begin
