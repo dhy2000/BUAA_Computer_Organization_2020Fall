@@ -20,15 +20,29 @@ module IM (
 );
 
     // SIMULATION-ONLY model, please use BRAM IPCORE if synthesis needed.
+
+    // bram sync-read model
+    reg `WORD addr_q;
+
     reg `WORD mem [0 : `IM_WORDNUM - 1];
     wire [`IM_ADDR_WIDTH - 1 : 2] index = addr[`IM_ADDR_WIDTH - 1 : 2];
 
     assign dout = mem[index];
-    assign ready = 1'b1;
+    assign ready = (ce & re) & ((addr >= 32'h0000_0000 && addr <= 32'h0000_0010) ? (addr == addr_q) : (1'b1));
 
     initial begin
         $readmemh(`CODE_FILE, mem);
         $readmemh(`HANDLER_FILE, mem, ((`KTEXT_START - `IM_ADDR_START) >> 2), ((`KTEXT_END - `IM_ADDR_START) >> 2));
+    end
+
+    always @ (posedge clk) begin
+        if (reset) begin
+            addr_q <= 0;
+        end
+        else begin
+            addr_q <= addr;
+        end
+
     end
 
 endmodule

@@ -21,6 +21,10 @@ module DM (
 );
 
     // SIMULATION-ONLY model, please use BRAM IPCORE if synthesis needed.
+
+    // bram sync-read model
+    reg `WORD addr_q;
+
     reg `WORD mem [0 : `DM_WORDNUM - 1];
     wire `WORD bitmask = {{8{be[3]}}, {8{be[2]}}, {8{be[1]}}, {8{be[0]}}};
     wire [`DM_ADDR_WIDTH - 1 : 2] index = addr[`DM_ADDR_WIDTH - 1 : 2];
@@ -28,7 +32,7 @@ module DM (
     wire `WORD dwrite = (mem[index] & (~bitmask)) | (din & bitmask);
 
     assign dout = mem[index];
-    assign ready = 1'b1;
+    assign ready = (ce) & ((we) | (re & (addr == addr_q)));
 
     integer i;
     
@@ -43,8 +47,10 @@ module DM (
             for (i = 0; i < `DM_WORDNUM; i = i + 1) begin
                 mem[i] <= 0;
             end
+            addr_q <= 0;
         end
         else if (ce) begin
+            addr_q <= addr;
             if (we) begin
                 mem[index] <= dwrite;
                 $display("%d@%h: *%h <= %h", $time, pc, addr, dwrite);
