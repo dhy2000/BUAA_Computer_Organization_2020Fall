@@ -75,7 +75,17 @@ module mips (
         .EXTERN_INT(interrupt)
     );
 
-    
+    IM im (
+        .clk(clk), .reset(reset),
+        .addr(IM_ADDR), .ce(IM_CE), .we(IM_WE), .re(IM_RE), .be(IM_BE),
+        .din(IM_DIN), .dout(IM_DOUT), .ready(IM_READY)
+    );
+
+    DM dm (
+        .clk(clk), .reset(reset), .pc(DM_PC),
+        .addr(DM_ADDR), .ce(DM_CE), .we(DM_WE), .re(DM_RE), .be(DM_BE),
+        .din(DM_DIN), .dout(DM_DOUT), .ready(DM_READY)
+    );
 
     Timer timer0 (
         .clk(clk), .reset(reset),
