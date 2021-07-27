@@ -39,12 +39,13 @@ module ALU (
         Alu_Srl     = 12,
         Alu_Sra     = 13,
         Alu_Clo     = 14,
-        Alu_Clz     = 15;
+        Alu_Clz     = 15,
+        Alu_Addr    = 16;
     
     /* Control */
     wire [WIDTH_Alu - 1 : 0] aluOp;
     assign aluOp = (
-        (ifunc == `I_MEM_R || ifunc == `I_MEM_W) ? (Alu_Add) :
+        (ifunc == `I_MEM_R || ifunc == `I_MEM_W) ? (Alu_Addr) :
         (instr == `ADD || instr == `ADDU || instr == `ADDIU || instr == `ADDI) ? (Alu_Add) :
         (instr == `SUB || instr == `SUBU) ? (Alu_Sub) :
         (instr == `AND || instr == `ANDI) ? (Alu_And) :
@@ -99,6 +100,7 @@ module ALU (
             Alu_Sra:    alu = ($signed($signed(b) >>> a[4:0]));
             Alu_Clo:    alu = (countLeading(a, 1));
             Alu_Clz:    alu = (countLeading(a, 0));
+            Alu_Addr:   alu = (a + b) & 32'b00000000_00000000_00111111_11111111;    // reserved
             default:    alu = 0;
             endcase
         end
