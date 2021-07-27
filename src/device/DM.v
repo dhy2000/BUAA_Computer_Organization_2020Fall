@@ -24,6 +24,7 @@ module DM (
 
     // bram sync-read model
     reg `WORD addr_q;
+    reg [3:0] count;    // block 1-period per 16 visits.
 
     reg `WORD mem [0 : `DM_WORDNUM - 1];
     wire `WORD bitmask = {{8{be[3]}}, {8{be[2]}}, {8{be[1]}}, {8{be[0]}}};
@@ -32,7 +33,7 @@ module DM (
     wire `WORD dwrite = (mem[index] & (~bitmask)) | (din & bitmask);
 
     assign dout = mem[index];
-    assign ready = (ce) & ((we) | (re & (addr == addr_q)));
+    assign ready = (ce & (re | we)) & (count ? 1'b1 : (addr == addr_q));
 
     integer i;
     
@@ -48,10 +49,14 @@ module DM (
                 mem[i] <= 0;
             end
             addr_q <= 0;
+            count <= 0;
         end
         else if (ce) begin
             addr_q <= addr;
-            if (we) begin
+            if ((re | we) & ready) begin
+                count <= count + 1;
+            end
+            if (we & ready) begin
                 mem[index] <= dwrite;
                 $display("%d@%h: *%h <= %h", $time, pc, addr, dwrite);
             end

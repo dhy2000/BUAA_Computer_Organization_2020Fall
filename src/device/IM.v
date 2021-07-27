@@ -23,12 +23,13 @@ module IM (
 
     // bram sync-read model
     reg `WORD addr_q;
+    reg [6:0] count;
 
     reg `WORD mem [0 : `IM_WORDNUM - 1];
     wire [`IM_ADDR_WIDTH - 1 : 2] index = addr[`IM_ADDR_WIDTH - 1 : 2];
 
     assign dout = mem[index];
-    assign ready = (ce & re) & ((addr >= 32'h0000_0000 && addr <= 32'h0000_0010) ? (addr == addr_q) : (1'b1));
+    assign ready = (ce & re) & (count ? (1'b1) : (addr == addr_q));
 
     initial begin
         $readmemh(`CODE_FILE, mem);
@@ -38,9 +39,13 @@ module IM (
     always @ (posedge clk) begin
         if (reset) begin
             addr_q <= 0;
+            count <= 0;
         end
         else begin
             addr_q <= addr;
+            if (ready) begin
+                count <= count + 1;
+            end
         end
 
     end
