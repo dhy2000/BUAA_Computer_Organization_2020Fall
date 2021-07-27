@@ -483,8 +483,8 @@ module StageD (
 
     Compare branch_compare (
         .instr(instr_D),
-        .dataRs(dataRs_D),
-        .dataRt(dataRt_D),
+        .dataRs(dataRs_use),
+        .dataRt(dataRt_use),
         .cmp(cmp_D)
     );
 
