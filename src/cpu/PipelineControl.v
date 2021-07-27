@@ -68,6 +68,7 @@ module PipelineControl (
     output wire enPC,
     output wire enMD,
     output wire enD,
+    output wire enGRF,
     output wire stall_D,
     output wire clear_D,
     output wire stall_E,
@@ -112,10 +113,10 @@ module PipelineControl (
     wire exl = (EXLOp != 0);
 
     // Generate control signals
-    assign {enPC, enMD, enD, stall_D, stall_E, stall_M, stall_W, clear_D, clear_E, clear_M, clear_W} = 
-        (exl)                               ? (11'b100_0000_1111) :
-        (busyD)                             ? (11'b011_1110_0001) :
-        (waitMD | waitReg | busyI)          ? (11'b011_1000_0100) :
-        (11'b111_0000_0000);
+    assign {enPC, enMD, enD, enGRF, stall_D, stall_E, stall_M, stall_W, clear_D, clear_E, clear_M, clear_W} = 
+        (exl)                               ? (12'b1001_0000_1111) :
+        (busyD)                             ? (12'b0110_1111_0000) :
+        (waitMD | waitReg | busyI)          ? (12'b0111_1000_0100) :
+        (12'b1111_0000_0000);
 
 endmodule

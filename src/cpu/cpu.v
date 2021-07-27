@@ -131,7 +131,7 @@ module CPU (
     // Pipeline Control
     wire Stall_D, Stall_E, Stall_M, Stall_W;
     wire Clear_D, Clear_E, Clear_M, Clear_W;
-    wire EnPC, EnMD, EnD;
+    wire EnPC, EnMD, EnD, EnGRF;
     wire BusyI, BusyMD, BusyD;
 
     // Macro status
@@ -209,7 +209,7 @@ module CPU (
     );
 
     GRF grf (
-        .clk(clk), .reset(reset),
+        .clk(clk), .reset(reset), .en(EnGRF),
         .RAddr1(AddrRs_D), .RData1(DataRs_D),
         .RAddr2(AddrRt_D), .RData2(DataRt_D),
         .WPC(RegWPC), .WEn(RegWEn), .WAddr(RegWAddr), .WData(RegWData)
@@ -239,7 +239,7 @@ module CPU (
         .Tnew_D(Tnew_D), .Tnew_E(Tnew_E), .Tnew_M(Tnew_M), .Tnew_W(Tnew_W),
         .busyI(BusyI), .busyD(BusyD), .busyMD(BusyMD),
         .EXLOp(EXLOp),
-        .enPC(EnPC), .enMD(EnMD), .enD(EnD),
+        .enPC(EnPC), .enMD(EnMD), .enD(EnD), .enGRF(EnGRF),
         .stall_D(Stall_D), .clear_D(Clear_D),
         .stall_E(Stall_E), .clear_E(Clear_E),
         .stall_M(Stall_M), .clear_M(Clear_M),

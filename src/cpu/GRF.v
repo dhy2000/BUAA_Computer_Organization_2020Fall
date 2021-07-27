@@ -14,6 +14,7 @@ module GRF (
     input wire `TYPE_REG RAddr2,
     output wire `WORD RData2,
     // Write Port
+    input wire en, // control by pipeline
     input wire `WORD WPC,
     input wire WEn,
     input wire `TYPE_REG WAddr,
@@ -35,7 +36,7 @@ module GRF (
             end
         end
         else begin
-            if (WEn & (WAddr != 0)) begin
+            if (en & WEn & (WAddr != 0)) begin
                 grf[WAddr] <= WData;
                 $display("%d@%h: $%d <= %h", $time, WPC, WAddr, WData);
             end
