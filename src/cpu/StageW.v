@@ -121,6 +121,7 @@ module StageW (
     assign regWEn = regWEn_W;
     assign regWAddr = regWAddr_W;
     assign regWData = ((ifunc == `I_MEM_R) && ((instr == `LH) || (instr == `LHU) || (instr == `LB) || (instr == `LBU))) ? extWord : regWData_W;
+    assign regWPC = PC_W;
 
 
 endmodule
