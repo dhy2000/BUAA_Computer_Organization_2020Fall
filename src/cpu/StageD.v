@@ -628,7 +628,7 @@ module StageD (
                 regWAddr_E      <=  regWAddr_D;
                 regWData_E      <=  regWData_D;
                 regWValid_E     <=  regWValid_D;
-                Tnew_E          <=  Tnew_D;
+                Tnew_E          <=  Tnew;
             end
         end
     end
