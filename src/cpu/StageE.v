@@ -100,7 +100,7 @@ module ALU (
             Alu_Sra:    alu = ($signed($signed(b) >>> a[4:0]));
             Alu_Clo:    alu = (countLeading(a, 1));
             Alu_Clz:    alu = (countLeading(a, 0));
-            Alu_Addr:   alu = (a + b) & 32'b00000000_00000000_00111111_11111111;    // reserved
+            Alu_Addr:   alu = (a + b); // reserved
             default:    alu = 0;
             endcase
         end
