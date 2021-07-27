@@ -35,8 +35,8 @@ module PREDM (
     assign offset = Addr[1:0];
     
     // D mem
-    assign DREn = (ifunc == `I_MEM_R);
-    assign DWEn = (ifunc == `I_MEM_W);
+    assign DREn = (en) & (ifunc == `I_MEM_R);
+    assign DWEn = (en) & (ifunc == `I_MEM_W);
 
     assign DByteEn = (en & (ifunc == `I_MEM_W)) ? (
         (instr == `SW) ? (4'b1111) : 
