@@ -119,14 +119,14 @@ module CPU (
     wire RegWEn;
     wire `TYPE_REG RegWAddr;
     wire `WORD RegWData;
-    wire RegWPC;
+    wire `WORD RegWPC;
 
     // CP0
     wire `TYPE_EXC CP0EXC;
     wire `TYPE_EXLOP EXLOp;
     wire `TYPE_REG CP0reg;
     wire `WORD CP0WData, CP0RData;
-    wire `WORD EPC;
+    wire `TYPE_EPC EPC;
 
     // Pipeline Control
     wire Stall_D, Stall_E, Stall_M, Stall_W;

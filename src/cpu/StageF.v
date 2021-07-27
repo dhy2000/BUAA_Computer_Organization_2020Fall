@@ -20,14 +20,14 @@ module PC (
     input wire `TYPE_INSTR instr,
     input wire `TYPE_IFUNC ifunc,
     input wire cmp,
-    input wire [15:0] imm16,
-    input wire [25:0] jAddr,
-    input wire [31:0] jReg,
+    input wire `TYPE_IMM imm,
+    input wire `TYPE_JADDR jAddr,
+    input wire `WORD jReg,
     // Exception
     input wire `TYPE_EXLOP exlOp,
-    input wire [31:2] EPC,
+    input wire `TYPE_EPC EPC,
     // output
-    output reg [31:0] PC = `PC_BOOT,
+    output reg `WORD PC = `PC_BOOT,
     output wire BD,
     output wire `TYPE_EXC exc
 );
@@ -45,7 +45,7 @@ module PC (
 
     // Extend Immediate
     wire `WORD extImm, extJmp;
-    assign extImm = {{14{imm16[15]}}, imm16, 2'b0};
+    assign extImm = {{14{imm[15]}}, imm, 2'b0};
     assign extJmp = {PC[31:28], jAddr, 2'b0};
 
     // Termination to avoid pc out of range without ending infinite loop
@@ -102,7 +102,7 @@ module StageF (
     input wire `TYPE_INSTR          instr_D,
     input wire `TYPE_IFUNC          ifunc_D,
     input wire                      cmp_D,
-    input wire `TYPE_IMM            imm16_D,
+    input wire `TYPE_IMM            imm_D,
     input wire `TYPE_JADDR          jAddr_D,
     input wire `WORD                jReg_D,
     /* Input from CP0 */
@@ -135,7 +135,7 @@ module StageF (
         .instr(instr_D),
         .ifunc(ifunc_D),
         .cmp(cmp_D),
-        .imm16(imm16_D),
+        .imm(imm_D),
         .jAddr(jAddr_D),
         .jReg(jReg_D),
         .exlOp(EXLOp),

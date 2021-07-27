@@ -454,7 +454,7 @@ module StageD (
     wire `TYPE_IFUNC ifunc;
     wire cmp;
     // exception
-    wire excDecoder;
+    wire `TYPE_EXC excDecoder;
     wire `TYPE_EXC exc; // exception for next
     // bypass
     wire `WORD dataRs_use, dataRt_use;
