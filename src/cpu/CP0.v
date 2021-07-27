@@ -112,7 +112,7 @@ module CP0 (
             end
             // EPC
             if (entry) begin
-                EPC <= ((MBD ? (MPC - 4) : MPC) & 32'hFFFF_FFFC);
+                EPC <= ((MBD ? (MPC - 4) : MPC) >> 2);
             end
             else if (instr == `MTC0 && regid == idEPC) begin
                 EPC <= {WData[31:2], 2'b00};
