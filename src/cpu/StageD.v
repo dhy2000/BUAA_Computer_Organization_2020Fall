@@ -560,6 +560,9 @@ module StageD (
                         ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R)) ? 1'b0 :
                         1'b1;
 
+    // jump
+    assign jReg_D = dataRs_use;
+
     /* ------ Pipeline Registers ------ */
 
     always @ (posedge clk) begin
