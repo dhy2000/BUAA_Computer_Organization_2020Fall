@@ -553,11 +553,13 @@ module StageD (
     assign useRs_D =    ((ifunc == `I_BRANCH)) ? 1'b1 :
                         ((ifunc == `I_JUMP) && ((instr == `JR) || (instr == `JALR))) ? 1'b1 :
                         ((ifunc == `I_ALU_R) && ((instr == `SLL) || (instr == `SRL) || (instr == `SRA))) ? 1'b0 :
+                        ((ifunc == `I_CP0)) ? 1'b0 :
                         1'b1;
     
     assign useRt_D =    ((ifunc == `I_BRANCH) && ((instr == `BEQ) || (instr == `BNE))) ? 1'b1 :
                         ((ifunc == `I_JUMP)) ? 1'b0 :
                         ((ifunc == `I_ALU_I) || (ifunc == `I_MEM_R)) ? 1'b0 :
+                        ((ifunc == `I_CP0) && (instr == `MTC0)) ? 1'b1 :
                         1'b1;
 
     // jump
