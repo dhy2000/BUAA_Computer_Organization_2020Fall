@@ -160,7 +160,7 @@ module MDU (
     localparam DIV_DELAY = 10;
 
     /* Part 1. Calculation for multiply and division */
-    // registers to store instr and operands
+    // use registers store instr and operands to keep them while calculating
     reg `WORD A, B;
     reg `TYPE_INSTR instr_reg;
 
@@ -178,10 +178,10 @@ module MDU (
     // mult
     wire [63:0] product;
 
-    wire [63:0] uExtA = {32'b0, srca};
-    wire [63:0] uExtB = {32'b0, srcb};
-    wire [63:0] sExtA = {{32{srca[31]}}, srca};
-    wire [63:0] sExtB = {{32{srcb[31]}}, srcb};
+    wire [63:0] uExtA = {32'b0, A};
+    wire [63:0] uExtB = {32'b0, B};
+    wire [63:0] sExtA = {{32{A[31]}}, A};
+    wire [63:0] sExtB = {{32{B[31]}}, B};
 
     /////////////// REPLACE IF SYNTHESIS ///////////////
     assign product = (sign) ? (sExtA * sExtB) : (uExtA * uExtB);    // operator '*' used
@@ -190,15 +190,15 @@ module MDU (
     // div
     wire [31:0] quotient, remainder;
 
-    wire [32:0] uDivA = {1'b0, srca};
-    wire [32:0] uDivB = {1'b0, srcb};
+    wire [32:0] uDivA = {1'b0, A};
+    wire [32:0] uDivB = {1'b0, B};
 
     /////////////// REPLACE IF SYNTHESIS ///////////////
     wire [31:0] uquo = uDivA / uDivB;   // operator '/' used
     wire [31:0] urem = uDivA % uDivB;   // operator '%' used
 
-    wire [31:0] squo = $signed($signed(srca) / $signed(srcb));
-    wire [31:0] srem = $signed($signed(srca) % $signed(srcb));
+    wire [31:0] squo = $signed($signed(A) / $signed(B));
+    wire [31:0] srem = $signed($signed(A) % $signed(B));
     ////////////////////////////////////////////////////
 
     assign {quotient, remainder} = (sign) ? ({squo, srem}) : ({uquo, urem});
