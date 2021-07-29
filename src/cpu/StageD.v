@@ -292,7 +292,8 @@ module Decoder (
             ((instr == `JR) || (instr == `JALR)) ? 0 : (`TUSE_INF)
         ) : 
         (ifunc == `I_MD) ? (
-            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV ) || (instr == `DIVU )) ? 1 :
+            ((instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU)) ? 1 :
             ((instr == `MTHI) || (instr == `MTLO)) ? 1 : 
             (`TUSE_INF)
         ) : 
@@ -313,7 +314,8 @@ module Decoder (
         ) : 
         (ifunc == `I_JUMP) ? (`TUSE_INF) : 
         (ifunc == `I_MD) ? (
-            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV) || (instr == `DIVU)) ? 1 : 
+            ((instr == `MULT) || (instr == `MULTU) || (instr == `DIV ) || (instr == `DIVU )) ? 1 :
+            ((instr == `MADD) || (instr == `MADDU) || (instr == `MSUB) || (instr == `MSUBU))
             (`TUSE_INF)
         ) : 
         (ifunc == `I_CP0) ? (
