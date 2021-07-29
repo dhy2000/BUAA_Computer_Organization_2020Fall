@@ -60,6 +60,7 @@ module ALU (
         (instr == `SRA || instr == `SRAV) ? (Alu_Sra) :
         (instr == `CLO) ? (Alu_Clo) :
         (instr == `CLZ) ? (Alu_Clz) :
+        (instr == `MOVN || instr == `MOVZ) ? (Alu_A) :
         (Alu_Zero) // default
     );
 

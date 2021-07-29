@@ -549,7 +549,7 @@ module StageD (
                         ((instr == `LUI)) ? (luiExt) : 
                         0;
 
-    assign regWValid_D = ((instr == `JAL) || (instr == `LUI)) ? 1'b1 : 1'b0;
+    assign regWValid_D = ((instr == `JAL) || (instr == `LUI) || ((instr == `MOVN) || (instr == `MOVZ))) ? 1'b1 : 1'b0;
 
     // reg use
     assign useRs_D =    ((ifunc == `I_BRANCH)) ? 1'b1 :
