@@ -33,7 +33,7 @@ module IM (
 
     initial begin
         $readmemh(`CODE_FILE, mem);
-        $readmemh(`HANDLER_FILE, mem, ((`KTEXT_START - `IM_ADDR_START) >> 2), ((`KTEXT_END - `IM_ADDR_START) >> 2));
+        $readmemh(`HANDLER_FILE, mem, ((`KTEXT_START - `IM_ADDR_START) >> 2), ((`TEXT_END - `IM_ADDR_START) >> 2));
     end
 
     always @ (posedge clk) begin

@@ -63,7 +63,7 @@ module PipelineControl (
     input wire busyD,
     input wire busyMD,
     // EXL
-    input wire `TYPE_EXLOP EXLOp,
+    input wire exl,
     // output
     output wire enPC,
     output wire enMD,
@@ -110,7 +110,7 @@ module PipelineControl (
         // busyD
 
     // 5. EXL change
-    wire exl = (EXLOp != 0);
+    // wire exl = (EXLOp != 0);
 
     // Generate control signals
     assign {enPC, enMD, enD, enGRF, stall_D, stall_E, stall_M, stall_W, clear_D, clear_E, clear_M, clear_W} = 

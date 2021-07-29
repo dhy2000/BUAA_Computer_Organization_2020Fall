@@ -123,10 +123,10 @@ module CPU (
 
     // CP0
     wire `TYPE_EXC CP0EXC;
-    wire `TYPE_EXLOP EXLOp;
+    wire Exl;
     wire `TYPE_REG CP0reg;
     wire `WORD CP0WData, CP0RData;
-    wire `TYPE_EPC EPC;
+    wire `WORD EXNPC;
 
     // Pipeline Control
     wire Stall_D, Stall_E, Stall_M, Stall_W;
@@ -142,7 +142,7 @@ module CPU (
     StageF f (
         .clk(clk), .reset(reset),
         .instr_D(Instr_D), .ifunc_D(Ifunc_D), .cmp_D(Cmp_D), .imm_D(Imm_D), .jAddr_D(JAddr_D), .jReg_D(JReg_D),
-        .EXLOp(EXLOp), .EPC(EPC),
+        .exl(Exl), .EXNPC(EXNPC),
         .IAddr(IAddr), .IRData(IData), .IReady(IReady),
         .code_D(Code_D), .PC_D(PC_D), .BD_D(BD_D), .EXC_D(EXC_D),
         .stall(Stall_D), .clear(Clear_D), .enPC(EnPC), .busyI(BusyI),
@@ -221,7 +221,7 @@ module CPU (
         .instr(Instr_M),
         .regid(CP0reg), .WData(CP0WData), .RData(CP0RData),
         .HWINT(HWINT), .EXC(CP0EXC),
-        .EPC(EPC), .EXLOp(EXLOp)
+        .exl(Exl), .EXNPC(EXNPC)
     );
 
     PipelineControl ctrl (
@@ -238,7 +238,7 @@ module CPU (
         .TuseRs_D(TuseRs_D), .TuseRt_D(TuseRt_D),
         .Tnew_D(Tnew_D), .Tnew_E(Tnew_E), .Tnew_M(Tnew_M), .Tnew_W(Tnew_W),
         .busyI(BusyI), .busyD(BusyD), .busyMD(BusyMD),
-        .EXLOp(EXLOp),
+        .exl(Exl),
         .enPC(EnPC), .enMD(EnMD), .enD(EnD), .enGRF(EnGRF),
         .stall_D(Stall_D), .clear_D(Clear_D),
         .stall_E(Stall_E), .clear_E(Clear_E),

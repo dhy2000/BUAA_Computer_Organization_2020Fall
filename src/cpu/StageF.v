@@ -24,8 +24,8 @@ module PC (
     input wire `TYPE_JADDR jAddr,
     input wire `WORD jReg,
     // Exception
-    input wire `TYPE_EXLOP exlOp,
-    input wire `TYPE_EPC EPC,
+    input wire exl,
+    input wire `WORD EXNPC,
     // output
     output reg `WORD PC = `PC_BOOT,
     output wire BD,
@@ -36,9 +36,8 @@ module PC (
         NPC_Branch  = 1,
         NPC_JmpImm  = 2,
         NPC_JmpReg  = 3,
-        NPC_ExcEnt  = 4,
-        NPC_ExcRet  = 5,
-        NPC_Keep    = 6;
+        NPC_Exl     = 4,
+        NPC_Keep    = 5;
     
     // BD Flag
     assign BD = (ifunc == `I_BRANCH || ifunc == `I_JUMP); // no matter whether really branch
@@ -55,23 +54,21 @@ module PC (
     // NPC Control
     wire [3 : 0] npcOp;
     assign npcOp = (
-        (exlOp == `EXL_ENTRY) ? (NPC_ExcEnt) : 
-        (exlOp == `EXL_ERET) ? (NPC_ExcRet) :
-        (terminated) ? (NPC_Keep) :
-        (instr == `JALR || instr == `JR) ? (NPC_JmpReg) : 
-        (instr == `J    || instr == `JAL) ? (NPC_JmpImm) : 
-        ((ifunc == `I_BRANCH) && cmp) ? (NPC_Branch) : 
+        (exl)           ? (NPC_Exl) :
+        (terminated)    ? (NPC_Keep) :
+        (instr == `JALR || instr == `JR)    ? (NPC_JmpReg) : 
+        (instr == `J    || instr == `JAL)   ? (NPC_JmpImm) : 
+        ((ifunc == `I_BRANCH) && cmp)       ? (NPC_Branch) : 
         (NPC_Order)
     );
     
     // Select data source
     wire [31 : 0] NPC;
-    assign NPC = (npcOp == NPC_Order) ? (PC + 4) : 
-                (npcOp == NPC_Branch) ? (PC + extImm) : // This PC is After b/j
-                (npcOp == NPC_JmpImm) ? (extJmp) : 
-                (npcOp == NPC_JmpReg) ? (jReg) : 
-                (npcOp == NPC_ExcEnt) ? (`KTEXT_START) : 
-                (npcOp == NPC_ExcRet) ? ({EPC[31:2], 2'b0}) :
+    assign NPC = (npcOp == NPC_Order)   ? (PC + 4) :
+                (npcOp == NPC_Branch)   ? (PC + extImm) : // This PC is After b/j
+                (npcOp == NPC_JmpImm)   ? (extJmp) :
+                (npcOp == NPC_JmpReg)   ? (jReg) :
+                (npcOp == NPC_Exl)      ? (EXNPC) :
                 (PC);
     
     // State update
@@ -106,8 +103,8 @@ module StageF (
     input wire `TYPE_JADDR          jAddr_D,
     input wire `WORD                jReg_D,
     /* Input from CP0 */
-    input wire `TYPE_EXLOP          EXLOp,
-    input wire `TYPE_EPC            EPC,
+    input wire                      exl,
+    input wire `WORD                EXNPC,
     /* Interface with IM */
     output wire `WORD               IAddr,
     input wire `WORD                IRData,
@@ -138,8 +135,8 @@ module StageF (
         .imm(imm_D),
         .jAddr(jAddr_D),
         .jReg(jReg_D),
-        .exlOp(EXLOp),
-        .EPC(EPC),
+        .exl(exl),
+        .EXNPC(EXNPC),
         .PC(PC_F),
         .BD(BD_F),
         .exc(EXC_F)

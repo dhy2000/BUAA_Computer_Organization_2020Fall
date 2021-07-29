@@ -30,9 +30,9 @@ module CP0 (
     // Interrupt and Exception
     input wire `TYPE_INT HWINT,
     input wire `TYPE_EXC EXC,
-    // EPC
-    output reg `TYPE_EPC EPC = 0,
-    output wire `TYPE_EXLOP EXLOp
+    // Control PC
+    output wire `WORD EXNPC,
+    output wire exl
 );
     localparam  idSR    = 12, 
                 idCause = 13,
@@ -49,7 +49,8 @@ module CP0 (
     reg [6:2] ExcCode = 6'b000000;
     reg BD = 0;
     wire [31:0] Cause = {BD, 15'b0, IP, 3'b0, ExcCode, 2'b0};
-    // 14: EPC, already in output port
+    // 14: EPC
+    reg [31:0] EPC;
     // 15: PrID
     reg [31:0] PrID = 32'hbaad_face;
     
@@ -62,19 +63,22 @@ module CP0 (
     wire Exception;
     assign Exception = (EXC != 0);
 
-    // EX LEVEL Op
+    // PC Op
     wire entry = (Interrupt || Exception);
     wire eret = (instr == `ERET);
-    assign EXLOp =  (entry) ? (`EXL_ENTRY) : 
-                    (eret) ? (`EXL_ERET) : (`EXL_NONE);
+    assign exl = (entry | eret);
+
+    assign EXNPC =  (entry) ? (`KTEXT_START) :
+                    (eret) ? (EPC) :
+                    0;
 
     // support MFC0, MTC0, ERET
     // MFC0 - Read
     assign RData = (instr == `MFC0) ? (
-        (regid == idSR) ? (SR) : 
-        (regid == idCause) ? (Cause) : 
-        (regid == idEPC) ? ({EPC, 2'b0}) : 
-        (regid == idPrID) ? (PrID) : 
+        (regid == idSR) ? (SR) :
+        (regid == idCause) ? (Cause) :
+        (regid == idEPC) ? (EPC) :
+        (regid == idPrID) ? (PrID) :
         0
     ) : 0;
 
@@ -112,10 +116,10 @@ module CP0 (
             end
             // EPC
             if (entry) begin
-                EPC <= ((MBD ? (MPC - 4) : MPC) >> 2);
+                EPC <= ((MBD ? (MPC - 4) : MPC) & 32'hFFFF_FFFC);
             end
             else if (instr == `MTC0 && regid == idEPC) begin
-                EPC <= WData[31:2];
+                EPC <= {WData[31:2], 2'b0};
             end
 
             // PrID
