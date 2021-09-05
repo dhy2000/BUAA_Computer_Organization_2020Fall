@@ -23,6 +23,7 @@ module mips (
 - `cpu` 目录：CPU 核心的源代码，其中 CPU 顶层模块为 `cpu.v`。
 - `include` 目录：所有 Verilog 头文件。
 
+用于仿真的 Testbench 代码文件位于 `testbench` 中。
 
 ## 设计说明
 
