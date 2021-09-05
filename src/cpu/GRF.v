@@ -1,5 +1,5 @@
 `default_nettype none
-`include "../include/memory.v"
+`include "../include/memory.vh"
 
 /*
  *  Overview: General Register File, with 2 read ports and 1 write port

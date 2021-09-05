@@ -1,7 +1,7 @@
 `default_nettype none
-`include "include/instructions.v"
-`include "include/exception.v"
-`include "include/memory.v"
+`include "include/instructions.vh"
+`include "include/exception.vh"
+`include "include/memory.vh"
 
 /*
  *  Overview: Top module of MIPS microsystem, for P7
